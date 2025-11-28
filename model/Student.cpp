@@ -1,31 +1,13 @@
-class Student {
+#include "BaseEntity.cpp"
+
+class Student : public BaseEntity { // Student inherits from BaseEntity to reuse common attributes
   private :
-      string name;
-      int age;
-      string id;
-      string phone_number;
       string school_year;
       double gpa;
 
 
   public :
-    // Setters
-    void setName(string name){
-     this->name = name;
-    }
-
-    void setAge(int age){
-     this->age = age;
-    }
-
-    void setId(string id){
-     this->id = id;
-    }
-
-    void setPhoneNumber(string phone_number){
-     this->phone_number = phone_number;
-    }
-
+     // Setters
     void setSchoolYear(string school_year){
      this->school_year = school_year;
     }
@@ -35,22 +17,6 @@ class Student {
     }
 
     // Getters
-    string GetName(){
-     return name;
-    }
-
-    int GetAge(){
-     return age;
-    }
-
-    string GetId(){
-     return id;
-    }
-
-    string GetPhoneNumber(){
-     return phone_number;
-    }
-
     string GetSchoolYear(){
      return school_year;
     }
