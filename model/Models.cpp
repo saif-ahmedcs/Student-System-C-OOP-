@@ -93,11 +93,63 @@ class Teacher : public BaseEntity { // Teacher inherits from BaseEntity to reuse
 
 };
 
+class Course {
+
+  private:
+      string subject_name;
+      Teacher teacher;
+      string AcadimecYear;
+      int subject_hours;
+      vector <Teacher> CourseTeachers;
+
+
+  public :
+     // Setters
+    void setCourseSubjectName(const string &name){
+     subject_name = name;
+    }
+
+    void setCourseTeacher(const Teacher &t){
+     teacher = t;
+     CourseTeachers.push_back(teacher);
+    }
+
+    void setAcademicYear(const string &AcadimecYear){
+     this->AcadimecYear = AcadimecYear;
+    }
+
+    void setSubjectHours(int subject_hours){
+     this->subject_hours = subject_hours;
+    }
+
+    // Getters
+    string GetSubjectName() const {
+      return subject_name;
+    }
+
+    Teacher GetCourseTeacher() const {
+      return teacher;
+    }
+
+    int GetSubjectHours() const {
+      return subject_hours;
+    }
+
+    const vector<Teacher> &GetCourseTeachers() const {
+     return CourseTeachers;
+    }
+
+    int GetNumberOfCourseTeachers() const {
+     return CourseTeachers.size();
+    }
+
+};
+
 class Student : public BaseEntity { // Student inherits from BaseEntity to reuse common attributes
   private :
       string school_year;
       double gpa;
-      Teacher Teachers[6];
+      vector <Teacher> Student_Teachers;
 
 
   public :
@@ -110,10 +162,8 @@ class Student : public BaseEntity { // Student inherits from BaseEntity to reuse
      this->gpa = gpa;
     }
 
-    void SetTeachers(Teacher Teachers[6]){
-       for (int i=0; i<6; i++){
-         this->Teachers[i] = Teachers[i];
-       }
+    void SetTeachers(const vector <Teacher> &Teachers){
+     this->Student_Teachers = Teachers;
     }
 
     // Getters
@@ -125,8 +175,36 @@ class Student : public BaseEntity { // Student inherits from BaseEntity to reuse
      return gpa;
     }
 
-    Teacher *GetTeachers(){
-        return this->Teachers;
-    }
+    const vector<Teacher> &GetStudentTeachers() const {
+     return Student_Teachers;
+}
 
+    int GetNumberOfStudentTeachers(){
+     return Student_Teachers.size();
+    }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
