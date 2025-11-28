@@ -1,4 +1,6 @@
 #include <iostream>
+#include <vector>
+
 using namespace std;
 
 class BaseEntity {
@@ -51,6 +53,8 @@ class Teacher : public BaseEntity { // Teacher inherits from BaseEntity to reuse
   private :
       double Monthly_salary;
       string Teacher_subject;
+      int numberOfStudents;
+      vector <int> StudentsIds;
 
   public :
     // Setters
@@ -62,6 +66,13 @@ class Teacher : public BaseEntity { // Teacher inherits from BaseEntity to reuse
      this->Teacher_subject = Teacher_subject;
     }
 
+
+    void setStudentsIds(const vector<int>& ids) {
+     numberOfStudents = ids.size();
+     StudentsIds = ids;
+}
+
+
     // Getters
     double GetMonthlySalary(){
      return Monthly_salary;
@@ -71,6 +82,13 @@ class Teacher : public BaseEntity { // Teacher inherits from BaseEntity to reuse
      return Teacher_subject;
     }
 
+    int GetNumberOfStudents() const {
+     return numberOfStudents;
+}
+
+    vector<int> GetStudentsIds() const {
+     return StudentsIds;
+}
 
 
 };
