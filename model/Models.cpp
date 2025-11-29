@@ -1,8 +1,7 @@
-#include <iostream>
-#include <vector>
-
+#include<bits/stdc++.h>
 using namespace std;
 
+//Create Model ShareData
 class ShareData {
 
  protected :
@@ -28,8 +27,7 @@ class ShareData {
     }
 
 };
-
-
+//Create Model BaseEntity
 class BaseEntity : public ShareData { // BaseEntity inherits from ShareData to reuse common attributes
 
  protected :
@@ -56,7 +54,7 @@ class BaseEntity : public ShareData { // BaseEntity inherits from ShareData to r
 
 
 };
-
+//Create Model Teacher
 class Teacher : public BaseEntity { // Teacher inherits from BaseEntity to reuse common attributes
 
   private :
@@ -95,7 +93,7 @@ class Teacher : public BaseEntity { // Teacher inherits from BaseEntity to reuse
      return studentIds.size();
     }
 };
-
+//Create Model Course
 class Course : public ShareData { // Course inherits from ShareData to reuse common attributes
 
   private:
@@ -146,14 +144,13 @@ class Course : public ShareData { // Course inherits from ShareData to reuse com
     }
 
 };
-
+//Create struct TeacherCourse to include Teacher Data and Course Data
 struct TeacherCourse {
 
  Teacher teacher;
  Course course;
 };
-
-
+//Create Model Student
 class Student : public BaseEntity { // Student inherits from BaseEntity to reuse common attributes
 
   private :
@@ -195,7 +192,6 @@ class Student : public BaseEntity { // Student inherits from BaseEntity to reuse
     int getNumberOfStudentCourses() const {
      return teacherCoursePairs.size();
     }
-
 };
 
 
