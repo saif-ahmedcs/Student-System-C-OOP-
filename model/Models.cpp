@@ -62,7 +62,7 @@ class Teacher : public BaseEntity { // Teacher inherits from BaseEntity to reuse
   private :
       double monthlySalary;
       string teacherSubject;
-      vector <int> StudentsIds;
+      vector <int> studentIds;
 
   public :
     // Setters
@@ -75,7 +75,7 @@ class Teacher : public BaseEntity { // Teacher inherits from BaseEntity to reuse
     }
 
     void setStudentsIds(const vector<int>& ids) {
-     StudentsIds = ids;
+     studentIds = ids;
     }
 
     // Getters
@@ -88,11 +88,11 @@ class Teacher : public BaseEntity { // Teacher inherits from BaseEntity to reuse
     }
 
     const vector<int> &getStudentsIds() const {
-     return StudentsIds;
+     return studentIds;
     }
 
     int getNumberOfStudents() const {
-     return StudentsIds.size();
+     return studentIds.size();
     }
 };
 
@@ -102,7 +102,7 @@ class Course : public ShareData { // Course inherits from ShareData to reuse com
       Teacher teacher;
       string AcademicYear;
       int subjectHours;
-      vector <Teacher> CourseTeachers;
+      vector <Teacher> courseTeachers;
 
 
   public :
@@ -113,7 +113,7 @@ class Course : public ShareData { // Course inherits from ShareData to reuse com
     }
 
     void addTeacher(const Teacher &t){
-     CourseTeachers.push_back(t);
+     courseTeachers.push_back(t);
     }
 
     void setAcademicYear(const string &Academic_Year){
@@ -138,23 +138,28 @@ class Course : public ShareData { // Course inherits from ShareData to reuse com
     }
 
     const vector<Teacher> &getCourseTeachers() const {
-     return CourseTeachers;
+     return courseTeachers;
     }
 
     int getNumberOfCourseTeachers() const {
-     return CourseTeachers.size();
+     return courseTeachers.size();
     }
 
 };
+
+struct TeacherCourse {
+
+ Teacher teacher;
+ Course course;
+};
+
 
 class Student : public BaseEntity { // Student inherits from BaseEntity to reuse common attributes
 
   private :
       string schoolYear;
       double gpa;
-      vector <Teacher> Student_Teachers;
-      vector <Course>  Student_courses;
-
+      vector <TeacherCourse> teacherCoursePairs;
 
   public :
      // Setters
@@ -166,12 +171,8 @@ class Student : public BaseEntity { // Student inherits from BaseEntity to reuse
      this->gpa = gpa;
     }
 
-    void setStudentTeachers(const vector <Teacher> &Teachers){
-     Student_Teachers = Teachers;
-    }
-
-    void setStudentCourses(const vector <Course> &Courses){
-     Student_courses = Courses;
+    void setStudentTeacherCourse(const Teacher &teacher, const Course &course){
+      teacherCoursePairs.push_back({teacher,course});
     }
 
     // Getters
@@ -183,22 +184,17 @@ class Student : public BaseEntity { // Student inherits from BaseEntity to reuse
      return gpa;
     }
 
-    const vector<Teacher> &getStudentTeachers() const {
-     return Student_Teachers;
+    const vector<TeacherCourse>& getStudentTeacherCourses() const {
+     return teacherCoursePairs;
     }
 
     int getNumberOfStudentTeachers() const {
-     return Student_Teachers.size();
+     return teacherCoursePairs.size();
     }
 
-     const vector<Course> &getStudentCourses() const {
-     return Student_courses;
+    int getNumberOfStudentCourses() const {
+     return teacherCoursePairs.size();
     }
-
-     int getNumberOfStudentCourses() const {
-     return Student_courses.size();
-    }
-
 
 };
 
