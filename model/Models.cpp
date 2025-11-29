@@ -3,185 +3,203 @@
 
 using namespace std;
 
-class BaseEntity {
+class ShareData {
 
  protected :
     string name;
-    int age;
     string id;
-    string phone_number;
 
  public :
-    // Setters
-    void setName(string name){
+    //Setters
+     void setName(string name){
      this->name = name;
     }
 
+     void setId(string id){
+     this->id = id;
+    }
+    //Getters
+    string getName() const {
+     return name;
+    }
+
+    string getId() const {
+     return id;
+    }
+
+};
+
+
+class BaseEntity : public ShareData { // BaseEntity inherits from ShareData to reuse common attributes
+
+ protected :
+    int age;
+    string phoneNumber;
+
+ public :
+    // Setters
     void setAge(int age){
      this->age = age;
     }
 
-    void setId(string id){
-     this->id = id;
-    }
-
     void setPhoneNumber(string phone_number){
-     this->phone_number = phone_number;
+     phoneNumber = phone_number;
     }
-
     // Getters
-    string GetName(){
-     return name;
-    }
-
-    int GetAge(){
+    int getAge() const {
      return age;
     }
 
-    string GetId(){
-     return id;
-    }
-
-    string GetPhoneNumber(){
-     return phone_number;
+    string getPhoneNumber() const {
+     return phoneNumber;
     }
 
 
 };
 
 class Teacher : public BaseEntity { // Teacher inherits from BaseEntity to reuse common attributes
+
   private :
-      double Monthly_salary;
-      string Teacher_subject;
-      int numberOfStudents;
+      double monthlySalary;
+      string teacherSubject;
       vector <int> StudentsIds;
 
   public :
     // Setters
     void setMonthlySalary(double Monthly_salary){
-     this->Monthly_salary = Monthly_salary;
+     monthlySalary = Monthly_salary;
     }
 
     void setTeacherSubject(string Teacher_subject){
-     this->Teacher_subject = Teacher_subject;
+     teacherSubject = Teacher_subject;
     }
-
 
     void setStudentsIds(const vector<int>& ids) {
-     numberOfStudents = ids.size();
      StudentsIds = ids;
-}
-
+    }
 
     // Getters
-    double GetMonthlySalary(){
-     return Monthly_salary;
+    double getMonthlySalary() const {
+     return monthlySalary;
     }
 
-    string GetTeacherSubject(){
-     return Teacher_subject;
+    string getTeacherSubject() const {
+     return teacherSubject;
     }
 
-    int GetNumberOfStudents() const {
-     return numberOfStudents;
-}
-
-    vector<int> GetStudentsIds() const {
+    const vector<int> &getStudentsIds() const {
      return StudentsIds;
-}
+    }
 
-
+    int getNumberOfStudents() const {
+     return StudentsIds.size();
+    }
 };
 
-class Course {
+class Course : public ShareData { // Course inherits from ShareData to reuse common attributes
 
   private:
-      string subject_name;
       Teacher teacher;
-      string AcadimecYear;
-      int subject_hours;
+      string AcademicYear;
+      int subjectHours;
       vector <Teacher> CourseTeachers;
 
 
   public :
-     // Setters
-    void setCourseSubjectName(const string &name){
-     subject_name = name;
+
+    // Setters
+    void setSingleTeacher(const Teacher& t){
+    teacher = t;
     }
 
-    void setCourseTeacher(const Teacher &t){
-     teacher = t;
-     CourseTeachers.push_back(teacher);
+    void addTeacher(const Teacher &t){
+     CourseTeachers.push_back(t);
     }
 
-    void setAcademicYear(const string &AcadimecYear){
-     this->AcadimecYear = AcadimecYear;
+    void setAcademicYear(const string &Academic_Year){
+     AcademicYear = Academic_Year;
     }
 
     void setSubjectHours(int subject_hours){
-     this->subject_hours = subject_hours;
+     subjectHours = subject_hours;
     }
 
     // Getters
-    string GetSubjectName() const {
-      return subject_name;
-    }
-
-    Teacher GetCourseTeacher() const {
+    Teacher getCourseTeacher() const {
       return teacher;
     }
 
-    int GetSubjectHours() const {
-      return subject_hours;
+    string getAcademicYear() const {
+      return AcademicYear;
     }
 
-    const vector<Teacher> &GetCourseTeachers() const {
+    int getSubjectHours() const {
+      return subjectHours;
+    }
+
+    const vector<Teacher> &getCourseTeachers() const {
      return CourseTeachers;
     }
 
-    int GetNumberOfCourseTeachers() const {
+    int getNumberOfCourseTeachers() const {
      return CourseTeachers.size();
     }
 
 };
 
 class Student : public BaseEntity { // Student inherits from BaseEntity to reuse common attributes
+
   private :
-      string school_year;
+      string schoolYear;
       double gpa;
       vector <Teacher> Student_Teachers;
+      vector <Course>  Student_courses;
 
 
   public :
      // Setters
     void setSchoolYear(string school_year){
-     this->school_year = school_year;
+     schoolYear = school_year;
     }
 
     void setGpa(double gpa){
      this->gpa = gpa;
     }
 
-    void SetTeachers(const vector <Teacher> &Teachers){
-     this->Student_Teachers = Teachers;
+    void setStudentTeachers(const vector <Teacher> &Teachers){
+     Student_Teachers = Teachers;
+    }
+
+    void setStudentCourses(const vector <Course> &Courses){
+     Student_courses = Courses;
     }
 
     // Getters
-    string GetSchoolYear(){
-     return school_year;
+    string getSchoolYear() const {
+     return schoolYear;
     }
 
-    double GetGpa(){
+    double getGpa() const {
      return gpa;
     }
 
-    const vector<Teacher> &GetStudentTeachers() const {
+    const vector<Teacher> &getStudentTeachers() const {
      return Student_Teachers;
-}
+    }
 
-    int GetNumberOfStudentTeachers(){
+    int getNumberOfStudentTeachers() const {
      return Student_Teachers.size();
     }
+
+     const vector<Course> &getStudentCourses() const {
+     return Student_courses;
+    }
+
+     int getNumberOfStudentCourses() const {
+     return Student_courses.size();
+    }
+
+
 };
 
 
