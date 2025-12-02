@@ -4,12 +4,14 @@ using namespace std;
 
 const int firstGrade = 1;
 const int lastGrade = 12;
+const int MaxStudentsInSchool = 1440;
 enum Stage {Primary = 1, Middle, Secondary};
 
 ////////////////// Teacher \\\\\\\\\\\\\\\\\\
 // interface TeacherRepository
 class TeacherRepository {
 
+      virtual bool addTeacher(Stage stage, Course &course) = 0;
 
 
 
@@ -45,24 +47,26 @@ class CourseRepository {
 // class CourseRepository implementation
 class CourseRepositoryImpl : public CourseRepository {
 
-
-  const map <Stage,int> maxCoursesPerStage = {
+  const map <Stage,int> maxCoursesPerGradeInStage = {
   {Stage::Primary,7},
   {Stage::Middle, 9},
   {Stage::Secondary,12}
   };
 
-  map <Stage,vector<Course>> coursesByGrade;
-
+  map <Stage,vector<Course>> coursesInGrade;
+  map <Stage,vector<Course>> coursesInStage;
+  vector <Course> coursesInSchool;
   public :
 
      bool addCourse(Stage stage, Course &course) override {
 
-       if(coursesByGrade[stage].size() >= maxCoursesPerStage.at(stage)){
+       if(coursesInGrade[stage].size() >= maxCoursesPerGradeInStage.at(stage)){
          return false;
        }
 
-         coursesByGrade[stage].push_back(course);
+         coursesInGrade[stage].push_back(course);
+         coursesInStage[stage].push_back(course);
+         coursesInSchool.push_back(course);
          return true;
 
      }
@@ -76,6 +80,7 @@ class StudentRepository {
 
   public :
 
+      virtual Stage getStageFromGrade(int grade) = 0;
       virtual bool addStudent(int grade, Student &student) = 0;
 };
 
@@ -83,20 +88,46 @@ class StudentRepository {
 class StudentRepositoryImpl : public StudentRepository {
 
   const int maxStudentsPerGrade = 120 ;
-  map <int,vector<Student>> studentsByGrade;
+
+  map <int,vector<Student>> studentsInGrade;
+  map <Stage,vector<Student>> studentsInStage;
+  vector <Student>studentsInSchool;
 
   public :
 
-    bool addStudent(int grade, Student &student) override {
 
-       if (grade < firstGrade || grade > lastGrade || studentsByGrade[grade].size() >= maxStudentsPerGrade ){
+      Stage getStageFromGrade(int grade) override {
+        if (grade >=1 && grade <=6) {
+            return Stage::Primary;
+          }
+
+        else if (grade >=7 && grade <=9){
+           return Stage::Middle;
+          }
+
+        else if (grade > 9 && grade <= 12 ){
+           return Stage::Secondary; // 10-12
+          }
+
+         throw invalid_argument("Invalid grade");
+
+      }
+
+     bool addStudent(int grade, Student &student) override {
+
+       if (grade < firstGrade || grade > lastGrade || studentsInGrade[grade].size() >= maxStudentsPerGrade ){
         return false;
        }
 
-       else {
-         studentsByGrade[grade].push_back(student);
-          return true;
-       }
+
+       Stage stage = getStageFromGrade(grade);
+
+         studentsInGrade[grade].push_back(student);
+         studentsInStage[stage].push_back(student);
+         studentsInSchool.push_back(student);
+
+        return true;
+
      }
 
 };

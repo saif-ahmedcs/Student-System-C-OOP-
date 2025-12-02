@@ -60,7 +60,7 @@ class Teacher : public BaseEntity { // Teacher inherits from BaseEntity to reuse
   private :
       double monthlySalary;
       string teacherSubject;
-      vector <int> studentIds;
+      vector <int> studentIds; // vector of students in teacherCourse
 
   public :
     // Setters
@@ -72,8 +72,8 @@ class Teacher : public BaseEntity { // Teacher inherits from BaseEntity to reuse
      teacherSubject = Teacher_subject;
     }
 
-    void setStudentsIds(const vector<int>& ids) {
-     studentIds = ids;
+    void addStudentId(int id) {
+     studentIds.push_back(id);
     }
 
     // Getters
@@ -89,7 +89,7 @@ class Teacher : public BaseEntity { // Teacher inherits from BaseEntity to reuse
      return studentIds;
     }
 
-    int getNumberOfStudents() const {
+    int getNumberOfStudentsInTeacherCourse() const {
      return studentIds.size();
     }
 };
