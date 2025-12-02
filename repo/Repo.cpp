@@ -7,6 +7,37 @@ const int lastGrade = 12;
 const int MaxStudentsInSchool = 1440;
 enum Stage {Primary = 1, Middle, Secondary};
 
+
+    Stage getStageFromGrade(int grade) {
+        if (grade >=1 && grade <=6) {
+            return Stage::Primary;
+          }
+
+        else if (grade >=7 && grade <=9){
+           return Stage::Middle;
+          }
+
+        else if (grade > 9 && grade <= 12 ){
+           return Stage::Secondary; // 10-12
+          }
+
+         throw invalid_argument("Invalid grade");
+
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ////////////////// Teacher \\\\\\\\\\\\\\\\\\
 // interface TeacherRepository
 class TeacherRepository {
@@ -40,7 +71,7 @@ class CourseRepository {
 
   public :
 
-      virtual bool addCourse(Stage stage, Course &course) = 0;
+      virtual bool addCourse(int grade, Course &course) = 0;
 
 };
 
@@ -48,28 +79,48 @@ class CourseRepository {
 class CourseRepositoryImpl : public CourseRepository {
 
   const map <Stage,int> maxCoursesPerGradeInStage = {
-  {Stage::Primary,7},
-  {Stage::Middle, 9},
-  {Stage::Secondary,12}
+  {Stage::Primary,15},
+  {Stage::Middle, 18},
+  {Stage::Secondary,24}
   };
 
-  map <Stage,vector<Course>> coursesInGrade;
+  map <int,vector<Course>> coursesInGrade;
   map <Stage,vector<Course>> coursesInStage;
   vector <Course> coursesInSchool;
+
   public :
 
-     bool addCourse(Stage stage, Course &course) override {
 
-       if(coursesInGrade[stage].size() >= maxCoursesPerGradeInStage.at(stage)){
-         return false;
-       }
-
-         coursesInGrade[stage].push_back(course);
-         coursesInStage[stage].push_back(course);
-         coursesInSchool.push_back(course);
-         return true;
-
+    void addCourseInGrade(int grade, Course &course) {
+        coursesInGrade[grade].push_back(course);
      }
+
+
+    void addCourseInStage(int grade, Course &course) {
+        Stage stage = getStageFromGrade(grade);
+        coursesInStage[stage].push_back(course);
+     }
+
+    void addCourseInSchool(Course &course) {
+        coursesInSchool.push_back(course);
+     }
+
+
+
+    bool addCourse(int grade, Course &course) override {
+        Stage stage = getStageFromGrade(grade);
+
+
+        if (grade < firstGrade || grade > lastGrade || coursesInGrade[grade].size() >= maxCoursesPerStage.at(stage))
+            return false;
+
+        addCourseInGrade(grade, course);
+        addCourseInStage(grade, course);
+        addCourseInSchool(course);
+
+        return true;
+     }
+
 
 };
 
@@ -80,7 +131,6 @@ class StudentRepository {
 
   public :
 
-      virtual Stage getStageFromGrade(int grade) = 0;
       virtual bool addStudent(int grade, Student &student) = 0;
 };
 
@@ -96,38 +146,39 @@ class StudentRepositoryImpl : public StudentRepository {
   public :
 
 
-      Stage getStageFromGrade(int grade) override {
-        if (grade >=1 && grade <=6) {
-            return Stage::Primary;
-          }
+   void addStudentInGrade(int grade, Student &student) {
+        studentsInGrade[grade].push_back(student);
+    }
 
-        else if (grade >=7 && grade <=9){
-           return Stage::Middle;
-          }
-
-        else if (grade > 9 && grade <= 12 ){
-           return Stage::Secondary; // 10-12
-          }
-
-         throw invalid_argument("Invalid grade");
-
-      }
-
-     bool addStudent(int grade, Student &student) override {
-
-       if (grade < firstGrade || grade > lastGrade || studentsInGrade[grade].size() >= maxStudentsPerGrade ){
-        return false;
-       }
+   void addStudentInStage(int grade, Student &student) {
+        Stage stage = getStageFromGrade(grade);
+        studentsInStage[stage].push_back(student);
+    }
 
 
-       Stage stage = getStageFromGrade(grade);
+   void addStudentInSchool(Student &student) {
+        studentsInSchool.push_back(student);
+    }
 
-         studentsInGrade[grade].push_back(student);
-         studentsInStage[stage].push_back(student);
-         studentsInSchool.push_back(student);
+
+   bool addStudent(int grade, Student &student) override {
+        if (grade < firstGrade || grade > lastGrade || studentsInGrade[grade].size() >= maxStudentsPerGrade) {
+            return false;
+        }
+
+        addStudentInGrade(grade, student);
+        addStudentInStage(grade, student);
+        addStudentInSchool(student);
 
         return true;
+    }
 
-     }
+
+
+
+
+
+
+
 
 };
