@@ -2,6 +2,10 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+const int firstGrade = 1;
+const int lastGrade = 12;
+enum Stage {Primary = 1, Middle, Secondary};
+
 ////////////////// Teacher \\\\\\\\\\\\\\\\\\
 // interface TeacherRepository
 class TeacherRepository {
@@ -34,35 +38,34 @@ class CourseRepository {
 
   public :
 
-      virtual void addCourse(Course &course) = 0;
+      virtual bool addCourse(Stage stage, Course &course) = 0;
 
 };
 
 // class CourseRepository implementation
 class CourseRepositoryImpl : public CourseRepository {
 
-  int MaxNumberOfCoursesPerGrade = 10;
-  vector <Course> courses;
+
+  const map <Stage,int> maxCoursesPerStage = {
+  {Stage::Primary,7},
+  {Stage::Middle, 9},
+  {Stage::Secondary,12}
+  };
+
+  map <Stage,vector<Course>> coursesByGrade;
 
   public :
 
-    virtual void addCourse(Course &course){
-       if (students.size() >= maxStudentsPerGrade){
-         cout <<"Registration full. Cannot add more students." << endl;
+     bool addCourse(Stage stage, Course &course) override {
+
+       if(coursesByGrade[stage].size() >= maxCoursesPerStage.at(stage)){
+         return false;
        }
-       else {
-         students.push_back(student);
-          cout << "Added successfully." << endl;
-       }
+
+         coursesByGrade[stage].push_back(course);
+         return true;
+
      }
-
-
-
-
-
-
-
-
 
 };
 
@@ -80,8 +83,6 @@ class StudentRepository {
 class StudentRepositoryImpl : public StudentRepository {
 
   const int maxStudentsPerGrade = 120 ;
-  const int firstGrade = 1;
-  const int lastGrade = 12;
   map <int,vector<Student>> studentsByGrade;
 
   public :
