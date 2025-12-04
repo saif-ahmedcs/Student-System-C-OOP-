@@ -2,6 +2,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+////////////////// Teacher \\\\\\\\\\\\\\\\\\
+
 class TeacherController {
 
 private :
@@ -13,6 +15,7 @@ public :
     }
 };
 
+////////////////// Course \\\\\\\\\\\\\\\\\\
 
 class CourseController {
 
@@ -25,6 +28,7 @@ public :
     }
 };
 
+////////////////// Student \\\\\\\\\\\\\\\\\\
 
 class StudentController {
 

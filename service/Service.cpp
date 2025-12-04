@@ -2,6 +2,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+////////////////// Teacher \\\\\\\\\\\\\\\\\\
+// interface TeacherService
 class TeacherService {
 
 public :
@@ -12,7 +14,8 @@ public :
 
 };
 
-class TeacherServiceImpl {
+// class TeacherService implementation
+class TeacherServiceImpl : public TeacherService {
 
 private :
     TeacherRepository &teacherRepository;
@@ -28,7 +31,8 @@ public :
 
 };
 
-
+////////////////// Course \\\\\\\\\\\\\\\\\\
+// interface CourseService
 class CourseService {
 
 public :
@@ -38,7 +42,8 @@ public :
 
 };
 
-class CourseServiceImpl {
+// class CourseService implementation
+class CourseServiceImpl : public CourseService{
 
 private :
     CourseRepository &courseRepository;
@@ -51,7 +56,8 @@ public :
 
 };
 
-
+////////////////// Student \\\\\\\\\\\\\\\\\\
+// interface StudentService
 class StudentService {
 
 public :
@@ -62,8 +68,8 @@ public :
 
 
 };
-
-class StudentServiceImpl {
+// class StudentService implementation
+class StudentServiceImpl : public StudentService{
 
 private :
     StudentRepository &studentRepository;
@@ -73,9 +79,6 @@ public :
    bool addStudent(int grade, Student &student){
       return studentRepository.addStudent(grade,student);
      }
-
-
-
 
 
 };
