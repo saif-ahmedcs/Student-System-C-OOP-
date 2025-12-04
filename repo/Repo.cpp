@@ -1,13 +1,13 @@
 #include "../model/Models.cpp"
 #include <bits/stdc++.h>
 using namespace std;
-
+//Global variables
 const int firstGrade = 1;
 const int lastGrade = 12;
 const int MaxStudentsInSchool = 1440;
 enum Stage {Primary = 1, Middle, Secondary};
 
-
+//Global Function
     Stage getStageFromGrade(int grade) {
         if (grade >=1 && grade <=6) {
             return Stage::Primary;
@@ -25,27 +25,12 @@ enum Stage {Primary = 1, Middle, Secondary};
 
       }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ////////////////// Teacher \\\\\\\\\\\\\\\\\\
 // interface TeacherRepository
 class TeacherRepository {
 
-      virtual bool addTeacher(Stage stage, Course &course) = 0;
-
-
-
+public :
+      virtual bool addTeacher(int grade, Teacher &teacher) = 0;
 
 
 
@@ -55,12 +40,48 @@ class TeacherRepository {
 class TeacherRepositoryImpl : public TeacherRepository {
 
 
+  const map <Stage,int> maxTeachersPerGradeInStage = {
+  {Stage::Primary,7},
+  {Stage::Middle, 9},
+  {Stage::Secondary,12}
+  };
+
+  map <int,vector<Teacher>> teachersInGrade;
+  map <Stage,vector<Teacher>> teachersInStage;
+  vector <Teacher> teachersInSchool;
+
+  public :
+
+
+    void addTeacherInGrade(int grade, Teacher &teacher) {
+        teachersInGrade[grade].push_back(teacher);
+     }
+
+
+    void addTeacherInStage(int grade, Teacher &teacher) {
+        Stage stage = getStageFromGrade(grade);
+        teachersInStage[stage].push_back(teacher);
+     }
+
+    void addTeacherInSchool(Teacher &teacher) {
+        teachersInSchool.push_back(teacher);
+     }
 
 
 
+    bool addTeacher(int grade, Teacher &teacher) override {
+        Stage stage = getStageFromGrade(grade);
 
 
+        if (grade < firstGrade || grade > lastGrade || teachersInGrade[grade].size() >= maxTeachersPerGradeInStage.at(stage))
+            return false;
 
+        addTeacherInGrade(grade, teacher);
+        addTeacherInStage(grade, teacher);
+        addTeacherInSchool(teacher);
+
+        return true;
+     }
 
 
 };
@@ -79,9 +100,9 @@ class CourseRepository {
 class CourseRepositoryImpl : public CourseRepository {
 
   const map <Stage,int> maxCoursesPerGradeInStage = {
-  {Stage::Primary,15},
-  {Stage::Middle, 18},
-  {Stage::Secondary,24}
+  {Stage::Primary,7},
+  {Stage::Middle, 9},
+  {Stage::Secondary,12}
   };
 
   map <int,vector<Course>> coursesInGrade;
@@ -111,7 +132,7 @@ class CourseRepositoryImpl : public CourseRepository {
         Stage stage = getStageFromGrade(grade);
 
 
-        if (grade < firstGrade || grade > lastGrade || coursesInGrade[grade].size() >= maxCoursesPerStage.at(stage))
+        if (grade < firstGrade || grade > lastGrade || coursesInGrade[grade].size() >= maxCoursesPerGradeInStage.at(stage))
             return false;
 
         addCourseInGrade(grade, course);
