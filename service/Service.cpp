@@ -1,84 +1,25 @@
-#include "../repo/Repo.cpp"
-#include <bits/stdc++.h>
-using namespace std;
+#include "Service.h"
 
-////////////////// Teacher \\\\\\\\\\\\\\\\\\
-// interface TeacherService
-class TeacherService {
+////////////////// TeacherServiceImpl \\\\\\\\\\\\\\\
 
-public :
+TeacherServiceImpl::TeacherServiceImpl(TeacherRepositoryImpl &repo) : teacherRepository(repo) {}
 
-    virtual bool addTeacher(int grade, Teacher &teacher) = 0;
+bool TeacherServiceImpl::addTeacher(int grade, Teacher &teacher) {
+    return teacherRepository.addTeacher(grade, teacher);
+}
 
+////////////////// CourseServiceImpl \\\\\\\\\\\\\\\
 
+CourseServiceImpl::CourseServiceImpl(CourseRepositoryImpl &repo) : courseRepository(repo) {}
 
-};
+bool CourseServiceImpl::addCourse(int grade, Course &course) {
+    return courseRepository.addCourse(grade, course);
+}
 
-// class TeacherService implementation
-class TeacherServiceImpl : public TeacherService {
+////////////////// StudentServiceImpl \\\\\\\\\\\\\\\
 
-private :
-    TeacherRepository &teacherRepository;
+StudentServiceImpl::StudentServiceImpl(StudentRepositoryImpl &repo) : studentRepository(repo) {}
 
-public :
-
-    bool addTeacher(int grade, Teacher &teacher){
-      return teacherRepository.addTeacher(grade,teacher);
-    }
-
-
-
-
-};
-
-////////////////// Course \\\\\\\\\\\\\\\\\\
-// interface CourseService
-class CourseService {
-
-public :
-
-    virtual bool addCourse(int grade, Course &course) = 0;
-
-
-};
-
-// class CourseService implementation
-class CourseServiceImpl : public CourseService{
-
-private :
-    CourseRepository &courseRepository;
-
-public :
-
-   bool addCourse(int grade, Course &course){
-      return courseRepository.addCourse(grade,course);
-     }
-
-};
-
-////////////////// Student \\\\\\\\\\\\\\\\\\
-// interface StudentService
-class StudentService {
-
-public :
-
- virtual bool addStudent(int grade, Student &student) = 0;
-
-
-
-
-};
-// class StudentService implementation
-class StudentServiceImpl : public StudentService{
-
-private :
-    StudentRepository &studentRepository;
-
-public :
-
-   bool addStudent(int grade, Student &student){
-      return studentRepository.addStudent(grade,student);
-     }
-
-
-};
+bool StudentServiceImpl::addStudent(int grade, Student &student) {
+    return studentRepository.addStudent(grade, student);
+}

@@ -1,44 +1,19 @@
-#include "../service/Service.cpp"
-#include <bits/stdc++.h>
-using namespace std;
+#include "Controller.h"
 
-////////////////// Teacher \\\\\\\\\\\\\\\\\\
+TeacherController::TeacherController(TeacherServiceImpl &service) : teacherService(service) {}
 
-class TeacherController {
+bool TeacherController::addTeacher(int grade, Teacher &teacher) {
+    return teacherService.addTeacher(grade, teacher);
+}
 
-private :
-    TeacherService &teacherService;
+CourseController::CourseController(CourseServiceImpl &service) : courseService(service) {}
 
-public :
-    bool addTeacher(int grade, Teacher &teacher){
-      return teacherService.addTeacher(grade,teacher);
-    }
-};
+bool CourseController::addCourse(int grade, Course &course) {
+    return courseService.addCourse(grade, course);
+}
 
-////////////////// Course \\\\\\\\\\\\\\\\\\
+StudentController::StudentController(StudentServiceImpl &service) : studentService(service) {}
 
-class CourseController {
-
-private :
-    CourseService &courseService;
-
-public :
-    bool addCourse(int grade, Course &course){
-      return courseService.addCourse(grade,course);
-    }
-};
-
-////////////////// Student \\\\\\\\\\\\\\\\\\
-
-class StudentController {
-
-private :
-    StudentService &studentService;
-
-public :
-
-    bool addStudent(int grade, Student &student){
-      return studentService.addStudent(grade,student);
-     }
-
-};
+bool StudentController::addStudent(int grade, Student &student) {
+    return studentService.addStudent(grade, student);
+}

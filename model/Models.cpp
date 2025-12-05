@@ -1,220 +1,107 @@
-#include<bits/stdc++.h>
-using namespace std;
+#include "Models.h"
 
-//Create Model ShareData
-class ShareData {
-
- protected :
-    string name;
-    string id;
-
- public :
-    //Setters
-     void setName(string name){
-     this->name = name;
+// ShareData
+void ShareData::setName(const string &n){
+     name = n;
     }
-
-     void setId(string id){
-     this->id = id;
+void ShareData::setId(const string &i){
+    id = i;
     }
-    //Getters
-    string getName() const {
-     return name;
+string ShareData::getName() const {
+    return name;
     }
-
-    string getId() const {
+string ShareData::getId() const {
      return id;
     }
 
-};
-//Create Model BaseEntity
-class BaseEntity : public ShareData { // BaseEntity inherits from ShareData to reuse common attributes
-
- protected :
-    int age;
-    string phoneNumber;
-
- public :
-    // Setters
-    void setAge(int age){
-     this->age = age;
+// BaseEntity
+void BaseEntity::setAge(int a){
+    age = a;
     }
-
-    void setPhoneNumber(string phone_number){
-     phoneNumber = phone_number;
+void BaseEntity::setPhoneNumber(const string &p){
+     phoneNumber = p;
     }
-    // Getters
-    int getAge() const {
+int BaseEntity::getAge() const {
      return age;
     }
-
-    string getPhoneNumber() const {
+string BaseEntity::getPhoneNumber() const {
      return phoneNumber;
     }
 
-
-};
-//Create Model Teacher
-class Teacher : public BaseEntity { // Teacher inherits from BaseEntity to reuse common attributes
-
-  private :
-      double monthlySalary;
-      string teacherSubject;
-      vector <int> studentIds; // vector of students in teacherCourse
-
-  public :
-    // Setters
-    void setMonthlySalary(double Monthly_salary){
-     monthlySalary = Monthly_salary;
+// Teacher
+void Teacher::setMonthlySalary(double s){
+     monthlySalary = s;
     }
-
-    void setTeacherSubject(string Teacher_subject){
-     teacherSubject = Teacher_subject;
+void Teacher::setTeacherSubject(const string &sub){
+     teacherSubject = sub;
     }
-
-    void addStudentId(int id) {
-     studentIds.push_back(id);
+void Teacher::addStudentId(int id){
+    studentIds.push_back(id);
     }
-
-    // Getters
-    double getMonthlySalary() const {
-     return monthlySalary;
+double Teacher::getMonthlySalary() const {
+    return monthlySalary;
     }
-
-    string getTeacherSubject() const {
-     return teacherSubject;
+string Teacher::getTeacherSubject() const {
+    return teacherSubject;
     }
-
-    const vector<int> &getStudentsIds() const {
-     return studentIds;
+const vector<int>& Teacher::getStudentsIds() const {
+    return studentIds;
     }
-
-    int getNumberOfStudentsInTeacherCourse() const {
+int Teacher::getNumberOfStudentsInTeacherCourse() const {
      return studentIds.size();
     }
-};
-//Create Model Course
-class Course : public ShareData { // Course inherits from ShareData to reuse common attributes
 
-  private:
-      Teacher teacher;
-      string AcademicYear;
-      int subjectHours;
-      vector <Teacher> courseTeachers;
-
-
-  public :
-
-    // Setters
-    void setSingleTeacher(const Teacher& t){
-    teacher = t;
+// Course
+void Course::setSingleTeacher(const Teacher& t){
+     teacher = t;
     }
-
-    void addTeacher(const Teacher &t){
+void Course::addTeacher(const Teacher &t){
      courseTeachers.push_back(t);
     }
-
-    void setAcademicYear(const string &Academic_Year){
-     AcademicYear = Academic_Year;
+void Course::setAcademicYear(const string &year){
+     AcademicYear = year;
+    }
+void Course::setSubjectHours(int hours){
+    subjectHours = hours;
+    }
+Teacher Course::getCourseTeacher() const {
+    return teacher;
+    }
+const vector<Teacher>& Course::getCourseTeachers() const {
+    return courseTeachers;
+    }
+string Course::getAcademicYear() const {
+    return AcademicYear;
+    }
+int Course::getSubjectHours() const {
+    return subjectHours;
+    }
+int Course::getNumberOfCourseTeachers() const {
+    return courseTeachers.size();
     }
 
-    void setSubjectHours(int subject_hours){
-     subjectHours = subject_hours;
+// Student
+void Student::setSchoolYear(const string &year){
+     schoolYear = year;
     }
-
-    // Getters
-    Teacher getCourseTeacher() const {
-      return teacher;
+void Student::setGpa(double g){
+     gpa = g;
     }
-
-    string getAcademicYear() const {
-      return AcademicYear;
+void Student::setStudentTeacherCourse(const Teacher &teacher, const Course &course){
+    teacherCoursePairs.push_back({teacher, course});
     }
-
-    int getSubjectHours() const {
-      return subjectHours;
-    }
-
-    const vector<Teacher> &getCourseTeachers() const {
-     return courseTeachers;
-    }
-
-    int getNumberOfCourseTeachers() const {
-     return courseTeachers.size();
-    }
-
-};
-//Create struct TeacherCourse to include Teacher Data and Course Data
-struct TeacherCourse {
-
- Teacher teacher;
- Course course;
-};
-//Create Model Student
-class Student : public BaseEntity { // Student inherits from BaseEntity to reuse common attributes
-
-  private :
-      string schoolYear;
-      double gpa;
-      vector <TeacherCourse> teacherCoursePairs;
-
-  public :
-     // Setters
-    void setSchoolYear(string school_year){
-     schoolYear = school_year;
-    }
-
-    void setGpa(double gpa){
-     this->gpa = gpa;
-    }
-
-    void setStudentTeacherCourse(const Teacher &teacher, const Course &course){
-      teacherCoursePairs.push_back({teacher,course});
-    }
-
-    // Getters
-    string getSchoolYear() const {
+string Student::getSchoolYear() const {
      return schoolYear;
     }
-
-    double getGpa() const {
+double Student::getGpa() const {
      return gpa;
     }
-
-    const vector<TeacherCourse>& getStudentTeacherCourses() const {
+const vector<TeacherCourse>& Student::getStudentTeacherCourses() const {
      return teacherCoursePairs;
     }
-
-    int getNumberOfStudentTeachers() const {
+int Student::getNumberOfStudentTeachers() const {
      return teacherCoursePairs.size();
     }
-
-    int getNumberOfStudentCourses() const {
-     return teacherCoursePairs.size();
+int Student::getNumberOfStudentCourses() const {
+    return teacherCoursePairs.size();
     }
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
