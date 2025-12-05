@@ -1,8 +1,6 @@
 #ifndef MODELS_H
 #define MODELS_H
-
-#include <string>
-#include <vector>
+#include <bits/stdc++.h>
 using namespace std;
 
 class ShareData {

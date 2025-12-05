@@ -20,6 +20,6 @@ bool CourseServiceImpl::addCourse(int grade, Course &course) {
 
 StudentServiceImpl::StudentServiceImpl(StudentRepositoryImpl &repo) : studentRepository(repo) {}
 
-bool StudentServiceImpl::addStudent(int grade, Student &student) {
+string StudentServiceImpl::addStudent(int grade, Student &student) {
     return studentRepository.addStudent(grade, student);
 }

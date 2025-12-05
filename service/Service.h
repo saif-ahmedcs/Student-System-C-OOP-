@@ -36,7 +36,7 @@ public:
 
 class StudentService {
 public:
-    virtual bool addStudent(int grade, Student &student) = 0;
+    virtual string addStudent(int grade, Student &student) = 0;
 };
 
 class StudentServiceImpl : public StudentService {
@@ -46,7 +46,7 @@ private:
 public:
     StudentServiceImpl(StudentRepositoryImpl &repo);
 
-    bool addStudent(int grade, Student &student) override;
+    string addStudent(int grade, Student &student) override;
 };
 
 #endif

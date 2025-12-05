@@ -50,11 +50,6 @@ bool flag = true;
             cin>>name;
             student.setName(name);
 
-            cout <<"Enter Student id:"<<endl;
-            string id;
-            cin>>id;
-            student.setId(id);
-
             cout <<"Enter Student gpa:"<<endl;
             double gpa;
             cin>>gpa;
@@ -70,7 +65,7 @@ bool flag = true;
 
             student.setPhoneNumber(phoneNumber);
 
-            cout <<studentController.addStudent(grade,student);
+            cout << studentController.addStudent(grade,student) << endl;
 
            } break;
 

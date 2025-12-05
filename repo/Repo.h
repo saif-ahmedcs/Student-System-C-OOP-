@@ -2,9 +2,6 @@
 #define REPO_H
 
 #include "../model/Models.h"
-#include <vector>
-#include <map>
-#include <stdexcept>
 using namespace std;
 
 enum Stage { Primary = 1, Middle, Secondary };
@@ -69,12 +66,11 @@ public:
 
 class StudentRepository {
 public:
-    virtual bool addStudent(int grade, Student &student) = 0;
+    virtual string addStudent(int grade, Student &student) = 0;
 };
 
 class StudentRepositoryImpl : public StudentRepository {
 private:
-    const int maxStudentsPerGrade = 120;
     map<int, vector<Student>> studentsInGrade;
     map<Stage, vector<Student>> studentsInStage;
     vector<Student> studentsInSchool;
@@ -84,7 +80,7 @@ public:
     void addStudentInStage(int grade, Student &student);
     void addStudentInSchool(Student &student);
 
-    bool addStudent(int grade, Student &student) override;
+    string addStudent(int grade, Student &student) override;
 };
 
 #endif

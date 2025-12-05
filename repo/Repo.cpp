@@ -1,13 +1,57 @@
 #include "Repo.h"
 
-////////////////// Global function \\\\\\\\\\\\\\\
+const int maxStudentsPerGrade = 2;
 
+////////////////// Global functions \\\\\\\\\\\\\\\
+
+
+// Determines the educational stage (Primary, Middle, Secondary)
+// based on the given grade number (1–12). Throws an exception for invalid grades.
 Stage getStageFromGrade(int grade) {
     if (grade >= 1 && grade <= 6) return Stage::Primary;
     if (grade >= 7 && grade <= 9) return Stage::Middle;
     if (grade >= 10 && grade <= 12) return Stage::Secondary;
     throw invalid_argument("Invalid grade");
 }
+
+// Generates a unique student ID based on the student's grade.
+// The ID starts with a year prefix (depending on grade) followed by
+// an auto-incremented serial number (000–MaximumStudentsPerGrade) using a static array.
+string generateStudentID(int grade){
+
+static int id[13]={0};
+
+string idStart;
+
+ if (grade == 1) idStart = "2019";
+    else if (grade == 2) idStart = "2018";
+    else if (grade == 3) idStart = "2017";
+    else if (grade == 4) idStart = "2016";
+    else if (grade == 5) idStart = "2015";
+    else if (grade == 6) idStart = "2014";
+    else if (grade == 7) idStart = "2013";
+    else if (grade == 8) idStart = "2012";
+    else if (grade == 9) idStart = "2011";
+    else if (grade == 10) idStart = "2010";
+    else if (grade == 11) idStart = "2009";
+    else if (grade == 12) idStart = "2008";
+    else return "Invalid grade";
+
+    if (id[grade] >= 0 && id[grade] <= 9){
+        id[grade]++;
+        return idStart + "00" + to_string(id[grade]);
+    }
+    else if (id[grade] >= 10 && id[grade] <= 99){
+        id[grade]++;
+        return idStart + "0" + to_string(id[grade]);
+    }
+    else {
+        id[grade]++;
+        return idStart + to_string(id[grade]);
+    }
+
+}
+
 
 ////////////////// TeacherRepositoryImpl \\\\\\\\\\\\\\\
 
@@ -76,12 +120,13 @@ void StudentRepositoryImpl::addStudentInSchool(Student &student) {
     studentsInSchool.push_back(student);
 }
 
-bool StudentRepositoryImpl::addStudent(int grade, Student &student) {
+string StudentRepositoryImpl::addStudent(int grade, Student &student) {
     if (grade < 1 || grade > 12 || studentsInGrade[grade].size() >= maxStudentsPerGrade)
-        return false;
+        return "Registration is closed. All spots are filled.";
 
     addStudentInGrade(grade, student);
     addStudentInStage(grade, student);
     addStudentInSchool(student);
-    return true;
+    string finalId = generateStudentID(grade);
+    return "Student added successfully. Assigned ID: " + finalId;
 }

@@ -14,6 +14,6 @@ bool CourseController::addCourse(int grade, Course &course) {
 
 StudentController::StudentController(StudentServiceImpl &service) : studentService(service) {}
 
-bool StudentController::addStudent(int grade, Student &student) {
+string StudentController::addStudent(int grade, Student &student) {
     return studentService.addStudent(grade, student);
 }

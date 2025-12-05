@@ -27,7 +27,7 @@ private:
 
 public:
     StudentController(StudentServiceImpl &service);
-    bool addStudent(int grade, Student &student);
+    string addStudent(int grade, Student &student);
 };
 
 #endif
