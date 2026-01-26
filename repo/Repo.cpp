@@ -11,7 +11,6 @@ Stage getStageFromGrade(int grade) {
     if (grade >= 1 && grade <= 6) return Stage::Primary;
     if (grade >= 7 && grade <= 9) return Stage::Middle;
     if (grade >= 10 && grade <= 12) return Stage::Secondary;
-    throw invalid_argument("Invalid grade");
 }
 
 // Generates a unique student ID based on the student's grade.
@@ -121,12 +120,15 @@ void StudentRepositoryImpl::addStudentInSchool(Student &student) {
 }
 
 string StudentRepositoryImpl::addStudent(int grade, Student &student) {
-    if (grade < 1 || grade > 12 || studentsInGrade[grade].size() >= maxStudentsPerGrade)
+    if (studentsInGrade[grade].size() >= maxStudentsPerGrade)
         return "Registration is closed. All spots are filled.";
+    if (grade < 1 || grade > 12)
+        return "Invalid Grade !";
 
     addStudentInGrade(grade, student);
     addStudentInStage(grade, student);
     addStudentInSchool(student);
     string finalId = generateStudentID(grade);
+    student.setId(finalId);
     return "Student added successfully. Assigned ID: " + finalId;
 }
