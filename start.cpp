@@ -5,12 +5,13 @@ using namespace std;
 
 void displaySystem() {
     cout << "\t********************* Welcome To Student System *********************" << endl << endl;
-    cout << "Please enter the process you need !" << endl;
+    cout << "The Process you need is : " << endl;
     cout << "1- About Student\t2- About Course" << endl;
     cout << "3- About Teacher\t4- Exit" << endl;
 }
 
 void showProcesses(string s) {
+    cout <<"Please enter the process you need !" << endl;
     cout << "1- Add " << s << "\t\t2- Remove " << s << endl;
     cout << "3- Edit " << s << "\t\t4- Show " << s << " Info" << endl;
 }
@@ -34,7 +35,6 @@ int main() {
     bool flag = true;
 
     while (flag) {
-        cout << "\nEnter process number: ";
         cin >> process;
 
         switch (process) {
@@ -42,7 +42,6 @@ int main() {
             case 1: // Student
             {
                 showProcesses("Student");
-
                 int studentProcess;
                 cin >> studentProcess;
 
@@ -72,6 +71,17 @@ int main() {
 
                     cout << studentController.addStudent(grade, student) << endl;
                 }
+
+
+
+
+
+
+
+
+
+
+
             }
             break;
 

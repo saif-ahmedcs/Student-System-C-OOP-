@@ -43,9 +43,14 @@ class StudentServiceImpl : public StudentService {
 private:
     StudentRepositoryImpl &studentRepository;
 
+    // Validation functions
+    bool validateGpa(double gpa);
+    bool validatePhoneNumber(const string &phone);
+    bool validateGrade(int grade);
+    bool validateName(const string &name);
+
 public:
     StudentServiceImpl(StudentRepositoryImpl &repo);
-
     string addStudent(int grade, Student &student) override;
 };
 

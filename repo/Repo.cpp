@@ -120,10 +120,6 @@ void StudentRepositoryImpl::addStudentInSchool(Student &student) {
 }
 
 string StudentRepositoryImpl::addStudent(int grade, Student &student) {
-    if (studentsInGrade[grade].size() >= maxStudentsPerGrade)
-        return "Registration is closed. All spots are filled.";
-    if (grade < 1 || grade > 12)
-        return "Invalid Grade !";
 
     addStudentInGrade(grade, student);
     addStudentInStage(grade, student);
