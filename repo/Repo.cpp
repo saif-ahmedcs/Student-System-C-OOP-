@@ -93,15 +93,21 @@ void CourseRepositoryImpl::addCourseInSchool(Course &course) {
     coursesInSchool.push_back(course);
 }
 
-bool CourseRepositoryImpl::addCourse(int grade, Course &course) {
+const vector<Course>& CourseRepositoryImpl::getCoursesInGrade(int grade) const {
+    static vector<Course> empty;
+    auto it = coursesInGrade.find(grade);
+    if (it != coursesInGrade.end())
+        return it->second;
+    return empty;
+}
+
+string CourseRepositoryImpl::addCourse(int grade, Course &course) {
     Stage stage = getStageFromGrade(grade);
-    if (grade < 1 || grade > 12 || coursesInGrade[grade].size() >= maxCoursesPerGradeInStage.at(stage))
-        return false;
 
     addCourseInGrade(grade, course);
     addCourseInStage(grade, course);
     addCourseInSchool(course);
-    return true;
+    return "Course added successfully./n";
 }
 
 ////////////////// StudentRepositoryImpl \\\\\\\\\\\\\\\

@@ -8,7 +8,7 @@ bool TeacherController::addTeacher(int grade, Teacher &teacher) {
 
 CourseController::CourseController(CourseServiceImpl &service) : courseService(service) {}
 
-bool CourseController::addCourse(int grade, Course &course) {
+string CourseController::addCourse(int grade, Course &course) {
     return courseService.addCourse(grade, course);
 }
 

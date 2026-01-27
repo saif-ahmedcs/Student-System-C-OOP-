@@ -18,7 +18,7 @@ private:
 
 public:
     CourseController(CourseServiceImpl &service);
-    bool addCourse(int grade, Course &course);
+    string addCourse(int grade, Course &course);
 };
 
 class StudentController {

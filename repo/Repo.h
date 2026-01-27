@@ -39,7 +39,7 @@ public:
 
 class CourseRepository {
 public:
-    virtual bool addCourse(int grade, Course &course) = 0;
+    virtual string addCourse(int grade, Course &course) = 0;
 };
 
 class CourseRepositoryImpl : public CourseRepository {
@@ -59,7 +59,10 @@ public:
     void addCourseInStage(int grade, Course &course);
     void addCourseInSchool(Course &course);
 
-    bool addCourse(int grade, Course &course) override;
+    const vector<Course>& getCoursesInGrade(int grade) const;
+
+    string addCourse(int grade, Course &course) override;
+
 };
 
 ////////////////// Student \\\\\\\\\\\\\\\\\\

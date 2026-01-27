@@ -1,4 +1,5 @@
 #include "Service.h"
+#include "../repo/Repo.h"
 
 ////////////////// TeacherServiceImpl \\\\\\\\\\\\\\\
 
@@ -12,9 +13,60 @@ bool TeacherServiceImpl::addTeacher(int grade, Teacher &teacher) {
 
 CourseServiceImpl::CourseServiceImpl(CourseRepositoryImpl &repo) : courseRepository(repo) {}
 
-bool CourseServiceImpl::addCourse(int grade, Course &course) {
-    return courseRepository.addCourse(grade, course);
+// Validation functions
+bool CourseServiceImpl::validateCourseName(const string &name) {
+    return !name.empty();
 }
+
+bool CourseServiceImpl::validateAcademicYear(const string &year) {
+    return !year.empty();
+}
+
+bool CourseServiceImpl::validateSubjectHours(int hours) {
+    return hours >= 2 && hours <= 6;
+}
+
+bool CourseServiceImpl::validateGrade(int grade) {
+    return grade >= 1 && grade <= 12;
+}
+
+// Check if course already exists in the grade
+bool CourseServiceImpl::isCourseAlreadyRegistered(int grade, const Course &course) {
+    const auto &coursesInGrade = courseRepository.getCoursesInGrade(grade);
+    for (const auto &c : coursesInGrade) {
+        if (c.getName() == course.getName()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Add course with validation
+string CourseServiceImpl::addCourse(int grade, Course &course) {
+    string errorMessages;
+
+    if (!validateCourseName(course.getName()))
+        errorMessages += "- Invalid course name.\n";
+    if (!validateAcademicYear(course.getAcademicYear()))
+        errorMessages += "- Invalid academic year.\n";
+    if (!validateSubjectHours(course.getSubjectHours()))
+        errorMessages += "- Subject hours must be between 2 and 6.\n";
+    if (!validateGrade(grade))
+        errorMessages += "- Invalid grade. Must be between 1 and 12.\n";
+
+    if (isCourseAlreadyRegistered(grade, course))
+        errorMessages += "- Course already exists in this grade.\n";
+
+    if (!errorMessages.empty()) {
+        return "Course cannot be added due to the following issues:\n" + errorMessages;
+    }
+
+    // Everything valid, add to repository
+     return courseRepository.addCourse(grade, course);
+}
+
+
+
 
 ////////////////// StudentServiceImpl \\\\\\\\\\\\\\\
 

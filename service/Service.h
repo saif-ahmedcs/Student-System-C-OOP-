@@ -21,7 +21,9 @@ public:
 
 class CourseService {
 public:
-    virtual bool addCourse(int grade, Course &course) = 0;
+    virtual string addCourse(int grade, Course &course) = 0;
+    virtual bool isCourseAlreadyRegistered(int grade, const Course &course) = 0;
+
 };
 
 class CourseServiceImpl : public CourseService {
@@ -36,7 +38,8 @@ private:
 
 public:
     CourseServiceImpl(CourseRepositoryImpl &repo);
-    bool addCourse(int grade, Course &course) override;
+    bool isCourseAlreadyRegistered(int grade, const Course &course) override;
+    string addCourse(int grade, Course &course) override;
 };
 ////////////////// Student \\\\\\\\\\\\\\\
 
@@ -53,6 +56,7 @@ private:
     bool validateName(const string &name);
     bool validatePhoneNumber(const string &phone);
     bool validateGrade(int grade);
+    bool isCourseAlreadyRegistered(int grade, const Course &course);
 
 public:
     StudentServiceImpl(StudentRepositoryImpl &repo);

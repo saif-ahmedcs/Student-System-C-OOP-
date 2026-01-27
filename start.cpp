@@ -18,15 +18,15 @@ void showProcesses(string s) {
 
 int main() {
     StudentRepositoryImpl studentRepo;
-    StudentServiceImpl studentService(studentRepo);
-    StudentController studentController(studentService);
-
     CourseRepositoryImpl courseRepo;
-    CourseServiceImpl courseService(courseRepo);
-    CourseController courseController(courseService);
-
     TeacherRepositoryImpl teacherRepo;
+
+    StudentServiceImpl studentService(studentRepo);
+    CourseServiceImpl courseService(courseRepo);
     TeacherServiceImpl teacherService(teacherRepo);
+
+    StudentController studentController(studentService);
+    CourseController courseController(courseService);
     TeacherController teacherController(teacherService);
 
     displaySystem();
@@ -35,129 +35,123 @@ int main() {
     bool flag = true;
 
     while (flag) {
+        cout << "\nEnter your choice (1-4): ";
         cin >> process;
 
         switch (process) {
 
-            case 1: // Student
+            case 1:
             {
-                cout << "\t********************* STUDENT BRANCH *********************"<<endl;
+                cout << "\n\t************ STUDENT BRANCH ************\n";
                 showProcesses("Student");
+
                 int studentProcess;
                 cin >> studentProcess;
 
                 if (studentProcess == 1) {
                     Student student;
                     cout << "- Please enter the required student information below:" << endl;
-                    cout << "Student Full Name:" << endl;
-                    string name;
+
+                    cout << "Student Full Name: ";
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    string name;
                     getline(cin, name);
                     student.setName(name);
 
-                    cout << "Student school grade (1 - 12):" << endl;
+                    cout << "Student School Grade (1-12): ";
                     int grade;
                     cin >> grade;
 
-                    cout << "Student phone number (10 - 12 numbers):" << endl;
+                    cout << "Student Phone Number (10-12 digits): ";
                     string phoneNumber;
                     cin >> phoneNumber;
                     student.setPhoneNumber(phoneNumber);
 
-                    cout << studentController.addStudent(grade, student) << endl;
+                    cout << "\n" << studentController.addStudent(grade, student) << endl;
                 }
-
-
-
-
-
-
-
-
-
-
-
             }
             break;
 
-            case 2: // Course
+            case 2:
             {
+                cout << "\n\t************ COURSE BRANCH ************\n";
                 showProcesses("Course");
-                int studentProcess;
-                cin >> studentProcess;
-                  if (studentProcess == 1){
-                cout << "Please Enter Course Data :" << endl;
-                Course course;
 
-                cin.ignore();
-                cout << "Enter Course Name:" << endl;
-                string courseName;
-                getline(cin, courseName);
-                course.setName(courseName);
+                int courseProcess;
+                cin >> courseProcess;
 
-                cout << "Enter Academic Year:" << endl;
-                string year;
-                getline(cin, year);
-                course.setAcademicYear(year);
+                if (courseProcess == 1) {
+                    Course course;
+                    cin.ignore();
 
-                cout << "Enter Subject Hours:" << endl;
-                int hours;
-                cin >> hours;
-                course.setSubjectHours(hours);
+                    cout << "- Please Enter Course Data:" << endl;
 
-                cout << "Enter Grade (1-12):" << endl;
-                int grade;
-                cin >> grade;
+                    cout << "Course Name: ";
+                    string courseName;
+                    getline(cin, courseName);
+                    course.setName(courseName);
 
-                if (courseController.addCourse(grade, course))
-                    cout << "Course added successfully!" << endl;
-                else
-                    cout << "Cannot add course. Limit reached or invalid grade." << endl;
-            }
+                    cout << "Academic Year: ";
+                    string year;
+                    getline(cin, year);
+                    course.setAcademicYear(year);
+
+                    cout << "Subject Hours: ";
+                    int hours;
+                    cin >> hours;
+                    course.setSubjectHours(hours);
+
+                    cout << "Grade (1-12): ";
+                    int grade;
+                    cin >> grade;
+
+                    cout << courseController.addCourse(grade, course)<<endl;
+                }
             }
             break;
 
-            case 3: // Teacher
+            case 3:
             {
+                cout << "\n\t************ TEACHER BRANCH ************\n";
                 showProcesses("Teacher");
 
-                cout << "Please Enter Teacher Data :" << endl;
+                cout << "- Please Enter Teacher Data:" << endl;
                 Teacher teacher;
-
                 cin.ignore();
-                cout << "Enter Teacher Name:" << endl;
+
+                cout << "Teacher Name: ";
                 string name;
                 getline(cin, name);
                 teacher.setName(name);
 
-                cout << "Enter Teacher Subject:" << endl;
+                cout << "Teacher Subject: ";
                 string subject;
                 getline(cin, subject);
                 teacher.setTeacherSubject(subject);
 
-                cout << "Enter Teacher Monthly Salary:" << endl;
+                cout << "Monthly Salary: ";
                 double salary;
                 cin >> salary;
                 teacher.setMonthlySalary(salary);
 
-                cout << "Enter Grade (1-12):" << endl;
+                cout << "Grade (1-12): ";
                 int grade;
                 cin >> grade;
 
                 if (teacherController.addTeacher(grade, teacher))
-                    cout << "Teacher added successfully!" << endl;
+                    cout << "\nTeacher added successfully!" << endl;
                 else
-                    cout << "Cannot add teacher. Limit reached or invalid grade." << endl;
+                    cout << "\nCannot add teacher. Limit reached or invalid grade." << endl;
             }
             break;
 
-            case 4: // Exit
-                cout << "Exiting program..." << endl;
+            case 4:
+                cout << "\nExiting program..." << endl;
                 flag = false;
                 break;
 
             default:
-                cout << "Invalid Choice. Please enter 1-4." << endl;
+                cout << "\nInvalid Choice. Please enter a number between 1-4." << endl;
         }
     }
 
