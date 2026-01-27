@@ -41,30 +41,25 @@ int main() {
 
             case 1: // Student
             {
+                cout << "\t********************* STUDENT BRANCH *********************"<<endl;
                 showProcesses("Student");
                 int studentProcess;
                 cin >> studentProcess;
 
                 if (studentProcess == 1) {
-                    cout << "Please Enter Student Data :" << endl;
                     Student student;
-
-                    cin.ignore();
-                    cout << "Enter Student Name:" << endl;
+                    cout << "- Please enter the required student information below:" << endl;
+                    cout << "Student Full Name:" << endl;
                     string name;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     getline(cin, name);
                     student.setName(name);
 
-                    cout << "Enter Student GPA:" << endl;
-                    double gpa;
-                    cin >> gpa;
-                    student.setGpa(gpa);
-
-                    cout << "Enter Student school grade:" << endl;
+                    cout << "Student school grade (1 - 12):" << endl;
                     int grade;
                     cin >> grade;
 
-                    cout << "Enter Student phone number:" << endl;
+                    cout << "Student phone number (10 - 12 numbers):" << endl;
                     string phoneNumber;
                     cin >> phoneNumber;
                     student.setPhoneNumber(phoneNumber);
@@ -88,7 +83,9 @@ int main() {
             case 2: // Course
             {
                 showProcesses("Course");
-
+                int studentProcess;
+                cin >> studentProcess;
+                  if (studentProcess == 1){
                 cout << "Please Enter Course Data :" << endl;
                 Course course;
 
@@ -116,6 +113,7 @@ int main() {
                     cout << "Course added successfully!" << endl;
                 else
                     cout << "Cannot add course. Limit reached or invalid grade." << endl;
+            }
             }
             break;
 

@@ -20,33 +20,42 @@ bool CourseServiceImpl::addCourse(int grade, Course &course) {
 
 StudentServiceImpl::StudentServiceImpl(StudentRepositoryImpl &repo) : studentRepository(repo) {}
 
-bool StudentServiceImpl::validateGpa(double gpa) {
-    return gpa >= 0.0 && gpa <= 4.0;
+bool StudentServiceImpl::validateName(const string &name) {
+    return !name.empty();
 }
 
 bool StudentServiceImpl::validatePhoneNumber(const string &phone) {
-    return phone.length() >= 10 && phone.length() <= 12;
+    if (phone.length() < 10 || phone.length() > 12)
+        return false;
+
+    for (char c : phone) {
+        if (!isdigit(c))
+            return false;
+    }
+    return true;
 }
 
 bool StudentServiceImpl::validateGrade(int grade) {
     return grade >= 1 && grade <= 12;
 }
 
-bool StudentServiceImpl::validateName(const string &name) {
-    return !name.empty();
-}
-
 string StudentServiceImpl::addStudent(int grade, Student &student) {
-    // 1. Validate inputs
-    if (!validateName(student.getName()))
-        return "Invalid name!";
-    if (!validateGpa(student.getGpa()))
-        return "Invalid GPA! Must be between 0.0 and 4.0";
-    if (!validatePhoneNumber(student.getPhoneNumber()))
-        return "Invalid phone number! Must be 12 digits";
-    if (!validateGrade(grade))
-        return "Invalid grade! Must be between 1 and 12";
 
-    // 2. If everything is valid, add to repository
+    string errors = "";
+
+    if (!validateName(student.getName()))
+        errors += "- Name cannot be empty.\n";
+
+    if (!validatePhoneNumber(student.getPhoneNumber()))
+        errors += "- Phone number must be 10 --> 12 digits and contain digits only.\n";
+
+    if (!validateGrade(grade))
+        errors += "- Grade must be between 1 and 12.\n";
+
+    // If any validation errors exist
+    if (!errors.empty())
+        return "Invalid student data. Please review the following errors:\n" + errors;
+
+    // All validations passed
     return studentRepository.addStudent(grade, student);
 }

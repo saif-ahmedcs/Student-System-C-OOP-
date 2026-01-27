@@ -27,6 +27,12 @@ public:
 class CourseServiceImpl : public CourseService {
 private:
     CourseRepositoryImpl &courseRepository;
+    // Validation
+    bool validateCourseName(const string &name);
+    bool validateAcademicYear(const string &year);
+    bool validateSubjectHours(int hours);
+    bool validateGrade(int grade);
+
 
 public:
     CourseServiceImpl(CourseRepositoryImpl &repo);
@@ -43,11 +49,10 @@ class StudentServiceImpl : public StudentService {
 private:
     StudentRepositoryImpl &studentRepository;
 
-    // Validation functions
-    bool validateGpa(double gpa);
+    // Validation
+    bool validateName(const string &name);
     bool validatePhoneNumber(const string &phone);
     bool validateGrade(int grade);
-    bool validateName(const string &name);
 
 public:
     StudentServiceImpl(StudentRepositoryImpl &repo);
