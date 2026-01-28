@@ -9,7 +9,7 @@ private:
 
 public:
     TeacherController(TeacherServiceImpl &service);
-    bool addTeacher(int grade, Teacher &teacher);
+    string addTeacher(int grade, Teacher &teacher);
 };
 
 class CourseController {

@@ -5,7 +5,7 @@
 
 TeacherServiceImpl::TeacherServiceImpl(TeacherRepositoryImpl &repo) : teacherRepository(repo) {}
 
-bool TeacherServiceImpl::addTeacher(int grade, Teacher &teacher) {
+string TeacherServiceImpl::addTeacher(int grade, Teacher &teacher) {
     return teacherRepository.addTeacher(grade, teacher);
 }
 

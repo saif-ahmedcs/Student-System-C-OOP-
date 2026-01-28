@@ -12,12 +12,12 @@ Stage getStageFromGrade(int grade); // global function
 
 class TeacherRepository {
 public:
-    virtual bool addTeacher(int grade, Teacher &teacher) = 0;
+    virtual string addTeacher(int grade, Teacher &teacher) = 0;
 };
 
 class TeacherRepositoryImpl : public TeacherRepository {
 private:
-    const map<Stage, int> maxTeachersPerGradeInStage = {
+    const map<Stage, int> maxTeachersPerGradeInStage = { // Max number of teachers that can be in any grade in a certain stage
         {Stage::Primary, 7},
         {Stage::Middle, 9},
         {Stage::Secondary, 12}
@@ -32,7 +32,7 @@ public:
     void addTeacherInStage(int grade, Teacher &teacher);
     void addTeacherInSchool(Teacher &teacher);
 
-    bool addTeacher(int grade, Teacher &teacher) override;
+    string addTeacher(int grade, Teacher &teacher) override;
 };
 
 ////////////////// Course \\\\\\\\\\\\\\\\\\

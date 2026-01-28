@@ -40,7 +40,7 @@ int main() {
 
         switch (process) {
 
-            case 1:
+            case 1: // About Student
             {
                 cout << "\n\t************ STUDENT BRANCH ************\n";
                 showProcesses("Student");
@@ -48,7 +48,7 @@ int main() {
                 int studentProcess;
                 cin >> studentProcess;
 
-                if (studentProcess == 1) {
+                if (studentProcess == 1) { // Add Student
                     Student student;
                     cout << "- Please enter the required student information below:" << endl;
 
@@ -72,7 +72,7 @@ int main() {
             }
             break;
 
-            case 2:
+            case 2: // About Course
             {
                 cout << "\n\t************ COURSE BRANCH ************\n";
                 showProcesses("Course");
@@ -80,7 +80,7 @@ int main() {
                 int courseProcess;
                 cin >> courseProcess;
 
-                if (courseProcess == 1) {
+                if (courseProcess == 1) { // Add Course
                     Course course;
                     cin.ignore();
 
@@ -110,10 +110,15 @@ int main() {
             }
             break;
 
-            case 3:
+            case 3: // About Teacher
             {
                 cout << "\n\t************ TEACHER BRANCH ************\n";
                 showProcesses("Teacher");
+
+                int courseProcess;
+                cin >> courseProcess;
+
+                if (courseProcess == 1) { // Add Teacher
 
                 cout << "- Please Enter Teacher Data:" << endl;
                 Teacher teacher;
@@ -129,21 +134,22 @@ int main() {
                 getline(cin, subject);
                 teacher.setTeacherSubject(subject);
 
+                cout << "Grade (1-12): ";
+                int grade;
+                cin >> grade;
+
                 cout << "Monthly Salary: ";
                 double salary;
                 cin >> salary;
                 teacher.setMonthlySalary(salary);
 
-                cout << "Grade (1-12): ";
-                int grade;
-                cin >> grade;
-
-                if (teacherController.addTeacher(grade, teacher))
-                    cout << "\nTeacher added successfully!" << endl;
-                else
-                    cout << "\nCannot add teacher. Limit reached or invalid grade." << endl;
+               cout << teacherController.addTeacher(grade, teacher) << endl;
+            }
             }
             break;
+
+
+
 
             case 4:
                 cout << "\nExiting program..." << endl;

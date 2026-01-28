@@ -51,6 +51,31 @@ string idStart;
 
 }
 
+// Generates a unique teacher ID based on the teacher's grade.
+// The ID starts with the grade number followed by
+// an auto-incremented serial number (000–MaxTeachersPerGrade)
+// using a static array to track IDs per grade.
+
+string generateTeacherID(int grade) {
+
+    static int id[13] = {0};
+    string idStart;
+
+    if (grade >= 1 && grade <= 12)
+        idStart = to_string(grade);
+    else
+        return "Invalid grade";
+
+    id[grade]++;
+
+    if (id[grade] <= 9)
+        return idStart + "00" + to_string(id[grade]);
+    else if (id[grade] <= 99)
+        return idStart + "0" + to_string(id[grade]);
+    else
+        return idStart + to_string(id[grade]);
+}
+
 
 ////////////////// TeacherRepositoryImpl \\\\\\\\\\\\\\\
 
@@ -67,15 +92,17 @@ void TeacherRepositoryImpl::addTeacherInSchool(Teacher &teacher) {
     teachersInSchool.push_back(teacher);
 }
 
-bool TeacherRepositoryImpl::addTeacher(int grade, Teacher &teacher) {
+string TeacherRepositoryImpl::addTeacher(int grade, Teacher &teacher) {
     Stage stage = getStageFromGrade(grade);
     if (grade < 1 || grade > 12 || teachersInGrade[grade].size() >= maxTeachersPerGradeInStage.at(stage))
-        return false;
+        return "ERROR!!!";
 
     addTeacherInGrade(grade, teacher);
     addTeacherInStage(grade, teacher);
     addTeacherInSchool(teacher);
-    return true;
+    string finalId = generateTeacherID(grade);
+    teacher.setId(finalId);
+    return "Teacher added successfully. Assigned ID: " + finalId;
 }
 
 ////////////////// CourseRepositoryImpl \\\\\\\\\\\\\\\

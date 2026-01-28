@@ -2,7 +2,7 @@
 
 TeacherController::TeacherController(TeacherServiceImpl &service) : teacherService(service) {}
 
-bool TeacherController::addTeacher(int grade, Teacher &teacher) {
+string TeacherController::addTeacher(int grade, Teacher &teacher) {
     return teacherService.addTeacher(grade, teacher);
 }
 
