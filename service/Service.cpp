@@ -5,7 +5,36 @@
 
 TeacherServiceImpl::TeacherServiceImpl(TeacherRepositoryImpl &repo) : teacherRepository(repo) {}
 
+bool TeacherServiceImpl::validateTeacherName(const string &name) {
+    return !name.empty();
+}
+
+bool TeacherServiceImpl::validateTeacherGrade(int grade) {
+    return grade >= 1 && grade <= 12;
+}
+
+bool TeacherServiceImpl::validateTeachersLimit(int grade) {
+    Stage stage = getStageFromGrade(grade);
+    return teacherRepository.getTeachersInGrade(grade).size() < teacherRepository.getMaxTeachersForStage(stage);
+}
+
+
 string TeacherServiceImpl::addTeacher(int grade, Teacher &teacher) {
+
+    string errors;
+
+    if (!validateTeacherName(teacher.getName()))
+        errors += "- Teacher name cannot be empty.\n";
+
+    if (!validateTeacherGrade(grade))
+        errors += "- Grade must be between 1 and 12.\n";
+
+    if (!validateTeachersLimit(grade))
+        errors += "- Maximum number of teachers reached for this grade.\n";
+
+    if (!errors.empty())
+        return "Teacher cannot be added due to the following issues:\n" + errors;
+
     return teacherRepository.addTeacher(grade, teacher);
 }
 
@@ -41,21 +70,32 @@ bool CourseServiceImpl::isCourseAlreadyRegistered(int grade, const Course &cours
     return false;
 }
 
+bool CourseServiceImpl::validateCoursesLimit(int grade) {
+    Stage stage = getStageFromGrade(grade);
+    return courseRepository.getCoursesInGrade(grade).size() < courseRepository.getMaxCoursesForStage(stage);
+}
+
 // Add course with validation
 string CourseServiceImpl::addCourse(int grade, Course &course) {
     string errorMessages;
 
     if (!validateCourseName(course.getName()))
         errorMessages += "- Invalid course name.\n";
+
     if (!validateAcademicYear(course.getAcademicYear()))
         errorMessages += "- Invalid academic year.\n";
+
     if (!validateSubjectHours(course.getSubjectHours()))
         errorMessages += "- Subject hours must be between 2 and 6.\n";
+
     if (!validateGrade(grade))
         errorMessages += "- Invalid grade. Must be between 1 and 12.\n";
 
     if (isCourseAlreadyRegistered(grade, course))
         errorMessages += "- Course already exists in this grade.\n";
+
+    if (!validateCoursesLimit(grade))
+        errorMessages += "- Maximum number of courses reached for this grade.\n";
 
     if (!errorMessages.empty()) {
         return "Course cannot be added due to the following issues:\n" + errorMessages;

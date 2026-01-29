@@ -92,11 +92,30 @@ void TeacherRepositoryImpl::addTeacherInSchool(Teacher &teacher) {
     teachersInSchool.push_back(teacher);
 }
 
+const vector<Teacher>& TeacherRepositoryImpl::getTeachersInGrade(int grade) const {
+    static vector<Teacher> empty;
+    auto it = teachersInGrade.find(grade);
+    if (it != teachersInGrade.end()) {
+      return it->second;
+    } else {
+      return empty;
+    }
+
+}
+
+int TeacherRepositoryImpl::getMaxTeachersForStage(Stage stage) const {
+    auto it = maxTeachersPerGradeInStage.find(stage);
+
+    if (it == maxTeachersPerGradeInStage.end())
+        return 0;
+
+    return it->second;
+}
+
+
+
 string TeacherRepositoryImpl::addTeacher(int grade, Teacher &teacher) {
     Stage stage = getStageFromGrade(grade);
-    if (grade < 1 || grade > 12 || teachersInGrade[grade].size() >= maxTeachersPerGradeInStage.at(stage))
-        return "ERROR!!!";
-
     addTeacherInGrade(grade, teacher);
     addTeacherInStage(grade, teacher);
     addTeacherInSchool(teacher);
@@ -128,13 +147,25 @@ const vector<Course>& CourseRepositoryImpl::getCoursesInGrade(int grade) const {
     return empty;
 }
 
+int CourseRepositoryImpl::getMaxCoursesForStage(Stage stage) const {
+    auto it = maxCoursesPerGradeInStage.find(stage);
+
+    if (it == maxCoursesPerGradeInStage.end())
+        return 0;
+
+    return it->second;
+}
+
+
+
+
 string CourseRepositoryImpl::addCourse(int grade, Course &course) {
     Stage stage = getStageFromGrade(grade);
 
     addCourseInGrade(grade, course);
     addCourseInStage(grade, course);
     addCourseInSchool(course);
-    return "Course added successfully./n";
+return string("Course added successfully to grade ") + to_string(grade) + " System.";
 }
 
 ////////////////// StudentRepositoryImpl \\\\\\\\\\\\\\\

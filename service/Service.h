@@ -12,6 +12,11 @@ public:
 class TeacherServiceImpl : public TeacherService {
 private:
     TeacherRepositoryImpl &teacherRepository;
+    // Validation
+    bool validateTeacherName(const string &name);
+    bool validateTeacherGrade(int grade);
+    bool validateTeachersLimit(int grade);
+
 
 public:
     TeacherServiceImpl(TeacherRepositoryImpl &repo);
@@ -34,6 +39,7 @@ private:
     bool validateAcademicYear(const string &year);
     bool validateSubjectHours(int hours);
     bool validateGrade(int grade);
+    bool validateCoursesLimit(int grade);
 
 
 public:
@@ -56,7 +62,6 @@ private:
     bool validateName(const string &name);
     bool validatePhoneNumber(const string &phone);
     bool validateGrade(int grade);
-    bool isCourseAlreadyRegistered(int grade, const Course &course);
 
 public:
     StudentServiceImpl(StudentRepositoryImpl &repo);

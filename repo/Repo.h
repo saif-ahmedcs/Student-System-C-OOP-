@@ -12,6 +12,9 @@ Stage getStageFromGrade(int grade); // global function
 
 class TeacherRepository {
 public:
+
+    virtual const vector<Teacher>& getTeachersInGrade(int grade) const = 0;
+    virtual int getMaxTeachersForStage(Stage stage) const = 0;
     virtual string addTeacher(int grade, Teacher &teacher) = 0;
 };
 
@@ -32,6 +35,10 @@ public:
     void addTeacherInStage(int grade, Teacher &teacher);
     void addTeacherInSchool(Teacher &teacher);
 
+    const vector<Teacher>& getTeachersInGrade(int grade) const override;
+
+    int getMaxTeachersForStage(Stage stage) const override;
+
     string addTeacher(int grade, Teacher &teacher) override;
 };
 
@@ -39,6 +46,9 @@ public:
 
 class CourseRepository {
 public:
+    virtual const vector<Course>& getCoursesInGrade(int grade) const = 0;
+        virtual int getMaxCoursesForStage(Stage stage) const = 0;
+
     virtual string addCourse(int grade, Course &course) = 0;
 };
 
@@ -59,7 +69,9 @@ public:
     void addCourseInStage(int grade, Course &course);
     void addCourseInSchool(Course &course);
 
-    const vector<Course>& getCoursesInGrade(int grade) const;
+    const vector<Course>& getCoursesInGrade(int grade) const override;
+    int getMaxCoursesForStage(Stage stage) const override;
+
 
     string addCourse(int grade, Course &course) override;
 
