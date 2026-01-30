@@ -183,12 +183,39 @@ void StudentRepositoryImpl::addStudentInSchool(Student &student) {
     studentsInSchool.push_back(student);
 }
 
+Student* StudentRepositoryImpl::findStudentById(const string& id) {
+    for (auto& [grade, students] : studentsInGrade) {
+        for (auto& s : students) {
+            if (s.getId() == id) {
+                return &s;
+            }
+        }
+    }
+    return nullptr;
+}
+
+
 string StudentRepositoryImpl::addStudent(int grade, Student &student) {
 
+    string finalId = generateStudentID(grade);
+    student.setId(finalId);
     addStudentInGrade(grade, student);
     addStudentInStage(grade, student);
     addStudentInSchool(student);
-    string finalId = generateStudentID(grade);
-    student.setId(finalId);
+
     return "Student added successfully. Assigned ID: " + finalId;
 }
+
+
+string StudentRepositoryImpl::editStudent(const string& id, const Student& newData) {
+    Student* s = findStudentById(id);
+    if (!s) return "Student not found.";
+
+    s->setName(newData.getName());
+    s->setPhoneNumber(newData.getPhoneNumber());
+    s->setGpa(newData.getGpa());
+    s->setSchoolYear(newData.getSchoolYear());
+
+    return "Student data updated successfully.";
+}
+

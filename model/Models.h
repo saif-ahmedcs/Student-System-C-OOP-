@@ -65,14 +65,14 @@ struct TeacherCourse {
 
 class Student : public BaseEntity {
 private:
-    string schoolYear;
+    int schoolYear;
     double gpa;
     vector<TeacherCourse> teacherCoursePairs;
 public:
-    void setSchoolYear(const string &year);
+    void setSchoolYear(const int &year);
     void setGpa(double g);
     void setStudentTeacherCourse(const Teacher &teacher, const Course &course);
-    string getSchoolYear() const;
+    int getSchoolYear() const;
     double getGpa() const;
     const vector<TeacherCourse>& getStudentTeacherCourses() const;
     int getNumberOfStudentTeachers() const;

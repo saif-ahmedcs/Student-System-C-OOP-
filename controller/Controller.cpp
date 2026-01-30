@@ -17,3 +17,7 @@ StudentController::StudentController(StudentServiceImpl &service) : studentServi
 string StudentController::addStudent(int grade, Student &student) {
     return studentService.addStudent(grade, student);
 }
+
+string StudentController::editStudent(const string& id, const Student& newData) {
+    return studentService.editStudent(id, newData);
+}

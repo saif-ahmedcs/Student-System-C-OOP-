@@ -82,6 +82,7 @@ public:
 class StudentRepository {
 public:
     virtual string addStudent(int grade, Student &student) = 0;
+
 };
 
 class StudentRepositoryImpl : public StudentRepository {
@@ -94,8 +95,12 @@ public:
     void addStudentInGrade(int grade, Student &student);
     void addStudentInStage(int grade, Student &student);
     void addStudentInSchool(Student &student);
+    Student* findStudentById(const string& id);
+
 
     string addStudent(int grade, Student &student) override;
+    string editStudent(const string& id, const Student& newData);
+
 };
 
 #endif

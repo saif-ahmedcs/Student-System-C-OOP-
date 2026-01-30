@@ -131,6 +131,11 @@ bool StudentServiceImpl::validateGrade(int grade) {
     return grade >= 1 && grade <= 12;
 }
 
+bool StudentServiceImpl::validateNewGpa(float gpa){
+  return gpa>=0.0 && gpa<=4.0;
+}
+
+
 string StudentServiceImpl::addStudent(int grade, Student &student) {
 
     string errors = "";
@@ -151,3 +156,25 @@ string StudentServiceImpl::addStudent(int grade, Student &student) {
     // All validations passed
     return studentRepository.addStudent(grade, student);
 }
+
+string StudentServiceImpl::editStudent(const string& id, const Student& newData) {
+    string errors = "";
+
+    if (!validateName(newData.getName()))
+        errors += "- Name cannot be empty.\n";
+
+    if (!validatePhoneNumber(newData.getPhoneNumber()))
+        errors += "- Phone number must be 10-12 digits.\n";
+
+    if (!validateNewGpa(newData.getGpa()))
+        errors += "- Grade must be between 0.0 and 4.0.\n";
+
+    if (!validateGrade(newData.getSchoolYear()))
+        errors += "- Grade must be between 1 and 12.\n";
+
+    if (!errors.empty())
+        return "Invalid data. Please fix the following errors:\n" + errors;
+
+    return studentRepository.editStudent(id, newData);
+}
+

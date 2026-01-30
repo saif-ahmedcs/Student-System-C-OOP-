@@ -81,7 +81,7 @@ int Course::getNumberOfCourseTeachers() const {
     }
 
 // Student
-void Student::setSchoolYear(const string &year){
+void Student::setSchoolYear(const int &year){
      schoolYear = year;
     }
 void Student::setGpa(double g){
@@ -90,7 +90,7 @@ void Student::setGpa(double g){
 void Student::setStudentTeacherCourse(const Teacher &teacher, const Course &course){
     teacherCoursePairs.push_back({teacher, course});
     }
-string Student::getSchoolYear() const {
+int Student::getSchoolYear() const {
      return schoolYear;
     }
 double Student::getGpa() const {

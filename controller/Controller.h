@@ -28,6 +28,8 @@ private:
 public:
     StudentController(StudentServiceImpl &service);
     string addStudent(int grade, Student &student);
+    string editStudent(const string& id, const Student& newData);
+
 };
 
 #endif

@@ -1,6 +1,5 @@
 #ifndef SERVICE_H
 #define SERVICE_H
-
 #include "../repo/Repo.h"
 ////////////////// Teacher \\\\\\\\\\\\\\\
 
@@ -52,6 +51,7 @@ public:
 class StudentService {
 public:
     virtual string addStudent(int grade, Student &student) = 0;
+
 };
 
 class StudentServiceImpl : public StudentService {
@@ -62,10 +62,14 @@ private:
     bool validateName(const string &name);
     bool validatePhoneNumber(const string &phone);
     bool validateGrade(int grade);
+    bool validateNewGpa(float gpa);
 
 public:
     StudentServiceImpl(StudentRepositoryImpl &repo);
     string addStudent(int grade, Student &student) override;
+    string editStudent(const string& id, const Student& newData);
+
+
 };
 
 #endif
