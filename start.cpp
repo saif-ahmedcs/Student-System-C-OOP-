@@ -137,6 +137,37 @@ while (flag) {
 
                 cout << courseController.addCourse(grade, course) << endl;
             }
+            else if (courseProcess == 3) { // Edit Course
+                cout << "\nEnter Course to edit: ";
+                string id;
+                cin >> id;
+
+                Student newData;
+
+                cout << "New Full Name: ";
+                cin.ignore();
+                string name;
+                getline(cin, name);
+                newData.setName(name);
+
+                cout << "New Phone Number: ";
+                string phone;
+                cin >> phone;
+                newData.setPhoneNumber(phone);
+
+                cout << "New Grade (1-12): ";
+                int grade;
+                cin >> grade;
+                newData.setSchoolYear(grade);
+
+                cout << "New GPA: ";
+                double gpa;
+                cin >> gpa;
+                newData.setGpa(gpa);
+
+                cout << studentController.editStudent(id, newData) << endl;
+            }
+
         }
         break;
 

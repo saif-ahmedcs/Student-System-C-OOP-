@@ -14,8 +14,6 @@ Stage getStageFromGrade(int grade) {
 }
 
 // Generates a unique student ID based on the student's grade.
-// The ID starts with a year prefix (depending on grade) followed by
-// an auto-incremented serial number (000–MaximumStudentsPerGrade) using a static array.
 string generateStudentID(int grade){
 
 static int id[13]={0};
@@ -50,11 +48,33 @@ string idStart;
     }
 
 }
+// Generates a unique course ID based on the course name and grade.
+string generateCourseID(const string& courseName, int grade) {
+
+    static int id[13] = {0};
+    string idStart = "";
+
+
+    for (int i = 0; i < courseName.length(); i++) {
+        if (courseName[i] != ' ')
+            idStart += tolower(courseName[i]);
+    }
+
+    idStart += to_string(grade);
+    id[grade]++;
+    int count = id[grade];
+
+
+    if (count <= 9)
+        return idStart + "00" + to_string(count);
+    else if (count <= 99)
+        return idStart + "0" + to_string(count);
+    else
+        return idStart + to_string(count);
+}
+
 
 // Generates a unique teacher ID based on the teacher's grade.
-// The ID starts with the grade number followed by
-// an auto-incremented serial number (000–MaxTeachersPerGrade)
-// using a static array to track IDs per grade.
 
 string generateTeacherID(int grade) {
 
@@ -157,15 +177,16 @@ int CourseRepositoryImpl::getMaxCoursesForStage(Stage stage) const {
 }
 
 
-
-
 string CourseRepositoryImpl::addCourse(int grade, Course &course) {
-    Stage stage = getStageFromGrade(grade);
 
+    Stage stage = getStageFromGrade(grade);
+    string finalId = generateCourseID(course.getName(),grade);
+    course.setId(finalId);
     addCourseInGrade(grade, course);
     addCourseInStage(grade, course);
     addCourseInSchool(course);
-return string("Course added successfully to grade ") + to_string(grade) + " System.";
+
+return string("Course added successfully to grade ") + to_string(grade) + " System." + "ID: " + finalId;
 }
 
 ////////////////// StudentRepositoryImpl \\\\\\\\\\\\\\\
