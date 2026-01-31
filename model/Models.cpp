@@ -58,20 +58,27 @@ void Course::setSingleTeacher(const Teacher& t){
 void Course::addTeacher(const Teacher &t){
      courseTeachers.push_back(t);
     }
-void Course::setAcademicYear(const string &year){
-     AcademicYear = year;
+void Course::setGrade(const int &year){
+     grade = year;
     }
 void Course::setSubjectHours(int hours){
     subjectHours = hours;
     }
+void Course::setCourseTeacherId(const string &s){
+   teacher.setId(s);
+    }
+string Course::getCourseTeacherId() const {
+  return teacher.getId();
+    }
+
 Teacher Course::getCourseTeacher() const {
     return teacher;
     }
 const vector<Teacher>& Course::getCourseTeachers() const {
     return courseTeachers;
     }
-string Course::getAcademicYear() const {
-    return AcademicYear;
+int Course::getGrade() const {
+    return grade;
     }
 int Course::getSubjectHours() const {
     return subjectHours;

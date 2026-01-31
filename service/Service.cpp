@@ -47,10 +47,6 @@ bool CourseServiceImpl::validateCourseName(const string &name) {
     return !name.empty();
 }
 
-bool CourseServiceImpl::validateAcademicYear(const string &year) {
-    return !year.empty();
-}
-
 bool CourseServiceImpl::validateSubjectHours(int hours) {
     return hours >= 2 && hours <= 6;
 }
@@ -59,21 +55,12 @@ bool CourseServiceImpl::validateGrade(int grade) {
     return grade >= 1 && grade <= 12;
 }
 
-// Check if course already exists in the grade
-bool CourseServiceImpl::isCourseAlreadyRegistered(int grade, const Course &course) {
-    const auto &coursesInGrade = courseRepository.getCoursesInGrade(grade);
-    for (const auto &c : coursesInGrade) {
-        if (c.getName() == course.getName()) {
-            return true;
-        }
-    }
-    return false;
-}
 
 bool CourseServiceImpl::validateCoursesLimit(int grade) {
     Stage stage = getStageFromGrade(grade);
     return courseRepository.getCoursesInGrade(grade).size() < courseRepository.getMaxCoursesForStage(stage);
 }
+
 
 // Add course with validation
 string CourseServiceImpl::addCourse(int grade, Course &course) {
@@ -82,17 +69,11 @@ string CourseServiceImpl::addCourse(int grade, Course &course) {
     if (!validateCourseName(course.getName()))
         errorMessages += "- Invalid course name.\n";
 
-    if (!validateAcademicYear(course.getAcademicYear()))
-        errorMessages += "- Invalid academic year.\n";
+    if (!validateGrade(course.getGrade()))
+        errorMessages += "- Invalid grade. Must be between 1 and 12.\n";
 
     if (!validateSubjectHours(course.getSubjectHours()))
         errorMessages += "- Subject hours must be between 2 and 6.\n";
-
-    if (!validateGrade(grade))
-        errorMessages += "- Invalid grade. Must be between 1 and 12.\n";
-
-    if (isCourseAlreadyRegistered(grade, course))
-        errorMessages += "- Course already exists in this grade.\n";
 
     if (!validateCoursesLimit(grade))
         errorMessages += "- Maximum number of courses reached for this grade.\n";
@@ -105,6 +86,35 @@ string CourseServiceImpl::addCourse(int grade, Course &course) {
      return courseRepository.addCourse(grade, course);
 }
 
+
+string CourseServiceImpl::editCourse(const string& id, const Course& newData){
+
+
+    string errorMessages = "";
+
+ if (!validateCourseName(newData.getName()))
+        errorMessages += "- Invalid course name.\n";
+
+    if (!validateGrade(newData.getGrade()))
+        errorMessages += "- Invalid academic year.\n";
+
+    if (!validateSubjectHours(newData.getSubjectHours()))
+        errorMessages += "- Subject hours must be between 2 and 6.\n";
+
+    if (!validateGrade(newData.getGrade()))
+        errorMessages += "- Invalid grade. Must be between 1 and 12.\n";
+
+    if (!validateCoursesLimit(newData.getGrade()))
+        errorMessages += "- Maximum number of courses reached for this grade.\n";
+
+    if (!errorMessages.empty()) {
+        return "Course cannot be added due to the following issues:\n" + errorMessages;
+    }
+
+    // Everything valid, add to repository
+     return courseRepository.editCourse(id, newData);
+
+}
 
 
 

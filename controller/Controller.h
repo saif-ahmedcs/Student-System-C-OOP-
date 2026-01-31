@@ -3,6 +3,7 @@
 
 #include "../service/Service.h"
 
+// Teacher
 class TeacherController {
 private:
     TeacherServiceImpl &teacherService;
@@ -12,6 +13,7 @@ public:
     string addTeacher(int grade, Teacher &teacher);
 };
 
+//Course
 class CourseController {
 private:
     CourseServiceImpl &courseService;
@@ -19,8 +21,11 @@ private:
 public:
     CourseController(CourseServiceImpl &service);
     string addCourse(int grade, Course &course);
+    string editCourse(const string& id, const Course& newData);
+
 };
 
+//Student
 class StudentController {
 private:
     StudentServiceImpl &studentService;

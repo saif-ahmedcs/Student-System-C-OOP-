@@ -26,7 +26,7 @@ public:
 class CourseService {
 public:
     virtual string addCourse(int grade, Course &course) = 0;
-    virtual bool isCourseAlreadyRegistered(int grade, const Course &course) = 0;
+    virtual string editCourse(const string& id, const Course& newData) = 0;
 
 };
 
@@ -35,7 +35,6 @@ private:
     CourseRepositoryImpl &courseRepository;
     // Validation
     bool validateCourseName(const string &name);
-    bool validateAcademicYear(const string &year);
     bool validateSubjectHours(int hours);
     bool validateGrade(int grade);
     bool validateCoursesLimit(int grade);
@@ -43,14 +42,16 @@ private:
 
 public:
     CourseServiceImpl(CourseRepositoryImpl &repo);
-    bool isCourseAlreadyRegistered(int grade, const Course &course) override;
     string addCourse(int grade, Course &course) override;
+    string editCourse(const string& id, const Course& newData) override;
+
 };
 ////////////////// Student \\\\\\\\\\\\\\\
 
 class StudentService {
 public:
     virtual string addStudent(int grade, Student &student) = 0;
+    virtual string editStudent(const string& id, const Student& newData) = 0;
 
 };
 
@@ -67,7 +68,7 @@ private:
 public:
     StudentServiceImpl(StudentRepositoryImpl &repo);
     string addStudent(int grade, Student &student) override;
-    string editStudent(const string& id, const Student& newData);
+    string editStudent(const string& id, const Student& newData) override;
 
 
 };

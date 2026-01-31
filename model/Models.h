@@ -25,6 +25,7 @@ public:
     string getPhoneNumber() const;
 };
 
+// Teacher
 class Teacher : public BaseEntity {
 private:
     double monthlySalary;
@@ -40,20 +41,23 @@ public:
     int getNumberOfStudentsInTeacherCourse() const;
 };
 
+// Course
 class Course : public ShareData {
 private:
     Teacher teacher;
     vector<Teacher> courseTeachers;
-    string AcademicYear;
+    int grade;
     int subjectHours;
 public:
     void setSingleTeacher(const Teacher& t);
+    void setCourseTeacherId(const string &id);
     void addTeacher(const Teacher& t);
-    void setAcademicYear(const string &year);
+    void setGrade(const int &year);
     void setSubjectHours(int hours);
     Teacher getCourseTeacher() const;
     const vector<Teacher>& getCourseTeachers() const;
-    string getAcademicYear() const;
+    int getGrade() const;
+    string getCourseTeacherId() const;
     int getSubjectHours() const;
     int getNumberOfCourseTeachers() const;
 };
@@ -63,6 +67,7 @@ struct TeacherCourse {
     Course course;
 };
 
+//Student
 class Student : public BaseEntity {
 private:
     int schoolYear;

@@ -121,51 +121,56 @@ while (flag) {
                 getline(cin, courseName);
                 course.setName(courseName);
 
-                cout << "Academic Year: ";
-                string year;
-                getline(cin, year);
-                course.setAcademicYear(year);
+                cout << "Grade (1-12): ";
+                int grade;
+                cin>>grade;
+                course.setGrade(grade);
 
                 cout << "Subject Hours: ";
                 int hours;
                 cin >> hours;
                 course.setSubjectHours(hours);
 
-                cout << "Grade (1-12): ";
-                int grade;
-                cin >> grade;
+                cout << "Course Teacher ID: ";
+                string id;
+                getline(cin, id);
+                course.setCourseTeacherId(id);
 
                 cout << courseController.addCourse(grade, course) << endl;
             }
+
             else if (courseProcess == 3) { // Edit Course
-                cout << "\nEnter Course to edit: ";
+                cout << "\nEnter Course Id to edit: ";
                 string id;
                 cin >> id;
 
-                Student newData;
+                Course newData;
 
-                cout << "New Full Name: ";
+                cout << "New Course Name: ";
                 cin.ignore();
                 string name;
                 getline(cin, name);
                 newData.setName(name);
 
-                cout << "New Phone Number: ";
-                string phone;
-                cin >> phone;
-                newData.setPhoneNumber(phone);
-
                 cout << "New Grade (1-12): ";
                 int grade;
                 cin >> grade;
-                newData.setSchoolYear(grade);
+                newData.setGrade(grade);
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-                cout << "New GPA: ";
-                double gpa;
-                cin >> gpa;
-                newData.setGpa(gpa);
+                cout << "New Subject Hours: ";
+                int hours;
+                cin >> hours;
+                newData.setSubjectHours(hours);
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-                cout << studentController.editStudent(id, newData) << endl;
+                cout << "New Course Teacher ID: ";
+                string teacherId;
+                getline(cin, teacherId);
+                newData.setCourseTeacherId(teacherId);
+
+
+                cout << courseController.editCourse(id, newData) << endl;
             }
 
         }

@@ -50,6 +50,8 @@ public:
         virtual int getMaxCoursesForStage(Stage stage) const = 0;
 
     virtual string addCourse(int grade, Course &course) = 0;
+    virtual string editCourse(const string& id, const Course& newData) = 0;
+
 };
 
 class CourseRepositoryImpl : public CourseRepository {
@@ -72,8 +74,13 @@ public:
     const vector<Course>& getCoursesInGrade(int grade) const override;
     int getMaxCoursesForStage(Stage stage) const override;
 
+    Course* findCourseById(const string& id);
+
 
     string addCourse(int grade, Course &course) override;
+    string editCourse(const string& id, const Course& newData) override;
+
+
 
 };
 
@@ -82,6 +89,8 @@ public:
 class StudentRepository {
 public:
     virtual string addStudent(int grade, Student &student) = 0;
+    virtual string editStudent(const string& id, const Student& newData) = 0;
+
 
 };
 
@@ -99,7 +108,7 @@ public:
 
 
     string addStudent(int grade, Student &student) override;
-    string editStudent(const string& id, const Student& newData);
+    string editStudent(const string& id, const Student& newData) override;
 
 };
 

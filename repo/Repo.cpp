@@ -176,8 +176,23 @@ int CourseRepositoryImpl::getMaxCoursesForStage(Stage stage) const {
     return it->second;
 }
 
+Course* CourseRepositoryImpl::findCourseById(const string& id) {
+    for (auto& [grade, courses] : coursesInGrade) {
+        for (auto& c : courses) {
+            if (c.getId() == id)
+                return &c;
+        }
+    }
+    return nullptr;
+}
+
 
 string CourseRepositoryImpl::addCourse(int grade, Course &course) {
+
+    Course* c = findCourseById(course.getId());
+    if (c){
+      return "Course Already exists.";
+    }
 
     Stage stage = getStageFromGrade(grade);
     string finalId = generateCourseID(course.getName(),grade);
@@ -188,6 +203,20 @@ string CourseRepositoryImpl::addCourse(int grade, Course &course) {
 
 return string("Course added successfully to grade ") + to_string(grade) + " System." + "ID: " + finalId;
 }
+
+string CourseRepositoryImpl::editCourse(const string& id, const Course& newData){
+
+    Course* c = findCourseById(id);
+    if (!c) return "Course not found.";
+
+    c->setName(newData.getName());
+    c->setGrade(newData.getGrade());
+    c->setSubjectHours(newData.getSubjectHours());
+
+   return "Course data updated successfully.";
+
+}
+
 
 ////////////////// StudentRepositoryImpl \\\\\\\\\\\\\\\
 
@@ -217,6 +246,11 @@ Student* StudentRepositoryImpl::findStudentById(const string& id) {
 
 
 string StudentRepositoryImpl::addStudent(int grade, Student &student) {
+
+    Student* s = findStudentById(student.getId());
+    if (s){
+      return "Student Already exists.";
+    }
 
     string finalId = generateStudentID(grade);
     student.setId(finalId);
