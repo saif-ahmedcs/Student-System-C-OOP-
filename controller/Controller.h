@@ -11,6 +11,8 @@ private:
 public:
     TeacherController(TeacherServiceImpl &service);
     string addTeacher(int grade, Teacher &teacher);
+    string editTeacher(const string& id, const Teacher& newData);
+
 };
 
 //Course

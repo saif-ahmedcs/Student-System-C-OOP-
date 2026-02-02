@@ -1,11 +1,14 @@
 #ifndef SERVICE_H
 #define SERVICE_H
 #include "../repo/Repo.h"
+
 ////////////////// Teacher \\\\\\\\\\\\\\\
 
 class TeacherService {
 public:
     virtual string addTeacher(int grade, Teacher &teacher) = 0;
+    virtual string editTeacher(const string& id, const Teacher& newData) = 0;
+
 };
 
 class TeacherServiceImpl : public TeacherService {
@@ -20,6 +23,8 @@ private:
 public:
     TeacherServiceImpl(TeacherRepositoryImpl &repo);
     string addTeacher(int grade, Teacher &teacher) override;
+    string editTeacher(const string& id, const Teacher& newData) override;
+
 };
 ////////////////// Course \\\\\\\\\\\\\\\
 

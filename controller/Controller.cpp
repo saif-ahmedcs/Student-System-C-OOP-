@@ -7,6 +7,10 @@ string TeacherController::addTeacher(int grade, Teacher &teacher) {
     return teacherService.addTeacher(grade, teacher);
 }
 
+string TeacherController::editTeacher(const string& id, const Teacher& newData){
+    return teacherService.editTeacher(id,newData);
+}
+
 // Course
 CourseController::CourseController(CourseServiceImpl &service) : courseService(service) {}
 

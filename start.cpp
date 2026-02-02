@@ -102,7 +102,7 @@ while (flag) {
         }
         break;
 
-        case 2: // About Course
+ case 2: // About Course
         {
             cout << "\n\t************ COURSE BRANCH ************\n";
             showProcesses("Course");
@@ -176,6 +176,7 @@ while (flag) {
         }
         break;
 
+
         case 3: // About Teacher
         {
             cout << "\n\t************ TEACHER BRANCH ************\n";
@@ -209,8 +210,44 @@ while (flag) {
                 teacher.setMonthlySalary(salary);
 
                 cout << teacherController.addTeacher(grade, teacher) << endl;
-            }
         }
+
+            else if (teacherProcess == 3) { // Edit Teacher
+
+                cout << "\nEnter Teacher Id to edit: ";
+                string id;
+                cin >> id;
+
+                Teacher newData;
+
+                cout << "New Teacher Name: ";
+                cin.ignore();
+                string name;
+                getline(cin, name);
+                newData.setName(name);
+
+                cout << "New Teacher Grade (1-12): ";
+                int grade;
+                cin >> grade;
+                newData.setTeacherGrade(grade);
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                cout << "New Teacher monthly salary : ";
+                double MonthlySalary;
+                cin >> MonthlySalary;
+                newData.setMonthlySalary(MonthlySalary);
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                cout <<"New Teacher subject : ";
+                string subject;
+                getline(cin,subject);
+                newData.setTeacherSubject(subject);
+
+                cout << teacherController.editTeacher(id, newData) << endl;
+            }
+
+        }
+
         break;
 
         case 4:

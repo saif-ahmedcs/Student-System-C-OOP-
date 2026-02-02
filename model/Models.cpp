@@ -29,6 +29,9 @@ string BaseEntity::getPhoneNumber() const {
     }
 
 // Teacher
+void Teacher::setTeacherGrade(int g){
+    grade = g;
+}
 void Teacher::setMonthlySalary(double s){
      monthlySalary = s;
     }
@@ -38,6 +41,10 @@ void Teacher::setTeacherSubject(const string &sub){
 void Teacher::addStudentId(int id){
     studentIds.push_back(id);
     }
+
+int Teacher::getTeacherGrade() const {
+    return grade;
+}
 double Teacher::getMonthlySalary() const {
     return monthlySalary;
     }

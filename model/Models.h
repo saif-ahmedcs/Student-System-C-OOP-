@@ -28,13 +28,17 @@ public:
 // Teacher
 class Teacher : public BaseEntity {
 private:
-    double monthlySalary;
+    int grade;
     string teacherSubject;
+    double monthlySalary;
     vector<int> studentIds;
 public:
+    void setTeacherGrade(int grade);
     void setMonthlySalary(double salary);
     void setTeacherSubject(const string &subject);
     void addStudentId(int id);
+
+    int getTeacherGrade() const;
     double getMonthlySalary() const;
     string getTeacherSubject() const;
     const vector<int>& getStudentsIds() const;

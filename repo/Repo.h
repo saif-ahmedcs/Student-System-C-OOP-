@@ -16,6 +16,8 @@ public:
     virtual const vector<Teacher>& getTeachersInGrade(int grade) const = 0;
     virtual int getMaxTeachersForStage(Stage stage) const = 0;
     virtual string addTeacher(int grade, Teacher &teacher) = 0;
+    virtual string editTeacher(const string& id, const Teacher& newData) = 0;
+
 };
 
 class TeacherRepositoryImpl : public TeacherRepository {
@@ -39,7 +41,13 @@ public:
 
     int getMaxTeachersForStage(Stage stage) const override;
 
+    Teacher* findTeacherById(const string& id);
+
+
     string addTeacher(int grade, Teacher &teacher) override;
+
+    string editTeacher(const string& id, const Teacher& newData) override;
+
 };
 
 ////////////////// Course \\\\\\\\\\\\\\\\\\
@@ -47,7 +55,7 @@ public:
 class CourseRepository {
 public:
     virtual const vector<Course>& getCoursesInGrade(int grade) const = 0;
-        virtual int getMaxCoursesForStage(Stage stage) const = 0;
+    virtual int getMaxCoursesForStage(Stage stage) const = 0;
 
     virtual string addCourse(int grade, Course &course) = 0;
     virtual string editCourse(const string& id, const Course& newData) = 0;
@@ -74,7 +82,7 @@ public:
     const vector<Course>& getCoursesInGrade(int grade) const override;
     int getMaxCoursesForStage(Stage stage) const override;
 
-    Course* findCourseById(const string& id);
+    bool findCourseById(const string& id) const;
 
 
     string addCourse(int grade, Course &course) override;

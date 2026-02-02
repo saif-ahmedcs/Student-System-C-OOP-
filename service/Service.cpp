@@ -21,7 +21,7 @@ bool TeacherServiceImpl::validateTeachersLimit(int grade) {
 
 string TeacherServiceImpl::addTeacher(int grade, Teacher &teacher) {
 
-    string errors;
+    string errors = "";
 
     if (!validateTeacherName(teacher.getName()))
         errors += "- Teacher name cannot be empty.\n";
@@ -37,6 +37,30 @@ string TeacherServiceImpl::addTeacher(int grade, Teacher &teacher) {
 
     return teacherRepository.addTeacher(grade, teacher);
 }
+
+string TeacherServiceImpl::editTeacher(const string& id, const Teacher& newData){
+
+
+    string errors = "";
+
+    if (!validateTeacherName(newData.getName()))
+        errors += "- Teacher name cannot be empty.\n";
+
+    if (!validateTeacherGrade(newData.getTeacherGrade()))
+        errors += "- Grade must be between 1 and 12.\n";
+
+    if (!validateTeachersLimit(newData.getTeacherGrade()))
+        errors += "- Maximum number of teachers reached for this grade.\n";
+
+    if (!errors.empty())
+        return "Teacher cannot be added due to the following issues:\n" + errors;
+
+    // Everything valid, add to repository
+     return teacherRepository.editTeacher(id, newData);
+
+}
+
+
 
 ////////////////// CourseServiceImpl \\\\\\\\\\\\\\\
 
@@ -64,7 +88,7 @@ bool CourseServiceImpl::validateCoursesLimit(int grade) {
 
 // Add course with validation
 string CourseServiceImpl::addCourse(int grade, Course &course) {
-    string errorMessages;
+    string errorMessages = "";
 
     if (!validateCourseName(course.getName()))
         errorMessages += "- Invalid course name.\n";
@@ -92,7 +116,7 @@ string CourseServiceImpl::editCourse(const string& id, const Course& newData){
 
     string errorMessages = "";
 
- if (!validateCourseName(newData.getName()))
+    if (!validateCourseName(newData.getName()))
         errorMessages += "- Invalid course name.\n";
 
     if (!validateGrade(newData.getGrade()))
