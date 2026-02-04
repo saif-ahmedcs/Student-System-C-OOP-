@@ -4,7 +4,7 @@ using namespace std;
 
 
 void displaySystem() {
-    cout << "\t********************* Welcome To Student System *********************" << endl << endl;
+    cout << "\t********************* Welcome To The School System *********************" << endl << endl;
     cout << "The Process you need is : " << endl;
     cout << "1- About Student\t2- About Course" << endl;
     cout << "3- About Teacher\t4- Exit" << endl;
@@ -31,271 +31,271 @@ int main() {
 
     displaySystem();
 
-int process;
-bool flag = true;
+    int process;
+    bool flag = true;
 
-while (flag) {
-    cout << "\nEnter your choice (1-4): ";
-    cin >> process;
+    while (flag) {
+        cout << "\nEnter your choice (1-4): ";
+        cin >> process;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-    switch (process) {
+        switch (process) {
 
-        case 1: // About Student
-        {
-            cout << "\n\t************ STUDENT BRANCH ************\n";
-            showProcesses("Student");
+            case 1: { // About Student
+                cout << "\n\t************ STUDENT BRANCH ************\n";
+                showProcesses("Student");
 
-            int studentProcess;
-            cin >> studentProcess;
-
-            if (studentProcess == 1) { // Add Student
-                Student student;
-                cout << "- Please enter the required student information below:" << endl;
-
-                cout << "Student Full Name: ";
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                string name;
-                getline(cin, name);
-                student.setName(name);
-
-                cout << "Student School Grade (1-12): ";
-                int grade;
-                cin >> grade;
-
-                cout << "Student Age: ";
-                int age;
-                cin>>age;
-                student.setAge(age);
+                int studentProcess;
+                cin >> studentProcess;
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-                cout << "Student Phone Number (10-12 digits): ";
-                string phoneNumber;
-                cin >> phoneNumber;
-                student.setPhoneNumber(phoneNumber);
+                if (studentProcess == 1) { // Add Student
+                    Student student;
+                    cout << "- Please enter the required student information below:\n";
 
-                cout << "\n" << studentController.addStudent(grade, student) << endl;
+                    cout << "Student Full Name: ";
+                    string name;
+                    getline(cin, name);
+                    student.setName(name);
+
+                    cout << "Student School Grade (1-12): ";
+                    int grade;
+                    cin >> grade;
+                    student.setSchoolYear(grade);
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    cout << "Student Age: ";
+                    int age;
+                    cin >> age;
+                    student.setAge(age);
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    cout << "Student Phone Number (10-12 digits): ";
+                    string phoneNumber;
+                    getline(cin, phoneNumber);
+                    student.setPhoneNumber(phoneNumber);
+
+                    cout << studentController.addStudent(grade, student) << endl;
+                }
+                else if (studentProcess == 3) { // Edit Student
+                    cout << "\nEnter Student ID to edit: ";
+                    string id;
+                    getline(cin, id);
+
+                    Student newData;
+
+                    cout << "Full Name: ";
+                    string name;
+                    getline(cin, name);
+                    newData.setName(name);
+
+                    cout << "Grade (1-12): ";
+                    int grade;
+                    cin >> grade;
+                    newData.setSchoolYear(grade);
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    cout << "Age: ";
+                    int age;
+                    cin >> age;
+                    newData.setAge(age);
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    cout << "Phone Number: ";
+                    string phone;
+                    getline(cin, phone);
+                    newData.setPhoneNumber(phone);
+
+                    cout << "GPA: ";
+                    double gpa;
+                    cin >> gpa;
+                    newData.setGpa(gpa);
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    cout << studentController.editStudent(id, newData) << endl;
+                }
+                else if (studentProcess == 4) { // Show Student
+                    cout << "\nEnter Student ID: ";
+                    string id;
+                    getline(cin, id);
+                    studentService.showStudent(id);
+                }
+                break;
             }
 
-            else if (studentProcess == 3) { // Edit Student
-                cout << "\nEnter Student ID to edit: ";
-                string id;
-                cin >> id;
+            case 2: { // About Course
+                cout << "\n\t************ COURSE BRANCH ************\n";
+                showProcesses("Course");
 
-                Student newData;
-
-                cout << "New Full Name: ";
-                cin.ignore();
-                string name;
-                getline(cin, name);
-                newData.setName(name);
-
-                cout << "New Grade (1-12): ";
-                int grade;
-                cin >> grade;
-                newData.setSchoolYear(grade);
-
-                cout << "New Age: ";
-                int age;
-                cin>>age;
-                newData.setAge(age);
+                int courseProcess;
+                cin >> courseProcess;
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-                cout << "New Phone Number: ";
-                string phone;
-                cin >> phone;
-                newData.setPhoneNumber(phone);
+                if (courseProcess == 1) { // Add Course
+                    Course course;
 
-                cout << "GPA: ";
-                double gpa;
-                cin >> gpa;
-                newData.setGpa(gpa);
+                    cout << "- Please Enter Course Data:\n";
 
-                cout << studentController.editStudent(id, newData) << endl;
+                    cout << "Course Name: ";
+                    string courseName;
+                    getline(cin, courseName);
+                    course.setName(courseName);
+
+                    cout << "Grade (1-12): ";
+                    int grade;
+                    cin >> grade;
+                    course.setGrade(grade);
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    cout << "Subject Hours: ";
+                    int hours;
+                    cin >> hours;
+                    course.setSubjectHours(hours);
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    cout << "Course Teacher ID: ";
+                    string teacherId;
+                    getline(cin, teacherId);
+                    course.setCourseTeacherId(teacherId);
+
+                    cout << courseController.addCourse(grade, course) << endl;
+                }
+                else if (courseProcess == 3) { // Edit Course
+                    cout << "\nEnter Course Id to edit: ";
+                    string id;
+                    getline(cin, id);
+
+                    Course newData;
+
+                    cout << "Course Name: ";
+                    string name;
+                    getline(cin, name);
+                    newData.setName(name);
+
+                    cout << "Grade (1-12): ";
+                    int grade;
+                    cin >> grade;
+                    newData.setGrade(grade);
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    cout << "Subject Hours: ";
+                    int hours;
+                    cin >> hours;
+                    newData.setSubjectHours(hours);
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    cout << "Course Teacher ID: ";
+                    string teacherId;
+                    getline(cin, teacherId);
+                    newData.setCourseTeacherId(teacherId);
+
+                    cout << courseController.editCourse(id, newData) << endl;
+                }
+                break;
             }
+
+            case 3: { // About Teacher
+                cout << "\n\t************ TEACHER BRANCH ************\n";
+                showProcesses("Teacher");
+
+                int teacherProcess;
+                cin >> teacherProcess;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                if (teacherProcess == 1) { // Add Teacher
+                    Teacher teacher;
+                    cout << "- Please Enter Teacher Data:\n";
+
+                    cout << "Teacher Name: ";
+                    string name;
+                    getline(cin, name);
+                    teacher.setName(name);
+
+                    cout << "Teacher Age: ";
+                    int age;
+                    cin >> age;
+                    teacher.setAge(age);
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    cout << "Teacher experience years: ";
+                    int experienceYears;
+                    cin >> experienceYears;
+                    teacher.setExperienceYears(experienceYears);
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    cout << "Teacher Subject: ";
+                    string subject;
+                    getline(cin, subject);
+                    teacher.setTeacherSubject(subject);
+
+                    cout << "Grade (1-12): ";
+                    int grade;
+                    cin >> grade;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    cout << "Monthly Salary: ";
+                    double salary;
+                    cin >> salary;
+                    teacher.setMonthlySalary(salary);
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    cout << teacherController.addTeacher(grade, teacher) << endl;
+                }
+                else if (teacherProcess == 3) { // Edit Teacher
+                    cout << "\nEnter Teacher Id to edit: ";
+                    string id;
+                    getline(cin, id);
+
+                    Teacher newData;
+
+                    cout << "Teacher Name: ";
+                    string name;
+                    getline(cin, name);
+                    newData.setName(name);
+
+                    cout << "Teacher Age: ";
+                    int age;
+                    cin >> age;
+                    newData.setAge(age);
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    cout << "Teacher experience years: ";
+                    int experienceYears;
+                    cin >> experienceYears;
+                    newData.setExperienceYears(experienceYears);
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    cout << "Teacher Grade (1-12): ";
+                    int grade;
+                    cin >> grade;
+                    newData.setTeacherGrade(grade);
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    cout << "Teacher monthly salary : ";
+                    double MonthlySalary;
+                    cin >> MonthlySalary;
+                    newData.setMonthlySalary(MonthlySalary);
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    cout <<"Teacher subject : ";
+                    string subject;
+                    getline(cin, subject);
+                    newData.setTeacherSubject(subject);
+
+                    cout << teacherController.editTeacher(id, newData) << endl;
+                }
+                break;
+            }
+
+            case 4:
+                cout << "\nExiting program..." << endl;
+                flag = false;
+                break;
+
+            default:
+                cout << "\nInvalid Choice. Please enter a number between 1-4." << endl;
         }
-        break;
-
- case 2: // About Course
-        {
-            cout << "\n\t************ COURSE BRANCH ************\n";
-            showProcesses("Course");
-
-            int courseProcess;
-            cin >> courseProcess;
-
-            if (courseProcess == 1) { // Add Course
-                Course course;
-                cin.ignore();
-
-                cout << "- Please Enter Course Data:" << endl;
-
-                cout << "Course Name: ";
-                string courseName;
-                getline(cin, courseName);
-                course.setName(courseName);
-
-                cout << "Grade (1-12): ";
-                int grade;
-                cin>>grade;
-                course.setGrade(grade);
-
-                cout << "Subject Hours: ";
-                int hours;
-                cin >> hours;
-                course.setSubjectHours(hours);
-
-                cout << "Course Teacher ID: ";
-                string id;
-                getline(cin, id);
-                course.setCourseTeacherId(id);
-
-                cout << courseController.addCourse(grade, course) << endl;
-            }
-
-            else if (courseProcess == 3) { // Edit Course
-                cout << "\nEnter Course Id to edit: ";
-                string id;
-                cin >> id;
-
-                Course newData;
-
-                cout << "New Course Name: ";
-                cin.ignore();
-                string name;
-                getline(cin, name);
-                newData.setName(name);
-
-                cout << "New Grade (1-12): ";
-                int grade;
-                cin >> grade;
-                newData.setGrade(grade);
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-                cout << "New Subject Hours: ";
-                int hours;
-                cin >> hours;
-                newData.setSubjectHours(hours);
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-                cout << "New Course Teacher ID: ";
-                string teacherId;
-                getline(cin, teacherId);
-                newData.setCourseTeacherId(teacherId);
-
-
-                cout << courseController.editCourse(id, newData) << endl;
-            }
-
-        }
-        break;
-
-
-        case 3: // About Teacher
-        {
-            cout << "\n\t************ TEACHER BRANCH ************\n";
-            showProcesses("Teacher");
-
-            int teacherProcess;
-            cin >> teacherProcess;
-
-            if (teacherProcess == 1) { // Add Teacher
-                cout << "- Please Enter Teacher Data:" << endl;
-                Teacher teacher;
-                cin.ignore();
-
-                cout << "Teacher Name: ";
-                string name;
-                getline(cin, name);
-                teacher.setName(name);
-
-                cout << "Teacher Age: ";
-                int age;
-                cin>>age;
-                teacher.setAge(age);
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-                cout << "Teacher experience years: ";
-                int experienceYears;
-                cin >> experienceYears;
-                teacher.setExperienceYears(experienceYears);
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-                cout << "Teacher Subject: ";
-                string subject;
-                getline(cin, subject);
-                teacher.setTeacherSubject(subject);
-
-                cout << "Grade (1-12): ";
-                int grade;
-                cin >> grade;
-
-                cout << "Monthly Salary: ";
-                double salary;
-                cin >> salary;
-                teacher.setMonthlySalary(salary);
-
-                cout << teacherController.addTeacher(grade, teacher) << endl;
-        }
-
-            else if (teacherProcess == 3) { // Edit Teacher
-
-                cout << "\nEnter Teacher Id to edit: ";
-                string id;
-                cin >> id;
-
-                Teacher newData;
-
-                cout << "New Teacher Name: ";
-                cin.ignore();
-                string name;
-                getline(cin, name);
-                newData.setName(name);
-
-                cout << "New Teacher Age: ";
-                int age;
-                cin>>age;
-                newData.setAge(age);
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-                cout << "New Teacher experience years: ";
-                int experienceYears;
-                cin >> experienceYears;
-                newData.setExperienceYears(experienceYears);
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-                cout << "New Teacher Grade (1-12): ";
-                int grade;
-                cin >> grade;
-                newData.setTeacherGrade(grade);
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-                cout << "New Teacher monthly salary : ";
-                double MonthlySalary;
-                cin >> MonthlySalary;
-                newData.setMonthlySalary(MonthlySalary);
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-                cout <<"New Teacher subject : ";
-                string subject;
-                getline(cin,subject);
-                newData.setTeacherSubject(subject);
-
-                cout << teacherController.editTeacher(id, newData) << endl;
-            }
-
-        }
-
-        break;
-
-        case 4:
-            cout << "\nExiting program..." << endl;
-            flag = false;
-            break;
-
-        default:
-            cout << "\nInvalid Choice. Please enter a number between 1-4." << endl;
     }
-}
 
-return 0;
+    return 0;
 }

@@ -32,3 +32,5 @@ string StudentController::addStudent(int grade, Student &student) {
 string StudentController::editStudent(const string& id, const Student& newData) {
     return studentService.editStudent(id, newData);
 }
+
+

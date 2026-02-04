@@ -250,3 +250,18 @@ string StudentServiceImpl::editStudent(const string& id, const Student& newData)
     return studentRepository.editStudent(id, newData);
 }
 
+void StudentServiceImpl::showStudent(const string& studentId) {
+    Student* student = studentRepository.findStudentById(studentId);
+    if (!student) {
+        cout << "Student not found.\n";
+        return;
+    }
+
+    cout << "-----------------------------------\n";
+    cout << "Student Name: " << student->getName() << endl;
+    cout << "Student ID: " << student->getId() << endl;
+    cout << "School Grade: " << student->getSchoolYear() << endl;
+    cout << "Age: " << student->getAge() << endl;
+    cout << "Phone Number: " << student->getPhoneNumber() << endl;
+    cout << "GPA: " << student->getGpa() << endl;
+}

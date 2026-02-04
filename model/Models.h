@@ -78,7 +78,7 @@ struct TeacherCourse {
 class Student : public BaseEntity {
 private:
     int schoolYear;
-    double gpa;
+    double gpa = 0.00;
     vector<TeacherCourse> teacherCoursePairs;
 public:
     void setSchoolYear(const int &year);

@@ -132,6 +132,17 @@ int TeacherRepositoryImpl::getMaxTeachersForStage(Stage stage) const {
     return it->second;
 }
 
+Teacher* TeacherRepositoryImpl::findTeacherById(const string& id) {
+    for (auto& [grade, teachers] : teachersInGrade) {
+        for (auto& t : teachers) {
+            if (t.getId() == id)
+                return &t;
+        }
+    }
+    return nullptr;
+}
+
+
 
 string TeacherRepositoryImpl::addTeacher(int grade, Teacher &teacher) {
     Stage stage = getStageFromGrade(grade);
@@ -283,8 +294,8 @@ string StudentRepositoryImpl::editStudent(const string& id, const Student& newDa
     s->setName(newData.getName());
     s->setPhoneNumber(newData.getPhoneNumber());
     s->setGpa(newData.getGpa());
+    s->setAge(newData.getAge());
     s->setSchoolYear(newData.getSchoolYear());
 
     return "Student data updated successfully.";
 }
-
