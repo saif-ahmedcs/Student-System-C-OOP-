@@ -9,6 +9,17 @@ bool TeacherServiceImpl::validateTeacherName(const string &name) {
     return !name.empty();
 }
 
+bool TeacherServiceImpl::validateTeacherAge(int age){
+  int minAge = 23;
+  int maxAge = 60;
+    return age >= minAge && age <= maxAge;
+}
+
+bool TeacherServiceImpl::validateTeacherExperience(int ey){
+  int requiredExperienceYears = 2;
+    return ey >= requiredExperienceYears;
+}
+
 bool TeacherServiceImpl::validateTeacherGrade(int grade) {
     return grade >= 1 && grade <= 12;
 }
@@ -25,6 +36,12 @@ string TeacherServiceImpl::addTeacher(int grade, Teacher &teacher) {
 
     if (!validateTeacherName(teacher.getName()))
         errors += "- Teacher name cannot be empty.\n";
+
+    if (!validateTeacherAge(teacher.getAge()))
+        errors += "- The entered age for the teacher does not comply with the school policy.\n";
+
+    if (!validateTeacherExperience(teacher.getTeacherExperienceYears()))
+        errors += "- The entered years of experience do not meet the school's requirements.\n";
 
     if (!validateTeacherGrade(grade))
         errors += "- Grade must be between 1 and 12.\n";
@@ -45,6 +62,12 @@ string TeacherServiceImpl::editTeacher(const string& id, const Teacher& newData)
 
     if (!validateTeacherName(newData.getName()))
         errors += "- Teacher name cannot be empty.\n";
+
+    if (!validateTeacherAge(newData.getAge()))
+        errors += "- The entered age for the teacher does not comply with the school policy.\n";
+
+    if (!validateTeacherExperience(newData.getTeacherExperienceYears()))
+        errors += "- The entered years of experience do not meet the school's requirements.\n";
 
     if (!validateTeacherGrade(newData.getTeacherGrade()))
         errors += "- Grade must be between 1 and 12.\n";
@@ -150,6 +173,15 @@ bool StudentServiceImpl::validateName(const string &name) {
     return !name.empty();
 }
 
+bool StudentServiceImpl::validateAge(int age, int grade) {
+    int expectedAge = grade + 5;
+    int minAge = expectedAge - 1;
+    int maxAge = expectedAge + 1;
+
+    return age >= minAge && age <= maxAge;
+}
+
+
 bool StudentServiceImpl::validatePhoneNumber(const string &phone) {
     if (phone.length() < 10 || phone.length() > 12)
         return false;
@@ -177,6 +209,9 @@ string StudentServiceImpl::addStudent(int grade, Student &student) {
     if (!validateName(student.getName()))
         errors += "- Name cannot be empty.\n";
 
+    if (!validateAge(student.getAge(),grade))
+        errors += "- The age entered does not match the expected range for this grade.\n";
+
     if (!validatePhoneNumber(student.getPhoneNumber()))
         errors += "- Phone number must be 10 --> 12 digits and contain digits only.\n";
 
@@ -196,6 +231,9 @@ string StudentServiceImpl::editStudent(const string& id, const Student& newData)
 
     if (!validateName(newData.getName()))
         errors += "- Name cannot be empty.\n";
+
+    if (!validateAge(newData.getAge(),newData.getSchoolYear()))
+        errors += "- The age entered does not match the expected range for this grade.\n";
 
     if (!validatePhoneNumber(newData.getPhoneNumber()))
         errors += "- Phone number must be 10-12 digits.\n";

@@ -16,6 +16,8 @@ private:
     TeacherRepositoryImpl &teacherRepository;
     // Validation
     bool validateTeacherName(const string &name);
+    bool validateTeacherAge(int age);
+    bool validateTeacherExperience(int experienceYears);
     bool validateTeacherGrade(int grade);
     bool validateTeachersLimit(int grade);
 
@@ -66,6 +68,7 @@ private:
 
     // Validation
     bool validateName(const string &name);
+    bool validateAge (int age, int grade);
     bool validatePhoneNumber(const string &phone);
     bool validateGrade(int grade);
     bool validateNewGpa(float gpa);

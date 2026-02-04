@@ -38,6 +38,10 @@ void Teacher::setMonthlySalary(double s){
 void Teacher::setTeacherSubject(const string &sub){
      teacherSubject = sub;
     }
+void Teacher::setExperienceYears(int e){
+  experienceYears = e;
+}
+
 void Teacher::addStudentId(int id){
     studentIds.push_back(id);
     }
@@ -51,6 +55,9 @@ double Teacher::getMonthlySalary() const {
 string Teacher::getTeacherSubject() const {
     return teacherSubject;
     }
+int Teacher::getTeacherExperienceYears() const {
+    return experienceYears;
+}
 const vector<int>& Teacher::getStudentsIds() const {
     return studentIds;
     }

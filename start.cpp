@@ -62,6 +62,12 @@ while (flag) {
                 int grade;
                 cin >> grade;
 
+                cout << "Student Age: ";
+                int age;
+                cin>>age;
+                student.setAge(age);
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
                 cout << "Student Phone Number (10-12 digits): ";
                 string phoneNumber;
                 cin >> phoneNumber;
@@ -69,6 +75,7 @@ while (flag) {
 
                 cout << "\n" << studentController.addStudent(grade, student) << endl;
             }
+
             else if (studentProcess == 3) { // Edit Student
                 cout << "\nEnter Student ID to edit: ";
                 string id;
@@ -82,17 +89,23 @@ while (flag) {
                 getline(cin, name);
                 newData.setName(name);
 
-                cout << "New Phone Number: ";
-                string phone;
-                cin >> phone;
-                newData.setPhoneNumber(phone);
-
                 cout << "New Grade (1-12): ";
                 int grade;
                 cin >> grade;
                 newData.setSchoolYear(grade);
 
-                cout << "New GPA: ";
+                cout << "New Age: ";
+                int age;
+                cin>>age;
+                newData.setAge(age);
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                cout << "New Phone Number: ";
+                string phone;
+                cin >> phone;
+                newData.setPhoneNumber(phone);
+
+                cout << "GPA: ";
                 double gpa;
                 cin >> gpa;
                 newData.setGpa(gpa);
@@ -195,6 +208,18 @@ while (flag) {
                 getline(cin, name);
                 teacher.setName(name);
 
+                cout << "Teacher Age: ";
+                int age;
+                cin>>age;
+                teacher.setAge(age);
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                cout << "Teacher experience years: ";
+                int experienceYears;
+                cin >> experienceYears;
+                teacher.setExperienceYears(experienceYears);
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
                 cout << "Teacher Subject: ";
                 string subject;
                 getline(cin, subject);
@@ -225,6 +250,18 @@ while (flag) {
                 string name;
                 getline(cin, name);
                 newData.setName(name);
+
+                cout << "New Teacher Age: ";
+                int age;
+                cin>>age;
+                newData.setAge(age);
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                cout << "New Teacher experience years: ";
+                int experienceYears;
+                cin >> experienceYears;
+                newData.setExperienceYears(experienceYears);
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                 cout << "New Teacher Grade (1-12): ";
                 int grade;

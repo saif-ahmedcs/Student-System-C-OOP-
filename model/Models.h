@@ -31,16 +31,19 @@ private:
     int grade;
     string teacherSubject;
     double monthlySalary;
+    int experienceYears;
     vector<int> studentIds;
 public:
     void setTeacherGrade(int grade);
     void setMonthlySalary(double salary);
     void setTeacherSubject(const string &subject);
+    void setExperienceYears(int exY);
     void addStudentId(int id);
 
     int getTeacherGrade() const;
     double getMonthlySalary() const;
     string getTeacherSubject() const;
+    int getTeacherExperienceYears() const;
     const vector<int>& getStudentsIds() const;
     int getNumberOfStudentsInTeacherCourse() const;
 };
