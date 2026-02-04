@@ -83,7 +83,19 @@ string TeacherServiceImpl::editTeacher(const string& id, const Teacher& newData)
 
 }
 
+void TeacherServiceImpl::showTeacher(const string& id){
 
+    Teacher* teacher = teacherRepository.findTeacherById(id);
+
+        cout << "--------------------------\n";
+        cout << "Teacher Name: " << teacher->getName() << endl;
+        cout << "Age: " << teacher->getAge() << endl;
+        cout << "Experience Years: " << teacher->getTeacherExperienceYears() << endl;
+        cout << "Subject: " << teacher->getTeacherSubject() << endl;
+        cout << "Grade: " << teacher->getTeacherGrade() << endl;
+        cout << "Monthly Salary: $" << teacher->getMonthlySalary() << endl;
+        cout << "--------------------------\n";
+    }
 
 ////////////////// CourseServiceImpl \\\\\\\\\\\\\\\
 
@@ -251,11 +263,8 @@ string StudentServiceImpl::editStudent(const string& id, const Student& newData)
 }
 
 void StudentServiceImpl::showStudent(const string& studentId) {
+
     Student* student = studentRepository.findStudentById(studentId);
-    if (!student) {
-        cout << "Student not found.\n";
-        return;
-    }
 
     cout << "-----------------------------------\n";
     cout << "Student Name: " << student->getName() << endl;

@@ -231,6 +231,7 @@ int main() {
                     cout << "Grade (1-12): ";
                     int grade;
                     cin >> grade;
+                    teacher.setTeacherGrade(grade);
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Monthly Salary: ";
@@ -284,8 +285,17 @@ int main() {
 
                     cout << teacherController.editTeacher(id, newData) << endl;
                 }
+
+                    else if (teacherProcess == 4) { // Show Student
+                    cout << "\nEnter Teacher ID: ";
+                    string id;
+                    getline(cin, id);
+                    teacherService.showTeacher(id);
+                }
+
                 break;
             }
+
 
             case 4:
                 cout << "\nExiting program..." << endl;

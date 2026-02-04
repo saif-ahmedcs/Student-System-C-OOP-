@@ -8,6 +8,7 @@ class TeacherService {
 public:
     virtual string addTeacher(int grade, Teacher &teacher) = 0;
     virtual string editTeacher(const string& id, const Teacher& newData) = 0;
+    virtual void showTeacher(const string& id) = 0;
 
 };
 
@@ -26,6 +27,8 @@ public:
     TeacherServiceImpl(TeacherRepositoryImpl &repo);
     string addTeacher(int grade, Teacher &teacher) override;
     string editTeacher(const string& id, const Teacher& newData) override;
+    void showTeacher(const string& id) override;
+
 
 };
 ////////////////// Course \\\\\\\\\\\\\\\

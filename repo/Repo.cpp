@@ -143,7 +143,6 @@ Teacher* TeacherRepositoryImpl::findTeacherById(const string& id) {
 }
 
 
-
 string TeacherRepositoryImpl::addTeacher(int grade, Teacher &teacher) {
     Stage stage = getStageFromGrade(grade);
     string finalId = generateTeacherID(grade);
@@ -155,18 +154,20 @@ string TeacherRepositoryImpl::addTeacher(int grade, Teacher &teacher) {
 }
 
 string TeacherRepositoryImpl::editTeacher(const string& id, const Teacher& newData){
-    for (auto& [grade, teachers] : teachersInGrade) {
-        for (auto& t : teachers) {
-            if (t.getId() == id) {
-                t.setName(newData.getName());
-                t.setTeacherGrade(newData.getTeacherGrade());
-                t.setTeacherSubject(newData.getTeacherSubject());
-                t.setMonthlySalary(newData.getMonthlySalary());
-                return "Teacher data updated successfully.";
-            }
+
+    Teacher* t = findTeacherById(id);
+       if (!t){
+        return "Teacher not found.";
         }
-    }
-    return "Teacher not found.";
+
+        t->setName(newData.getName());
+        t->setAge(newData.getAge());
+        t->setTeacherGrade(newData.getTeacherGrade());
+        t->setTeacherSubject(newData.getTeacherSubject());
+        t->setExperienceYears(newData.getTeacherExperienceYears());
+        t->setMonthlySalary(newData.getMonthlySalary());
+
+    return "Teacher data updated successfully.";
 }
 
 
@@ -271,11 +272,6 @@ Student* StudentRepositoryImpl::findStudentById(const string& id) {
 
 
 string StudentRepositoryImpl::addStudent(int grade, Student &student) {
-
-    Student* s = findStudentById(student.getId());
-    if (s){
-      return "Student Already exists.";
-    }
 
     string finalId = generateStudentID(grade);
     student.setId(finalId);
