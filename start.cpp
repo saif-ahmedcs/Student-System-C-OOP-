@@ -153,19 +153,22 @@ int main() {
                     course.setSubjectHours(hours);
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-                    cout << "Course Teacher ID: ";
-                    string teacherId;
-                    getline(cin, teacherId);
-                    course.setCourseTeacherId(teacherId);
+                    cout << "Course Teacher name: ";
+                    string teacherName;
+                    getline(cin, teacherName);
+                    course.setCourseTeacherName(teacherName);
 
                     cout << courseController.addCourse(grade, course) << endl;
                 }
+
                 else if (courseProcess == 3) { // Edit Course
                     cout << "\nEnter Course Id to edit: ";
                     string id;
                     getline(cin, id);
 
                     Course newData;
+
+                    cout <<"------- Enter NEW DATA : -------" <<endl;
 
                     cout << "Course Name: ";
                     string name;
@@ -184,12 +187,18 @@ int main() {
                     newData.setSubjectHours(hours);
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-                    cout << "Course Teacher ID: ";
-                    string teacherId;
-                    getline(cin, teacherId);
-                    newData.setCourseTeacherId(teacherId);
+                    cout << "Course Teacher name: ";
+                    string teacherName;
+                    getline(cin, teacherName);
+                    newData.setCourseTeacherName(teacherName);
 
                     cout << courseController.editCourse(id, newData) << endl;
+                }
+                    else if (courseProcess == 4) { // Show Student
+                    cout << "\nEnter Course ID: ";
+                    string id;
+                    getline(cin, id);
+                    courseService.showCourse(id);
                 }
                 break;
             }

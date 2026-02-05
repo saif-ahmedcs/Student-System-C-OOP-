@@ -144,6 +144,7 @@ Teacher* TeacherRepositoryImpl::findTeacherById(const string& id) {
 
 
 string TeacherRepositoryImpl::addTeacher(int grade, Teacher &teacher) {
+
     Stage stage = getStageFromGrade(grade);
     string finalId = generateTeacherID(grade);
     teacher.setId(finalId);
@@ -203,22 +204,19 @@ int CourseRepositoryImpl::getMaxCoursesForStage(Stage stage) const {
     return it->second;
 }
 
-bool CourseRepositoryImpl::findCourseById(const string& id) const {
-    for (const auto& [grade, courses] : coursesInGrade) {
-        for (const auto& c : courses) {
+Course* CourseRepositoryImpl::findCourseById(const string& id) {
+    for (auto& [grade, courses] : coursesInGrade) {
+        for (auto& c : courses) {
             if (c.getId() == id)
-                return true;
+                return &c;
         }
     }
-    return false;
+    return nullptr;
 }
 
 
-string CourseRepositoryImpl::addCourse(int grade, Course &course) {
 
-    if (findCourseById(course.getId())) {
-        return "Course Already exists.";
-    }
+string CourseRepositoryImpl::addCourse(int grade, Course &course) {
 
     Stage stage = getStageFromGrade(grade);
     string finalId = generateCourseID(course.getName(),grade);
@@ -231,17 +229,18 @@ return string("Course added successfully to grade ") + to_string(grade) + " Syst
 }
 
 string CourseRepositoryImpl::editCourse(const string& id, const Course& newData) {
-    for (auto& [grade, courses] : coursesInGrade) {
-        for (auto& c : courses) {
-            if (c.getId() == id) {
-                c.setName(newData.getName());
-                c.setGrade(newData.getGrade());
-                c.setSubjectHours(newData.getSubjectHours());
-                return "Course data updated successfully.";
-            }
-        }
-    }
-    return "Course not found.";
+  Course* c = findCourseById(id);
+    if (!c){
+      return "Course not found.";
+      }
+
+    c->setName(newData.getName());
+    c->setCourseTeacherName(newData.getCourseTeacherName());
+    c->setGrade(newData.getGrade());
+    c->setSubjectHours(newData.getSubjectHours());
+
+      return "Course data updated successfully.";
+
 }
 
 ////////////////// StudentRepositoryImpl \\\\\\\\\\\\\\\

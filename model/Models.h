@@ -51,20 +51,19 @@ public:
 // Course
 class Course : public ShareData {
 private:
-    Teacher teacher;
+    string teacherName;
     vector<Teacher> courseTeachers;
     int grade;
     int subjectHours;
 public:
-    void setSingleTeacher(const Teacher& t);
-    void setCourseTeacherId(const string &id);
+    void setCourseTeacherName(const string &id);
     void addTeacher(const Teacher& t);
     void setGrade(const int &year);
     void setSubjectHours(int hours);
     Teacher getCourseTeacher() const;
     const vector<Teacher>& getCourseTeachers() const;
     int getGrade() const;
-    string getCourseTeacherId() const;
+    string getCourseTeacherName() const;
     int getSubjectHours() const;
     int getNumberOfCourseTeachers() const;
 };

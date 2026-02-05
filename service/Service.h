@@ -37,6 +37,8 @@ class CourseService {
 public:
     virtual string addCourse(int grade, Course &course) = 0;
     virtual string editCourse(const string& id, const Course& newData) = 0;
+    virtual void showCourse(const string &id) = 0;
+
 
 };
 
@@ -45,6 +47,7 @@ private:
     CourseRepositoryImpl &courseRepository;
     // Validation
     bool validateCourseName(const string &name);
+    bool validateCourseTeacherName(const string &name);
     bool validateSubjectHours(int hours);
     bool validateGrade(int grade);
     bool validateCoursesLimit(int grade);
@@ -54,6 +57,7 @@ public:
     CourseServiceImpl(CourseRepositoryImpl &repo);
     string addCourse(int grade, Course &course) override;
     string editCourse(const string& id, const Course& newData) override;
+    void showCourse(const string &id) override;
 
 };
 ////////////////// Student \\\\\\\\\\\\\\\

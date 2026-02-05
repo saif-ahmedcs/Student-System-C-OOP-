@@ -82,7 +82,7 @@ public:
     const vector<Course>& getCoursesInGrade(int grade) const override;
     int getMaxCoursesForStage(Stage stage) const override;
 
-    bool findCourseById(const string& id) const;
+    Course* findCourseById(const string& id);
 
 
     string addCourse(int grade, Course &course) override;

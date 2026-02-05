@@ -86,6 +86,12 @@ string TeacherServiceImpl::editTeacher(const string& id, const Teacher& newData)
 void TeacherServiceImpl::showTeacher(const string& id){
 
     Teacher* teacher = teacherRepository.findTeacherById(id);
+      if (!teacher){
+      cout << "-----------------------\n";
+      cout << "Teacher not found.\n";
+      cout << "-----------------------\n";
+      return;
+      }
 
         cout << "--------------------------\n";
         cout << "Teacher Name: " << teacher->getName() << endl;
@@ -114,6 +120,10 @@ bool CourseServiceImpl::validateGrade(int grade) {
     return grade >= 1 && grade <= 12;
 }
 
+bool CourseServiceImpl::validateCourseTeacherName(const string &name) {
+    return !name.empty();
+}
+
 
 bool CourseServiceImpl::validateCoursesLimit(int grade) {
     Stage stage = getStageFromGrade(grade);
@@ -127,6 +137,9 @@ string CourseServiceImpl::addCourse(int grade, Course &course) {
 
     if (!validateCourseName(course.getName()))
         errorMessages += "- Invalid course name.\n";
+
+    if (!validateCourseTeacherName(course.getCourseTeacherName()))
+        errorMessages += "- Invalid teacher name.\n";
 
     if (!validateGrade(course.getGrade()))
         errorMessages += "- Invalid grade. Must be between 1 and 12.\n";
@@ -154,6 +167,9 @@ string CourseServiceImpl::editCourse(const string& id, const Course& newData){
     if (!validateCourseName(newData.getName()))
         errorMessages += "- Invalid course name.\n";
 
+    if (!validateCourseTeacherName(newData.getCourseTeacherName()))
+        errorMessages += "- Invalid teacher name.\n";
+
     if (!validateGrade(newData.getGrade()))
         errorMessages += "- Invalid academic year.\n";
 
@@ -172,6 +188,25 @@ string CourseServiceImpl::editCourse(const string& id, const Course& newData){
 
     // Everything valid, add to repository
      return courseRepository.editCourse(id, newData);
+}
+
+void CourseServiceImpl::showCourse(const string& id){
+
+    Course* course = courseRepository.findCourseById(id);
+      if (!course){
+      cout << "-----------------------\n";
+      cout << "Course not found.\n";
+      cout << "-----------------------\n";
+      return;
+      }
+
+    cout << "-----------------------------------\n";
+    cout << "Course Name: " << course->getName() << endl;
+    cout << "Course ID: " << course->getId() << endl;
+    cout << "Course Grade: " << course->getGrade() << endl;
+    cout << "Subject Hours: " << course->getSubjectHours() << endl;
+    cout << "Course Teacher: " << course->getCourseTeacherName() << endl;
+    cout << "-----------------------------------\n";
 
 }
 
@@ -265,6 +300,12 @@ string StudentServiceImpl::editStudent(const string& id, const Student& newData)
 void StudentServiceImpl::showStudent(const string& studentId) {
 
     Student* student = studentRepository.findStudentById(studentId);
+      if (!student){
+      cout << "-----------------------\n";
+      cout << "Student not found.\n";
+      cout << "-----------------------\n";
+      return;
+      }
 
     cout << "-----------------------------------\n";
     cout << "Student Name: " << student->getName() << endl;
