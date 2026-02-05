@@ -81,8 +81,15 @@ int main() {
                     cout << "\nEnter Student ID to edit: ";
                     string id;
                     getline(cin, id);
+                    Student* existingStudent = studentController.findStudentById(id);
+                     if (!existingStudent) {
+                       cout << "Student with ID " << id << " not found. Cannot edit." << endl;
+                       break;
+                    }
 
                     Student newData;
+
+                    cout <<"------- Enter NEW DATA : -------" <<endl;
 
                     cout << "Full Name: ";
                     string name;
@@ -165,6 +172,11 @@ int main() {
                     cout << "\nEnter Course Id to edit: ";
                     string id;
                     getline(cin, id);
+                    Course* existingCourse = courseController.findCourseById(id);
+                     if (!existingCourse) {
+                       cout << "Course with ID " << id << " not found. Cannot edit." << endl;
+                       break;
+                    }
 
                     Course newData;
 
@@ -255,8 +267,15 @@ int main() {
                     cout << "\nEnter Teacher Id to edit: ";
                     string id;
                     getline(cin, id);
+                    Teacher* existingTeacher = teacherController.findTeacherById(id);
+                     if (!existingTeacher) {
+                       cout << "Teacher with ID " << id << " not found. Cannot edit." << endl;
+                       break;
+                    }
 
                     Teacher newData;
+
+                    cout <<"------- Enter NEW DATA : -------" <<endl;
 
                     cout << "Teacher Name: ";
                     string name;

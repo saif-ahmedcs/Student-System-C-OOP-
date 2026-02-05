@@ -12,7 +12,7 @@ Stage getStageFromGrade(int grade); // global function
 
 class TeacherRepository {
 public:
-
+    virtual Teacher* findTeacherById(const string& id) = 0;
     virtual const vector<Teacher>& getTeachersInGrade(int grade) const = 0;
     virtual int getMaxTeachersForStage(Stage stage) const = 0;
     virtual string addTeacher(int grade, Teacher &teacher) = 0;
@@ -41,11 +41,8 @@ public:
 
     int getMaxTeachersForStage(Stage stage) const override;
 
-    Teacher* findTeacherById(const string& id);
-
-
+    Teacher* findTeacherById(const string& id) override;
     string addTeacher(int grade, Teacher &teacher) override;
-
     string editTeacher(const string& id, const Teacher& newData) override;
 
 };

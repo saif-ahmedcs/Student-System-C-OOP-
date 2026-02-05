@@ -6,6 +6,7 @@
 
 class TeacherService {
 public:
+    virtual Teacher* findTeacherById(const string& id) = 0;
     virtual string addTeacher(int grade, Teacher &teacher) = 0;
     virtual string editTeacher(const string& id, const Teacher& newData) = 0;
     virtual void showTeacher(const string& id) = 0;
@@ -25,6 +26,7 @@ private:
 
 public:
     TeacherServiceImpl(TeacherRepositoryImpl &repo);
+    Teacher* findTeacherById(const string& id) override;
     string addTeacher(int grade, Teacher &teacher) override;
     string editTeacher(const string& id, const Teacher& newData) override;
     void showTeacher(const string& id) override;
@@ -35,6 +37,7 @@ public:
 
 class CourseService {
 public:
+    virtual Course* findCourseById(const string& id) = 0;
     virtual string addCourse(int grade, Course &course) = 0;
     virtual string editCourse(const string& id, const Course& newData) = 0;
     virtual void showCourse(const string &id) = 0;
@@ -55,6 +58,7 @@ private:
 
 public:
     CourseServiceImpl(CourseRepositoryImpl &repo);
+    Course* findCourseById(const string& id) override;
     string addCourse(int grade, Course &course) override;
     string editCourse(const string& id, const Course& newData) override;
     void showCourse(const string &id) override;
@@ -64,6 +68,7 @@ public:
 
 class StudentService {
 public:
+    virtual Student* findStudentById(const string& id) = 0;
     virtual string addStudent(int grade, Student &student) = 0;
     virtual string editStudent(const string& id, const Student& newData) = 0;
     virtual void showStudent(const string &id) = 0;
@@ -83,6 +88,7 @@ private:
 
 public:
     StudentServiceImpl(StudentRepositoryImpl &repo);
+    Student* findStudentById(const string& id) override;
     string addStudent(int grade, Student &student) override;
     string editStudent(const string& id, const Student& newData) override;
     void showStudent(const string &id) override;

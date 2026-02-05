@@ -10,6 +10,7 @@ private:
 
 public:
     TeacherController(TeacherServiceImpl &service);
+    Teacher *findTeacherById(const string& id);
     string addTeacher(int grade, Teacher &teacher);
     string editTeacher(const string& id, const Teacher& newData);
 
@@ -22,6 +23,7 @@ private:
 
 public:
     CourseController(CourseServiceImpl &service);
+    Course *findCourseById(const string& id);
     string addCourse(int grade, Course &course);
     string editCourse(const string& id, const Course& newData);
 
@@ -34,6 +36,7 @@ private:
 
 public:
     StudentController(StudentServiceImpl &service);
+    Student *findStudentById(const string& id);
     string addStudent(int grade, Student &student);
     string editStudent(const string& id, const Student& newData);
 

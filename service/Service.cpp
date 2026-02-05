@@ -29,6 +29,9 @@ bool TeacherServiceImpl::validateTeachersLimit(int grade) {
     return teacherRepository.getTeachersInGrade(grade).size() < teacherRepository.getMaxTeachersForStage(stage);
 }
 
+Teacher* TeacherServiceImpl::findTeacherById(const string& id){
+  return teacherRepository.findTeacherById(id);
+}
 
 string TeacherServiceImpl::addTeacher(int grade, Teacher &teacher) {
 
@@ -128,6 +131,10 @@ bool CourseServiceImpl::validateCourseTeacherName(const string &name) {
 bool CourseServiceImpl::validateCoursesLimit(int grade) {
     Stage stage = getStageFromGrade(grade);
     return courseRepository.getCoursesInGrade(grade).size() < courseRepository.getMaxCoursesForStage(stage);
+}
+
+Course* CourseServiceImpl::findCourseById(const string& id){
+  return courseRepository.findCourseById(id);
 }
 
 
@@ -248,6 +255,9 @@ bool StudentServiceImpl::validateNewGpa(float gpa){
   return gpa>=0.0 && gpa<=4.0;
 }
 
+Student* StudentServiceImpl::findStudentById(const string& id){
+  return studentRepository.findStudentById(id);
+}
 
 string StudentServiceImpl::addStudent(int grade, Student &student) {
 
