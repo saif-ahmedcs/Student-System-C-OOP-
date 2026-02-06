@@ -224,8 +224,7 @@ string CourseRepositoryImpl::addCourse(int grade, Course &course) {
     addCourseInGrade(grade, course);
     addCourseInStage(grade, course);
     addCourseInSchool(course);
-
-return string("Course added successfully to grade ") + to_string(grade) + " System." + "ID: " + finalId;
+    return string("Course added successfully to grade ") + to_string(grade) + " System." + "ID: " + finalId;
 }
 
 string CourseRepositoryImpl::editCourse(const string& id, const Course& newData) {

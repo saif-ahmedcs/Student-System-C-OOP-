@@ -41,6 +41,9 @@ void Teacher::setTeacherSubject(const string &sub){
 void Teacher::setExperienceYears(int e){
   experienceYears = e;
 }
+void Teacher::setAssignedCourse(const string& courseId){
+  assignedCourse = courseId;
+}
 
 void Teacher::addStudentId(int id){
     studentIds.push_back(id);
@@ -57,6 +60,9 @@ string Teacher::getTeacherSubject() const {
     }
 int Teacher::getTeacherExperienceYears() const {
     return experienceYears;
+}
+string Teacher::getAssignedCourse() const {
+    return assignedCourse;
 }
 const vector<int>& Teacher::getStudentsIds() const {
     return studentIds;
@@ -78,9 +84,17 @@ void Course::setSubjectHours(int hours){
 void Course::setCourseTeacherName(const string &s){
     teacherName=s;
     }
+
+void Course::setCourseTeacherId(const string& id){
+    teacherId = id;
+}
+
 string Course::getCourseTeacherName() const {
   return teacherName;
     }
+string Course::getCourseTeacherId() const {
+  return teacherId;
+}
 
 const vector<Teacher>& Course::getCourseTeachers() const {
     return courseTeachers;

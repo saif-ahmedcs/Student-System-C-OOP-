@@ -37,6 +37,7 @@ public:
 
 class CourseService {
 public:
+    virtual bool validateCourseExisting(const string &courseId) = 0;
     virtual Course* findCourseById(const string& id) = 0;
     virtual string addCourse(int grade, Course &course) = 0;
     virtual string editCourse(const string& id, const Course& newData) = 0;
@@ -48,16 +49,19 @@ public:
 class CourseServiceImpl : public CourseService {
 private:
     CourseRepositoryImpl &courseRepository;
+    TeacherRepositoryImpl& teacherRepository;
     // Validation
     bool validateCourseName(const string &name);
-    bool validateCourseTeacherName(const string &name);
+    bool validateCourseTeacherExists(const string& id);
+    bool validateCourseTeacherGrade(const string& teacherId,int courseGrade);
     bool validateSubjectHours(int hours);
     bool validateGrade(int grade);
     bool validateCoursesLimit(int grade);
 
 
 public:
-    CourseServiceImpl(CourseRepositoryImpl &repo);
+    CourseServiceImpl(CourseRepositoryImpl& courseRepo,TeacherRepositoryImpl& teacherRepo);
+    bool validateCourseExisting(const string &courseId) override;
     Course* findCourseById(const string& id) override;
     string addCourse(int grade, Course &course) override;
     string editCourse(const string& id, const Course& newData) override;

@@ -13,6 +13,7 @@ public:
     Teacher *findTeacherById(const string& id);
     string addTeacher(int grade, Teacher &teacher);
     string editTeacher(const string& id, const Teacher& newData);
+    void showTeacher(const string& id);
 
 };
 
@@ -23,9 +24,12 @@ private:
 
 public:
     CourseController(CourseServiceImpl &service);
-    Course *findCourseById(const string& id);
+   Course *findCourseById(const string& id);
+    bool validateCourseExisting(const string &courseId);
     string addCourse(int grade, Course &course);
     string editCourse(const string& id, const Course& newData);
+    void showCourse(const string& id);
+
 
 };
 
@@ -39,6 +43,7 @@ public:
     Student *findStudentById(const string& id);
     string addStudent(int grade, Student &student);
     string editStudent(const string& id, const Student& newData);
+    void showStudent(const string& id);
 
 };
 

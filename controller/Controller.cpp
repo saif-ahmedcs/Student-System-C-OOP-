@@ -14,8 +14,17 @@ string TeacherController::addTeacher(int grade, Teacher &teacher) {
 string TeacherController::editTeacher(const string& id, const Teacher& newData){
     return teacherService.editTeacher(id,newData);
 }
+
+void TeacherController::showTeacher(const string& id){
+    return teacherService.showTeacher(id);
+}
+
 // Course
 CourseController::CourseController(CourseServiceImpl &service) : courseService(service) {}
+
+bool CourseController::validateCourseExisting(const string &courseId){
+    return courseService.validateCourseExisting(courseId);
+}
 
 Course* CourseController::findCourseById(const string& id){
     return courseService.findCourseById(id);
@@ -27,6 +36,9 @@ string CourseController::addCourse(int grade, Course &course) {
 
 string CourseController::editCourse(const string& id, const Course& newData) {
     return courseService.editCourse(id, newData);
+}
+void CourseController::showCourse(const string& id){
+    return courseService.showCourse(id);
 }
 
 // Student
@@ -44,4 +56,6 @@ string StudentController::editStudent(const string& id, const Student& newData) 
     return studentService.editStudent(id, newData);
 }
 
-
+void StudentController::showStudent(const string& id){
+    return studentService.showStudent(id);
+}

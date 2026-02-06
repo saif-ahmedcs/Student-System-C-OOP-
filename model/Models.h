@@ -32,18 +32,21 @@ private:
     string teacherSubject;
     double monthlySalary;
     int experienceYears;
+    string assignedCourse = "NONE";
     vector<int> studentIds;
 public:
     void setTeacherGrade(int grade);
     void setMonthlySalary(double salary);
     void setTeacherSubject(const string &subject);
     void setExperienceYears(int exY);
+    void setAssignedCourse(const string& courseId);
     void addStudentId(int id);
 
     int getTeacherGrade() const;
     double getMonthlySalary() const;
     string getTeacherSubject() const;
     int getTeacherExperienceYears() const;
+    string getAssignedCourse() const;
     const vector<int>& getStudentsIds() const;
     int getNumberOfStudentsInTeacherCourse() const;
 };
@@ -52,11 +55,13 @@ public:
 class Course : public ShareData {
 private:
     string teacherName;
+    string teacherId;
     vector<Teacher> courseTeachers;
     int grade;
     int subjectHours;
 public:
     void setCourseTeacherName(const string &id);
+    void setCourseTeacherId (const string &id);
     void addTeacher(const Teacher& t);
     void setGrade(const int &year);
     void setSubjectHours(int hours);
@@ -64,6 +69,7 @@ public:
     const vector<Teacher>& getCourseTeachers() const;
     int getGrade() const;
     string getCourseTeacherName() const;
+    string getCourseTeacherId() const;
     int getSubjectHours() const;
     int getNumberOfCourseTeachers() const;
 };

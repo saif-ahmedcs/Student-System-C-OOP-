@@ -102,15 +102,31 @@ void TeacherServiceImpl::showTeacher(const string& id){
         cout << "Experience Years: " << teacher->getTeacherExperienceYears() << endl;
         cout << "Subject: " << teacher->getTeacherSubject() << endl;
         cout << "Grade: " << teacher->getTeacherGrade() << endl;
+        cout << "Teacher Assigned Course ID: " <<teacher->getAssignedCourse() << endl;
         cout << "Monthly Salary: $" << teacher->getMonthlySalary() << endl;
         cout << "--------------------------\n";
     }
 
 ////////////////// CourseServiceImpl \\\\\\\\\\\\\\\
 
-CourseServiceImpl::CourseServiceImpl(CourseRepositoryImpl &repo) : courseRepository(repo) {}
+CourseServiceImpl::CourseServiceImpl(
+    CourseRepositoryImpl& courseRepo,
+    TeacherRepositoryImpl& teacherRepo
+)
+: courseRepository(courseRepo),
+  teacherRepository(teacherRepo)
+{}
 
 // Validation functions
+
+bool CourseServiceImpl::validateCourseExisting(const string &courseId){
+    Course* existingCourse = courseRepository.findCourseById(courseId);
+        if (!existingCourse) {
+            return false;
+        }
+       return true;
+}
+
 bool CourseServiceImpl::validateCourseName(const string &name) {
     return !name.empty();
 }
@@ -123,8 +139,20 @@ bool CourseServiceImpl::validateGrade(int grade) {
     return grade >= 1 && grade <= 12;
 }
 
-bool CourseServiceImpl::validateCourseTeacherName(const string &name) {
-    return !name.empty();
+bool CourseServiceImpl::validateCourseTeacherExists(const string& id){
+        Teacher* existingTeacher = teacherRepository.findTeacherById(id);
+            if (!existingTeacher) {
+                return false;
+            }
+    return true;
+}
+
+bool CourseServiceImpl::validateCourseTeacherGrade(const string& teacherId,int courseGrade){
+     Teacher* existingTeacher = teacherRepository.findTeacherById(teacherId);
+     if (!existingTeacher){
+        return false;
+       }
+   return existingTeacher->getTeacherGrade() == courseGrade;
 }
 
 
@@ -145,8 +173,13 @@ string CourseServiceImpl::addCourse(int grade, Course &course) {
     if (!validateCourseName(course.getName()))
         errorMessages += "- Invalid course name.\n";
 
-    if (!validateCourseTeacherName(course.getCourseTeacherName()))
-        errorMessages += "- Invalid teacher name.\n";
+    if (!validateCourseTeacherExists(course.getCourseTeacherId())){
+        errorMessages += "- Teacher not found!.\n";
+        }
+
+    else if (!validateCourseTeacherGrade(course.getCourseTeacherId(),grade)){
+        errorMessages += "- Teacher does not teach the selected grade\n";
+    }
 
     if (!validateGrade(course.getGrade()))
         errorMessages += "- Invalid grade. Must be between 1 and 12.\n";
@@ -162,8 +195,20 @@ string CourseServiceImpl::addCourse(int grade, Course &course) {
     }
 
     // Everything valid, add to repository
-     return courseRepository.addCourse(grade, course);
+
+    Teacher* existingTeacher = teacherRepository.findTeacherById(course.getCourseTeacherId());
+
+    if (existingTeacher) {
+        course.setCourseTeacherName(existingTeacher->getName());
+        }
+
+    string result = courseRepository.addCourse(grade, course);
+
+    existingTeacher->setAssignedCourse(course.getId());
+
+    return result;
 }
+
 
 
 string CourseServiceImpl::editCourse(const string& id, const Course& newData){
@@ -174,20 +219,19 @@ string CourseServiceImpl::editCourse(const string& id, const Course& newData){
     if (!validateCourseName(newData.getName()))
         errorMessages += "- Invalid course name.\n";
 
-    if (!validateCourseTeacherName(newData.getCourseTeacherName()))
-        errorMessages += "- Invalid teacher name.\n";
+    if (!validateCourseTeacherExists(newData.getCourseTeacherId())){
+        errorMessages += "- Teacher not found!.\n";
+        }
+
+    else if (!validateCourseTeacherGrade(newData.getCourseTeacherId(),newData.getGrade())){
+        errorMessages += "- Teacher does not teach the selected grade\n";
+        }
 
     if (!validateGrade(newData.getGrade()))
-        errorMessages += "- Invalid academic year.\n";
+        errorMessages += "- Invalid grade.\n";
 
     if (!validateSubjectHours(newData.getSubjectHours()))
         errorMessages += "- Subject hours must be between 2 and 6.\n";
-
-    if (!validateGrade(newData.getGrade()))
-        errorMessages += "- Invalid grade. Must be between 1 and 12.\n";
-
-    if (!validateCoursesLimit(newData.getGrade()))
-        errorMessages += "- Maximum number of courses reached for this grade.\n";
 
     if (!errorMessages.empty()) {
         return "Course cannot be added due to the following issues:\n" + errorMessages;
@@ -213,6 +257,7 @@ void CourseServiceImpl::showCourse(const string& id){
     cout << "Course Grade: " << course->getGrade() << endl;
     cout << "Subject Hours: " << course->getSubjectHours() << endl;
     cout << "Course Teacher: " << course->getCourseTeacherName() << endl;
+    cout << "Course Teacher ID: " << course->getCourseTeacherId() <<endl;
     cout << "-----------------------------------\n";
 
 }

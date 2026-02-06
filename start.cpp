@@ -22,7 +22,7 @@ int main() {
     TeacherRepositoryImpl teacherRepo;
 
     StudentServiceImpl studentService(studentRepo);
-    CourseServiceImpl courseService(courseRepo);
+    CourseServiceImpl courseService(courseRepo, teacherRepo);
     TeacherServiceImpl teacherService(teacherRepo);
 
     StudentController studentController(studentService);
@@ -75,6 +75,8 @@ int main() {
                     getline(cin, phoneNumber);
                     student.setPhoneNumber(phoneNumber);
 
+                    cout << endl;
+
                     cout << studentController.addStudent(grade, student) << endl;
                 }
                 else if (studentProcess == 3) { // Edit Student
@@ -119,13 +121,15 @@ int main() {
                     newData.setGpa(gpa);
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
+                    cout << endl;
+
                     cout << studentController.editStudent(id, newData) << endl;
                 }
                 else if (studentProcess == 4) { // Show Student
                     cout << "\nEnter Student ID: ";
                     string id;
                     getline(cin, id);
-                    studentService.showStudent(id);
+                    studentController.showStudent(id);
                 }
                 break;
             }
@@ -160,10 +164,13 @@ int main() {
                     course.setSubjectHours(hours);
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-                    cout << "Course Teacher name: ";
-                    string teacherName;
-                    getline(cin, teacherName);
-                    course.setCourseTeacherName(teacherName);
+                    cout << "Course teacher ID: ";
+                    string id;
+                    getline(cin, id);
+                    course.setCourseTeacherId(id);
+
+                    cout << endl;
+
 
                     cout << courseController.addCourse(grade, course) << endl;
                 }
@@ -172,9 +179,8 @@ int main() {
                     cout << "\nEnter Course Id to edit: ";
                     string id;
                     getline(cin, id);
-                    Course* existingCourse = courseController.findCourseById(id);
-                     if (!existingCourse) {
-                       cout << "Course with ID " << id << " not found. Cannot edit." << endl;
+                     if (!courseController.validateCourseExisting(id)){
+                        cout << "Course with ID "<<id << " is not found" << endl;
                        break;
                     }
 
@@ -199,18 +205,26 @@ int main() {
                     newData.setSubjectHours(hours);
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-                    cout << "Course Teacher name: ";
-                    string teacherName;
-                    getline(cin, teacherName);
-                    newData.setCourseTeacherName(teacherName);
+                    cout << "Course teacher ID: ";
+                    string tid;
+                    getline(cin, tid);
+                    newData.setCourseTeacherId(tid);
+
+
+                    cout << endl;
 
                     cout << courseController.editCourse(id, newData) << endl;
                 }
-                    else if (courseProcess == 4) { // Show Student
-                    cout << "\nEnter Course ID: ";
+                else if (courseProcess == 4) { // Show Student
+                    cout << "\nEnter Course Id: ";
                     string id;
                     getline(cin, id);
-                    courseService.showCourse(id);
+                     if (!courseController.validateCourseExisting(id)){
+                        cout << "Course with ID "<<id << " is not found" << endl;
+                       break;
+                    }
+
+                    courseController.showCourse(id);
                 }
                 break;
             }
@@ -260,6 +274,8 @@ int main() {
                     cin >> salary;
                     teacher.setMonthlySalary(salary);
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    cout << endl;
 
                     cout << teacherController.addTeacher(grade, teacher) << endl;
                 }
@@ -311,6 +327,8 @@ int main() {
                     getline(cin, subject);
                     newData.setTeacherSubject(subject);
 
+                    cout << endl;
+
                     cout << teacherController.editTeacher(id, newData) << endl;
                 }
 
@@ -318,7 +336,7 @@ int main() {
                     cout << "\nEnter Teacher ID: ";
                     string id;
                     getline(cin, id);
-                    teacherService.showTeacher(id);
+                    teacherController.showTeacher(id);
                 }
 
                 break;
