@@ -25,8 +25,7 @@ bool TeacherServiceImpl::validateTeacherGrade(int grade) {
 }
 
 bool TeacherServiceImpl::validateTeachersLimit(int grade) {
-    Stage stage = getStageFromGrade(grade);
-    return teacherRepository.getTeachersInGrade(grade).size() < teacherRepository.getMaxTeachersForStage(stage);
+    return teacherRepository.getTeachersInGrade(grade) < teacherRepository.getMaxTeachesForGrade(grade);
 }
 
 Teacher* TeacherServiceImpl::findTeacherById(const string& id){
@@ -37,23 +36,24 @@ string TeacherServiceImpl::addTeacher(int grade, Teacher &teacher) {
 
     string errors = "";
 
-    if (!validateTeacherName(teacher.getName()))
-        errors += "- Teacher name cannot be empty.\n";
+if (!validateTeacherName(teacher.getName()))
+    errors += "- Teacher name cannot be empty.\n";
 
-    if (!validateTeacherAge(teacher.getAge()))
-        errors += "- The entered age for the teacher does not comply with the school policy.\n";
+if (!validateTeacherAge(teacher.getAge()))
+    errors += "- The entered age for the teacher does not comply with the school policy.\n";
 
-    if (!validateTeacherExperience(teacher.getTeacherExperienceYears()))
-        errors += "- The entered years of experience do not meet the school's requirements.\n";
+if (!validateTeacherExperience(teacher.getTeacherExperienceYears()))
+    errors += "- The entered years of experience do not meet the school's requirements.\n";
 
-    if (!validateTeacherGrade(grade))
-        errors += "- Grade must be between 1 and 12.\n";
+if (!validateTeacherGrade(grade))
+    errors += "- Grade must be between 1 and 12.\n";
 
-    if (!validateTeachersLimit(grade))
-        errors += "- Maximum number of teachers reached for this grade.\n";
+if (!errors.empty())
+    return "Teacher cannot be added due to invalid input:\n" + errors;
 
-    if (!errors.empty())
-        return "Teacher cannot be added due to the following issues:\n" + errors;
+if (!validateTeachersLimit(grade))
+    return "- Maximum number of teachers reached for this grade.\n";
+
 
     return teacherRepository.addTeacher(grade, teacher);
 }
@@ -63,23 +63,23 @@ string TeacherServiceImpl::editTeacher(const string& id, const Teacher& newData)
 
     string errors = "";
 
-    if (!validateTeacherName(newData.getName()))
-        errors += "- Teacher name cannot be empty.\n";
+if (!validateTeacherName(newData.getName()))
+    errors += "- Teacher name cannot be empty.\n";
 
-    if (!validateTeacherAge(newData.getAge()))
-        errors += "- The entered age for the teacher does not comply with the school policy.\n";
+if (!validateTeacherAge(newData.getAge()))
+    errors += "- The entered age for the teacher does not comply with the school policy.\n";
 
-    if (!validateTeacherExperience(newData.getTeacherExperienceYears()))
-        errors += "- The entered years of experience do not meet the school's requirements.\n";
+if (!validateTeacherExperience(newData.getTeacherExperienceYears()))
+    errors += "- The entered years of experience do not meet the school's requirements.\n";
 
-    if (!validateTeacherGrade(newData.getTeacherGrade()))
-        errors += "- Grade must be between 1 and 12.\n";
+if (!validateTeacherGrade(newData.getTeacherGrade()))
+    errors += "- Grade must be between 1 and 12.\n";
 
-    if (!validateTeachersLimit(newData.getTeacherGrade()))
-        errors += "- Maximum number of teachers reached for this grade.\n";
+if (!errors.empty())
+    return "Teacher cannot be added due to invalid input:\n" + errors;
 
-    if (!errors.empty())
-        return "Teacher cannot be added due to the following issues:\n" + errors;
+if (!validateTeachersLimit(newData.getTeacherGrade()))
+    return "- Maximum number of teachers reached for this grade.\n";
 
     // Everything valid, add to repository
      return teacherRepository.editTeacher(id, newData);
@@ -157,8 +157,9 @@ bool CourseServiceImpl::validateCourseTeacherGrade(const string& teacherId,int c
 
 
 bool CourseServiceImpl::validateCoursesLimit(int grade) {
-    Stage stage = getStageFromGrade(grade);
-    return courseRepository.getCoursesInGrade(grade).size() < courseRepository.getMaxCoursesForStage(stage);
+    int currentCount = courseRepository.getCoursesInGrade(grade);
+    int maxCount = courseRepository.getMaxCoursesForGrade(grade);
+    return currentCount < maxCount;
 }
 
 Course* CourseServiceImpl::findCourseById(const string& id){
@@ -173,25 +174,28 @@ string CourseServiceImpl::addCourse(int grade, Course &course) {
     if (!validateCourseName(course.getName()))
         errorMessages += "- Invalid course name.\n";
 
-    if (!validateCourseTeacherExists(course.getCourseTeacherId())){
-        errorMessages += "- Teacher not found!.\n";
-        }
-
-    else if (!validateCourseTeacherGrade(course.getCourseTeacherId(),grade)){
-        errorMessages += "- Teacher does not teach the selected grade\n";
-    }
-
     if (!validateGrade(course.getGrade()))
         errorMessages += "- Invalid grade. Must be between 1 and 12.\n";
 
     if (!validateSubjectHours(course.getSubjectHours()))
         errorMessages += "- Subject hours must be between 2 and 6.\n";
 
-    if (!validateCoursesLimit(grade))
-        errorMessages += "- Maximum number of courses reached for this grade.\n";
+    if (!errorMessages.empty()) {
+        return "Course cannot be added due to invalid input:\n" + errorMessages;
+    }
+
+    if (!validateCourseTeacherExists(course.getCourseTeacherId()))
+        errorMessages += "- Teacher not found.\n";
+
+    else if (!validateCourseTeacherGrade(course.getCourseTeacherId(), grade))
+        errorMessages += "- Teacher does not teach the selected grade.\n";
 
     if (!errorMessages.empty()) {
-        return "Course cannot be added due to the following issues:\n" + errorMessages;
+        return "Course cannot be added due to invalid input:\n" + errorMessages;
+    }
+
+    if (!validateCoursesLimit(grade)) {
+        return "- Maximum number of courses reached for this grade.\n";
     }
 
     // Everything valid, add to repository
@@ -216,26 +220,29 @@ string CourseServiceImpl::editCourse(const string& id, const Course& newData){
 
     string errorMessages = "";
 
-    if (!validateCourseName(newData.getName()))
-        errorMessages += "- Invalid course name.\n";
+     if (!validateCourseName(newData.getName()))
+       errorMessages += "- Invalid course name.\n";
 
-    if (!validateCourseTeacherExists(newData.getCourseTeacherId())){
-        errorMessages += "- Teacher not found!.\n";
-        }
+     if (!validateGrade(newData.getGrade()))
+       errorMessages += "- Invalid grade. Must be between 1 and 12.\n";
 
-    else if (!validateCourseTeacherGrade(newData.getCourseTeacherId(),newData.getGrade())){
-        errorMessages += "- Teacher does not teach the selected grade\n";
-        }
+     if (!validateSubjectHours(newData.getSubjectHours()))
+       errorMessages += "- Subject hours must be between 2 and 6.\n";
 
-    if (!validateGrade(newData.getGrade()))
-        errorMessages += "- Invalid grade.\n";
+     if (!errorMessages.empty())
+       return "Course cannot be added due to invalid input:\n" + errorMessages;
 
-    if (!validateSubjectHours(newData.getSubjectHours()))
-        errorMessages += "- Subject hours must be between 2 and 6.\n";
+     if (!validateCourseTeacherExists(newData.getCourseTeacherId()))
+       errorMessages += "- Teacher not found.\n";
 
-    if (!errorMessages.empty()) {
-        return "Course cannot be added due to the following issues:\n" + errorMessages;
-    }
+     else if (!validateCourseTeacherGrade(newData.getCourseTeacherId(), newData.getGrade()))
+    errorMessages += "- Teacher does not teach the selected grade.\n";
+
+     if (!errorMessages.empty())
+       return "Course cannot be added due to invalid relations:\n" + errorMessages;
+
+     if (!validateCoursesLimit(newData.getGrade()))
+       return "- Maximum number of courses reached for this grade.\n";
 
     // Everything valid, add to repository
      return courseRepository.editCourse(id, newData);
@@ -304,6 +311,13 @@ Student* StudentServiceImpl::findStudentById(const string& id){
   return studentRepository.findStudentById(id);
 }
 
+bool StudentServiceImpl::validateStudentsLimit(int grade) {
+    int currentCount = studentRepository.getStudentsInGrade(grade);
+    int maxCount = studentRepository.getMaxStudentsForGrade(grade);
+    return currentCount < maxCount;
+}
+
+
 string StudentServiceImpl::addStudent(int grade, Student &student) {
 
     string errors = "";
@@ -319,6 +333,9 @@ string StudentServiceImpl::addStudent(int grade, Student &student) {
 
     if (!validateGrade(grade))
         errors += "- Grade must be between 1 and 12.\n";
+
+    if (!validateStudentsLimit(grade))
+        errors += "- Cannot add student. Grade " + to_string(grade) + " is full.\n";
 
     // If any validation errors exist
     if (!errors.empty())

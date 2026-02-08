@@ -88,6 +88,7 @@ private:
     bool validateAge (int age, int grade);
     bool validatePhoneNumber(const string &phone);
     bool validateGrade(int grade);
+    bool validateStudentsLimit(int grade);
     bool validateNewGpa(float gpa);
 
 public:

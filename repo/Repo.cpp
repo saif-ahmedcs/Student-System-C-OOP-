@@ -1,6 +1,16 @@
 #include "Repo.h"
 
-const int maxStudentsPerGrade = 2;
+int MaxTeachersForGradeInPrimary = 7;
+int MaxTeachersForGradeInMiddle = 9;
+int MaxTeachersForGradeInSecondary = 12;
+
+int MaxCoursesForGradeInPrimary = 8;
+int MaxCoursesForGradeInMiddle = 11;
+int MaxCoursesForGradeInSecondary = 13;
+
+int MaxStudentsForGradeInPrimary = 120;
+int MaxStudentsForGradeInMiddle = 100;
+int MaxStudentsForGradeInSecondary = 90;
 
 ////////////////// Global functions \\\\\\\\\\\\\\\
 
@@ -112,24 +122,23 @@ void TeacherRepositoryImpl::addTeacherInSchool(Teacher &teacher) {
     teachersInSchool.push_back(teacher);
 }
 
-const vector<Teacher>& TeacherRepositoryImpl::getTeachersInGrade(int grade) const {
-    static vector<Teacher> empty;
+int TeacherRepositoryImpl::getTeachersInGrade(int grade) const {
     auto it = teachersInGrade.find(grade);
-    if (it != teachersInGrade.end()) {
-      return it->second;
-    } else {
-      return empty;
-    }
-
+    if (it != teachersInGrade.end())
+        return it->second.size();
+    return 0;
 }
 
-int TeacherRepositoryImpl::getMaxTeachersForStage(Stage stage) const {
-    auto it = maxTeachersPerGradeInStage.find(stage);
+int TeacherRepositoryImpl::getMaxTeachesForGrade(int grade) const {
+    Stage stage = getStageFromGrade(grade);
 
-    if (it == maxTeachersPerGradeInStage.end())
-        return 0;
+    switch(stage) {
+        case Stage::Primary: return MaxTeachersForGradeInPrimary;
+        case Stage::Middle: return MaxTeachersForGradeInMiddle;
+        case Stage::Secondary: return MaxTeachersForGradeInSecondary;
+    }
 
-    return it->second;
+    return 0;
 }
 
 Teacher* TeacherRepositoryImpl::findTeacherById(const string& id) {
@@ -187,21 +196,23 @@ void CourseRepositoryImpl::addCourseInSchool(Course &course) {
     coursesInSchool.push_back(course);
 }
 
-const vector<Course>& CourseRepositoryImpl::getCoursesInGrade(int grade) const {
-    static vector<Course> empty;
+int CourseRepositoryImpl::getCoursesInGrade(int grade) const {
     auto it = coursesInGrade.find(grade);
     if (it != coursesInGrade.end())
-        return it->second;
-    return empty;
+        return it->second.size();
+    return 0;
 }
 
-int CourseRepositoryImpl::getMaxCoursesForStage(Stage stage) const {
-    auto it = maxCoursesPerGradeInStage.find(stage);
+int CourseRepositoryImpl::getMaxCoursesForGrade(int grade) const {
+    Stage stage = getStageFromGrade(grade);
 
-    if (it == maxCoursesPerGradeInStage.end())
-        return 0;
+    switch(stage) {
+        case Stage::Primary: return MaxCoursesForGradeInPrimary;
+        case Stage::Middle: return MaxCoursesForGradeInMiddle;
+        case Stage::Secondary: return MaxCoursesForGradeInSecondary;
+    }
 
-    return it->second;
+    return 0;
 }
 
 Course* CourseRepositoryImpl::findCourseById(const string& id) {
@@ -267,6 +278,27 @@ Student* StudentRepositoryImpl::findStudentById(const string& id) {
     }
     return nullptr;
 }
+
+int StudentRepositoryImpl::getStudentsInGrade(int grade) const {
+    auto it = studentsInGrade.find(grade);
+    if (it != studentsInGrade.end()) {
+        return it->second.size();
+    }
+    return 0;
+}
+
+int StudentRepositoryImpl::getMaxStudentsForGrade(int grade) const {
+    Stage stage = getStageFromGrade(grade);
+
+    switch(stage) {
+        case Stage::Primary: return MaxStudentsForGradeInPrimary;
+        case Stage::Middle: return MaxStudentsForGradeInMiddle;
+        case Stage::Secondary: return MaxStudentsForGradeInSecondary;
+    }
+
+    return 0;
+}
+
 
 
 string StudentRepositoryImpl::addStudent(int grade, Student &student) {

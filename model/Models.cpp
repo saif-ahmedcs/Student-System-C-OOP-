@@ -41,6 +41,9 @@ void Teacher::setTeacherSubject(const string &sub){
 void Teacher::setExperienceYears(int e){
   experienceYears = e;
 }
+void Teacher::setTeacherSpecialization(const string& specialization){
+    teacherSpecialization = specialization;
+}
 void Teacher::setAssignedCourse(const string& courseId){
   assignedCourse = courseId;
 }
@@ -60,6 +63,9 @@ string Teacher::getTeacherSubject() const {
     }
 int Teacher::getTeacherExperienceYears() const {
     return experienceYears;
+}
+string Teacher::getTeacherSpecialization() const {
+    return teacherSpecialization;
 }
 string Teacher::getAssignedCourse() const {
     return assignedCourse;
@@ -84,10 +90,12 @@ void Course::setSubjectHours(int hours){
 void Course::setCourseTeacherName(const string &s){
     teacherName=s;
     }
-
 void Course::setCourseTeacherId(const string& id){
     teacherId = id;
-}
+    }
+void Course::setCourseSpecialization(const string& specialization){
+    courseSpecialization = specialization;
+    }
 
 string Course::getCourseTeacherName() const {
   return teacherName;
@@ -108,6 +116,10 @@ int Course::getSubjectHours() const {
 int Course::getNumberOfCourseTeachers() const {
     return courseTeachers.size();
     }
+string Course::getCourseSpecialization() const {
+    return courseSpecialization;
+}
+
 
 // Student
 void Student::setSchoolYear(const int &year){

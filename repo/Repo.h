@@ -13,8 +13,8 @@ Stage getStageFromGrade(int grade); // global function
 class TeacherRepository {
 public:
     virtual Teacher* findTeacherById(const string& id) = 0;
-    virtual const vector<Teacher>& getTeachersInGrade(int grade) const = 0;
-    virtual int getMaxTeachersForStage(Stage stage) const = 0;
+    virtual int getTeachersInGrade(int grade) const = 0;
+    virtual int getMaxTeachesForGrade(int grade) const = 0;
     virtual string addTeacher(int grade, Teacher &teacher) = 0;
     virtual string editTeacher(const string& id, const Teacher& newData) = 0;
 
@@ -22,12 +22,6 @@ public:
 
 class TeacherRepositoryImpl : public TeacherRepository {
 private:
-    const map<Stage, int> maxTeachersPerGradeInStage = { // Max number of teachers that can be in any grade in a certain stage
-        {Stage::Primary, 7},
-        {Stage::Middle, 9},
-        {Stage::Secondary, 12}
-    };
-
     map<int, vector<Teacher>> teachersInGrade;
     map<Stage, vector<Teacher>> teachersInStage;
     vector<Teacher> teachersInSchool;
@@ -37,9 +31,9 @@ public:
     void addTeacherInStage(int grade, Teacher &teacher);
     void addTeacherInSchool(Teacher &teacher);
 
-    const vector<Teacher>& getTeachersInGrade(int grade) const override;
+    int getTeachersInGrade(int grade) const override;
 
-    int getMaxTeachersForStage(Stage stage) const override;
+    int getMaxTeachesForGrade(int grade) const override;
 
     Teacher* findTeacherById(const string& id) override;
     string addTeacher(int grade, Teacher &teacher) override;
@@ -51,9 +45,8 @@ public:
 
 class CourseRepository {
 public:
-    virtual const vector<Course>& getCoursesInGrade(int grade) const = 0;
-    virtual int getMaxCoursesForStage(Stage stage) const = 0;
-
+    virtual int getCoursesInGrade(int grade) const = 0;
+    virtual int getMaxCoursesForGrade(int grade) const = 0;
     virtual string addCourse(int grade, Course &course) = 0;
     virtual string editCourse(const string& id, const Course& newData) = 0;
 
@@ -61,12 +54,6 @@ public:
 
 class CourseRepositoryImpl : public CourseRepository {
 private:
-    const map<Stage, int> maxCoursesPerGradeInStage = {
-        {Stage::Primary, 7},
-        {Stage::Middle, 9},
-        {Stage::Secondary, 12}
-    };
-
     map<int, vector<Course>> coursesInGrade;
     map<Stage, vector<Course>> coursesInStage;
     vector<Course> coursesInSchool;
@@ -75,13 +62,9 @@ public:
     void addCourseInGrade(int grade, Course &course);
     void addCourseInStage(int grade, Course &course);
     void addCourseInSchool(Course &course);
-
-    const vector<Course>& getCoursesInGrade(int grade) const override;
-    int getMaxCoursesForStage(Stage stage) const override;
-
+    int getCoursesInGrade(int grade) const override;
+    int getMaxCoursesForGrade(int grade) const override;
     Course* findCourseById(const string& id);
-
-
     string addCourse(int grade, Course &course) override;
     string editCourse(const string& id, const Course& newData) override;
 
@@ -93,9 +76,10 @@ public:
 
 class StudentRepository {
 public:
+    virtual int getStudentsInGrade(int grade) const = 0;
+    virtual int getMaxStudentsForGrade(int grade) const = 0;
     virtual string addStudent(int grade, Student &student) = 0;
     virtual string editStudent(const string& id, const Student& newData) = 0;
-
 
 };
 
@@ -111,6 +95,8 @@ public:
     void addStudentInSchool(Student &student);
     Student* findStudentById(const string& id);
 
+    int getStudentsInGrade(int grade) const override;
+    int getMaxStudentsForGrade(int grade) const override;
 
     string addStudent(int grade, Student &student) override;
     string editStudent(const string& id, const Student& newData) override;

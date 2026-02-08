@@ -152,6 +152,11 @@ int main() {
                     getline(cin, courseName);
                     course.setName(courseName);
 
+                    cout << "Course Specialization: ";
+                    string specialization;
+                    getline(cin, specialization);
+                    course.setCourseSpecialization(specialization);
+
                     cout << "Grade (1-12): ";
                     int grade;
                     cin >> grade;
@@ -192,6 +197,11 @@ int main() {
                     string name;
                     getline(cin, name);
                     newData.setName(name);
+
+                    cout << "Course Specialization: ";
+                    string specialization;
+                    getline(cin, specialization);
+                    newData.setCourseSpecialization(specialization);
 
                     cout << "Grade (1-12): ";
                     int grade;
@@ -258,6 +268,11 @@ int main() {
                     teacher.setExperienceYears(experienceYears);
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
+                    cout << "Teacher Specialization: ";
+                    string specialization;
+                    getline(cin, specialization);
+                    teacher.setTeacherSpecialization(specialization);
+
                     cout << "Teacher Subject: ";
                     string subject;
                     getline(cin, subject);
@@ -321,6 +336,12 @@ int main() {
                     cin >> MonthlySalary;
                     newData.setMonthlySalary(MonthlySalary);
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    cout << "Teacher Specialization: ";
+                    string specialization;
+                    getline(cin, specialization);
+                    newData.setTeacherSpecialization(specialization);
+
 
                     cout <<"Teacher subject : ";
                     string subject;
