@@ -2,6 +2,9 @@
 #define SERVICE_H
 #include "../repo/Repo.h"
 
+
+class CourseService; //  forward declaration
+
 ////////////////// Teacher \\\\\\\\\\\\\\\
 
 class TeacherService {
@@ -9,6 +12,7 @@ public:
     virtual Teacher* findTeacherById(const string& id) = 0;
     virtual string addTeacher(int grade, Teacher &teacher) = 0;
     virtual string editTeacher(const string& id, const Teacher& newData) = 0;
+    virtual string assignCoursesToTeacher(const string& teacherId,const vector<string>& courseIds) = 0;
     virtual void showTeacher(const string& id) = 0;
 
 };
@@ -16,6 +20,7 @@ public:
 class TeacherServiceImpl : public TeacherService {
 private:
     TeacherRepositoryImpl &teacherRepository;
+    CourseService& courseService;
     // Validation
     bool validateTeacherName(const string &name);
     bool validateTeacherAge(int age);
@@ -25,20 +30,24 @@ private:
 
 
 public:
-    TeacherServiceImpl(TeacherRepositoryImpl &repo);
+    TeacherServiceImpl(TeacherRepositoryImpl &repo, CourseService &courseSrv);
     Teacher* findTeacherById(const string& id) override;
     string addTeacher(int grade, Teacher &teacher) override;
     string editTeacher(const string& id, const Teacher& newData) override;
+    string assignCoursesToTeacher(const string& teacherId,const vector<string>& courseIds) override;
     void showTeacher(const string& id) override;
 
 
 };
+
 ////////////////// Course \\\\\\\\\\\\\\\
 
 class CourseService {
 public:
     virtual bool validateCourseExisting(const string &courseId) = 0;
     virtual Course* findCourseById(const string& id) = 0;
+    virtual bool validateCourseTeacherStage(const string& teacherId, int courseGrade) = 0;
+    virtual bool validateCourseTeacherSpecialization(const string& teacherId, const string& courseSpecialization) = 0;
     virtual string addCourse(int grade, Course &course) = 0;
     virtual string editCourse(const string& id, const Course& newData) = 0;
     virtual void showCourse(const string &id) = 0;
@@ -52,8 +61,8 @@ private:
     TeacherRepositoryImpl& teacherRepository;
     // Validation
     bool validateCourseName(const string &name);
-    bool validateCourseTeacherExists(const string& id);
-    bool validateCourseTeacherGrade(const string& teacherId,int courseGrade);
+    bool validateCourseTeacherStage(const string& teacherId,int courseGrade);
+    bool validateCourseTeacherSpecialization(const string& teacherId,const string& courseSpecialization);
     bool validateSubjectHours(int hours);
     bool validateGrade(int grade);
     bool validateCoursesLimit(int grade);
@@ -68,6 +77,7 @@ public:
     void showCourse(const string &id) override;
 
 };
+
 ////////////////// Student \\\\\\\\\\\\\\\
 
 class StudentService {
@@ -96,6 +106,7 @@ public:
     Student* findStudentById(const string& id) override;
     string addStudent(int grade, Student &student) override;
     string editStudent(const string& id, const Student& newData) override;
+
     void showStudent(const string &id) override;
 
 

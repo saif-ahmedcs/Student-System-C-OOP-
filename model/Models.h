@@ -33,7 +33,7 @@ private:
     double monthlySalary;
     int experienceYears;
     string teacherSpecialization;
-    string assignedCourse = "NONE";
+    vector<string> assignedCourseIds;
     vector<int> studentIds;
 public:
     void setTeacherGrade(int grade);
@@ -41,7 +41,8 @@ public:
     void setTeacherSubject(const string &subject);
     void setExperienceYears(int exY);
     void setTeacherSpecialization(const string& specialization);
-    void setAssignedCourse(const string& courseId);
+    void addAssignedCourse(const string& courseId);
+    void clearAssignedCourses();
     void addStudentId(int id);
 
     int getTeacherGrade() const;
@@ -50,6 +51,7 @@ public:
     int getTeacherExperienceYears() const;
     string getTeacherSpecialization() const;
     string getAssignedCourse() const;
+    const vector<string>& getAssignedCourses() const;
     const vector<int>& getStudentsIds() const;
     int getNumberOfStudentsInTeacherCourse() const;
 };
@@ -71,6 +73,8 @@ public:
     void setGrade(const int &year);
     void setSubjectHours(int hours);
     void setCourseSpecialization(const string& specialization);
+
+
     Teacher getCourseTeacher() const;
     const vector<Teacher>& getCourseTeachers() const;
     int getGrade() const;

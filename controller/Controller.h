@@ -13,6 +13,8 @@ public:
     Teacher *findTeacherById(const string& id);
     string addTeacher(int grade, Teacher &teacher);
     string editTeacher(const string& id, const Teacher& newData);
+    string assignCoursesToTeacher(const string& teacherId,const vector<string>& courseIds);
+
     void showTeacher(const string& id);
 
 };

@@ -3,7 +3,8 @@
 
 ////////////////// TeacherServiceImpl \\\\\\\\\\\\\\\
 
-TeacherServiceImpl::TeacherServiceImpl(TeacherRepositoryImpl &repo) : teacherRepository(repo) {}
+TeacherServiceImpl::TeacherServiceImpl(TeacherRepositoryImpl& repo,CourseService& courseSrv) : teacherRepository(repo),courseService(courseSrv)
+{}
 
 bool TeacherServiceImpl::validateTeacherName(const string &name) {
     return !name.empty();
@@ -102,10 +103,59 @@ void TeacherServiceImpl::showTeacher(const string& id){
         cout << "Experience Years: " << teacher->getTeacherExperienceYears() << endl;
         cout << "Subject: " << teacher->getTeacherSubject() << endl;
         cout << "Grade: " << teacher->getTeacherGrade() << endl;
-        cout << "Teacher Assigned Course ID: " <<teacher->getAssignedCourse() << endl;
+        cout << "Teacher Assigned Courses IDs: ";
+        const vector<string>& courses = teacher->getAssignedCourses();
+
+        for (int i = 0; i < courses.size(); i++) {
+            cout << courses[i];
+        if (i != courses.size() - 1){
+            cout << ", ";
+        }
+        }
+        cout << endl;
         cout << "Monthly Salary: $" << teacher->getMonthlySalary() << endl;
         cout << "--------------------------\n";
+        }
+
+
+string TeacherServiceImpl::assignCoursesToTeacher(const string& teacherId, const vector<string>& courseIds) {
+
+    if (courseIds.empty() || courseIds.size() > 3)
+        return "Teacher must be assigned between 1 and 3 courses.";
+
+    Teacher* teacher = teacherRepository.findTeacherById(teacherId);
+    if (!teacher)
+        return "Teacher not found.";
+
+    string errors = "";
+
+    for (const string& cid : courseIds) {
+
+        Course* c = courseService.findCourseById(cid);
+        if (!c) {
+            errors += "- Course " + cid + ": Course does not exist in the system.\n";
+            continue;
+        }
+
+        if (!courseService.validateCourseTeacherStage(teacherId, c->getGrade())) {
+            errors += "- Course " + cid + ": Teacher does not teach the educational stage of this course.\n";
+        }
+
+        if (!courseService.validateCourseTeacherSpecialization(
+            teacherId, c->getCourseSpecialization())) {
+            errors += "- Course " + cid + ": Teacher specialization does not match the course specialization.\n";
+        }
     }
+
+    if (!errors.empty())
+        return "Course assignment failed due to the following errors:\n" + errors;
+
+    for (const string& cid : courseIds) {
+        teacher->addAssignedCourse(cid);
+    }
+
+    return "Courses assigned to teacher successfully.";
+}
 
 ////////////////// CourseServiceImpl \\\\\\\\\\\\\\\
 
@@ -139,22 +189,27 @@ bool CourseServiceImpl::validateGrade(int grade) {
     return grade >= 1 && grade <= 12;
 }
 
-bool CourseServiceImpl::validateCourseTeacherExists(const string& id){
-        Teacher* existingTeacher = teacherRepository.findTeacherById(id);
-            if (!existingTeacher) {
-                return false;
-            }
-    return true;
-}
-
-bool CourseServiceImpl::validateCourseTeacherGrade(const string& teacherId,int courseGrade){
-     Teacher* existingTeacher = teacherRepository.findTeacherById(teacherId);
-     if (!existingTeacher){
+bool CourseServiceImpl::validateCourseTeacherStage(const string& teacherId, int courseGrade) {
+    Teacher* teacher = teacherRepository.findTeacherById(teacherId);
+    if (!teacher){
         return false;
-       }
-   return existingTeacher->getTeacherGrade() == courseGrade;
+        }
+
+    Stage teacherStage = getStageFromGrade(teacher->getTeacherGrade());
+    Stage courseStage = getStageFromGrade(courseGrade);
+
+    return teacherStage == courseStage;
 }
 
+bool CourseServiceImpl::validateCourseTeacherSpecialization(const string& teacherId, const string& courseSpecialization) {
+    Teacher* teacher = teacherRepository.findTeacherById(teacherId);
+
+    if (!teacher){
+        return false;
+    }
+
+    return teacher->getTeacherSpecialization() == courseSpecialization;
+}
 
 bool CourseServiceImpl::validateCoursesLimit(int grade) {
     int currentCount = courseRepository.getCoursesInGrade(grade);
@@ -184,33 +239,13 @@ string CourseServiceImpl::addCourse(int grade, Course &course) {
         return "Course cannot be added due to invalid input:\n" + errorMessages;
     }
 
-    if (!validateCourseTeacherExists(course.getCourseTeacherId()))
-        errorMessages += "- Teacher not found.\n";
-
-    else if (!validateCourseTeacherGrade(course.getCourseTeacherId(), grade))
-        errorMessages += "- Teacher does not teach the selected grade.\n";
-
-    if (!errorMessages.empty()) {
-        return "Course cannot be added due to invalid input:\n" + errorMessages;
-    }
-
     if (!validateCoursesLimit(grade)) {
         return "- Maximum number of courses reached for this grade.\n";
     }
 
     // Everything valid, add to repository
 
-    Teacher* existingTeacher = teacherRepository.findTeacherById(course.getCourseTeacherId());
-
-    if (existingTeacher) {
-        course.setCourseTeacherName(existingTeacher->getName());
-        }
-
-    string result = courseRepository.addCourse(grade, course);
-
-    existingTeacher->setAssignedCourse(course.getId());
-
-    return result;
+    return courseRepository.addCourse(grade, course);
 }
 
 
@@ -232,11 +267,8 @@ string CourseServiceImpl::editCourse(const string& id, const Course& newData){
      if (!errorMessages.empty())
        return "Course cannot be added due to invalid input:\n" + errorMessages;
 
-     if (!validateCourseTeacherExists(newData.getCourseTeacherId()))
-       errorMessages += "- Teacher not found.\n";
-
-     else if (!validateCourseTeacherGrade(newData.getCourseTeacherId(), newData.getGrade()))
-    errorMessages += "- Teacher does not teach the selected grade.\n";
+     else if (!validateCourseTeacherStage(newData.getCourseTeacherId(), newData.getGrade()))
+    errorMessages += "- Teacher does not teach the selected stage.\n";
 
      if (!errorMessages.empty())
        return "Course cannot be added due to invalid relations:\n" + errorMessages;

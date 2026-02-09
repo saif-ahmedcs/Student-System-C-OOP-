@@ -44,8 +44,12 @@ void Teacher::setExperienceYears(int e){
 void Teacher::setTeacherSpecialization(const string& specialization){
     teacherSpecialization = specialization;
 }
-void Teacher::setAssignedCourse(const string& courseId){
-  assignedCourse = courseId;
+void Teacher::addAssignedCourse(const string& courseId) {
+    assignedCourseIds.push_back(courseId);
+}
+
+void Teacher::clearAssignedCourses() {
+    assignedCourseIds.clear();
 }
 
 void Teacher::addStudentId(int id){
@@ -67,8 +71,8 @@ int Teacher::getTeacherExperienceYears() const {
 string Teacher::getTeacherSpecialization() const {
     return teacherSpecialization;
 }
-string Teacher::getAssignedCourse() const {
-    return assignedCourse;
+const vector<string>& Teacher::getAssignedCourses() const {
+    return assignedCourseIds;
 }
 const vector<int>& Teacher::getStudentsIds() const {
     return studentIds;

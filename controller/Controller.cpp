@@ -15,6 +15,10 @@ string TeacherController::editTeacher(const string& id, const Teacher& newData){
     return teacherService.editTeacher(id,newData);
 }
 
+string TeacherController::assignCoursesToTeacher(const string& teacherId,const vector<string>& courseIds) {
+    return teacherService.assignCoursesToTeacher(teacherId, courseIds);
+}
+
 void TeacherController::showTeacher(const string& id){
     return teacherService.showTeacher(id);
 }
