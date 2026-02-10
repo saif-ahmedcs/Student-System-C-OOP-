@@ -77,18 +77,31 @@ int main() {
                     cout << "- Please enter the required student information below:\n";
 
                     cout << "Student Full Name: ";
-                    string name; getline(cin, name); student.setName(name);
+                    string name;
+                    getline(cin, name);
+                    student.setName(name);
+
+                    cout << "Student National Number: ";
+                    string nn;
+                    getline(cin, nn);
+                    student.setStudentNationalNum(nn);
 
                     cout << "Student School Grade (1-12): ";
-                    int grade; cin >> grade; student.setSchoolYear(grade);
+                    int grade;
+                    cin >> grade;
+                    student.setSchoolYear(grade);
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Student Age: ";
-                    int age; cin >> age; student.setAge(age);
+                    int age;
+                    cin >> age;
+                    student.setAge(age);
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Student Phone Number (10-12 digits): ";
-                    string phoneNumber; getline(cin, phoneNumber); student.setPhoneNumber(phoneNumber);
+                    string phoneNumber;
+                    getline(cin, phoneNumber);
+                    student.setPhoneNumber(phoneNumber);
 
                     cout << endl;
                     cout << studentController.addStudent(grade, student) << endl;
@@ -106,21 +119,31 @@ int main() {
                     cout << "------- Enter NEW DATA : -------\n";
 
                     cout << "Full Name: ";
-                    string name; getline(cin, name); newData.setName(name);
+                    string name;
+                    getline(cin, name);
+                    newData.setName(name);
 
                     cout << "Grade (1-12): ";
-                    int grade; cin >> grade; newData.setSchoolYear(grade);
+                    int grade;
+                    cin >> grade;
+                    newData.setSchoolYear(grade);
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Age: ";
-                    int age; cin >> age; newData.setAge(age);
+                    int age;
+                    cin >> age;
+                    newData.setAge(age);
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Phone Number: ";
-                    string phone; getline(cin, phone); newData.setPhoneNumber(phone);
+                    string phone;
+                    getline(cin, phone);
+                    newData.setPhoneNumber(phone);
 
                     cout << "GPA: ";
-                    double gpa; cin >> gpa; newData.setGpa(gpa);
+                    double gpa;
+                    cin >> gpa;
+                    newData.setGpa(gpa);
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << endl;
@@ -177,8 +200,9 @@ int main() {
                 else if (courseProcess == 3) { // Edit Course
                     cout << "\nEnter Course Id to edit: ";
                     string id; getline(cin, id);
-                    if (!courseController.validateCourseExisting(id)) {
-                        cout << "Course with ID " << id << " is not found\n";
+                    Course* existingCourse = courseController.findCourseById(id);
+                    if (!existingCourse) {
+                        cout << "Course with ID " << id << " not found. Cannot edit.\n";
                         break;
                     }
 
@@ -214,8 +238,9 @@ int main() {
                 else if (courseProcess == 4) { // Show Course
                     cout << "\nEnter Course Id: ";
                     string id; getline(cin, id);
-                    if (!courseController.validateCourseExisting(id)) {
-                        cout << "Course with ID " << id << " is not found\n";
+                    Course* existingCourse = courseController.findCourseById(id);
+                    if (!existingCourse) {
+                        cout << "Course with ID " << id << " not found. Cannot edit.\n";
                         break;
                     }
                     courseController.showCourse(id);
@@ -240,6 +265,11 @@ int main() {
                     string name;
                     getline(cin, name);
                     teacher.setName(name);
+
+                    cout << "Teacher National Number: ";
+                    string nn;
+                    getline(cin, nn);
+                    teacher.setTeacherNationalNum(nn);
 
                     cout << "Teacher Age: ";
                     int age;
@@ -290,6 +320,7 @@ int main() {
                     string name;
                     getline(cin, name);
                     newData.setName(name);
+
 
                     cout << "Teacher Age: ";
                     int age;

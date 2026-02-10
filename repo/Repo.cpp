@@ -58,8 +58,8 @@ string idStart;
     }
 
 }
-// Generates a unique course ID based on the course name and grade.
-string generateCourseID(const string& courseName, int grade) {
+// Generates a unique course ID based on the course name and grade and specialization.
+string generateCourseID(const string& courseName, int grade, const string& specialization) {
 
     static int id[13] = {0};
     string idStart = "";
@@ -69,11 +69,19 @@ string generateCourseID(const string& courseName, int grade) {
         if (courseName[i] != ' ')
             idStart += tolower(courseName[i]);
     }
-
+    idStart +='-';
     idStart += to_string(grade);
+    idStart +='-';
+
+
+    for (int i = 0; i < specialization.length(); i++) {
+        if (specialization[i] != ' ')
+            idStart += tolower(specialization[i]);
+    }
+
+
     id[grade]++;
     int count = id[grade];
-
 
     if (count <= 9)
         return idStart + "00" + to_string(count);
@@ -141,6 +149,15 @@ int TeacherRepositoryImpl::getMaxTeachesForGrade(int grade) const {
     return 0;
 }
 
+Teacher* TeacherRepositoryImpl::findTeacherByNationalNumber(const string& nationalNumber) {
+    for (auto& teacher : teachersInSchool) {
+        if (teacher.getTeacherNationalNum() == nationalNumber) {
+            return &teacher;
+        }
+    }
+    return nullptr;
+}
+
 Teacher* TeacherRepositoryImpl::findTeacherById(const string& id) {
     for (auto& [grade, teachers] : teachersInGrade) {
         for (auto& t : teachers) {
@@ -166,9 +183,6 @@ string TeacherRepositoryImpl::addTeacher(int grade, Teacher &teacher) {
 string TeacherRepositoryImpl::editTeacher(const string& id, const Teacher& newData){
 
     Teacher* t = findTeacherById(id);
-       if (!t){
-        return "Teacher not found.";
-        }
 
         t->setName(newData.getName());
         t->setAge(newData.getAge());
@@ -196,11 +210,15 @@ void CourseRepositoryImpl::addCourseInSchool(Course &course) {
     coursesInSchool.push_back(course);
 }
 
-int CourseRepositoryImpl::getCoursesInGrade(int grade) const {
+int CourseRepositoryImpl::getNumberOfCoursesInGrade(int grade) const {
     auto it = coursesInGrade.find(grade);
     if (it != coursesInGrade.end())
         return it->second.size();
     return 0;
+}
+
+vector<Course> CourseRepositoryImpl::getCoursesInSchoolVector() {
+    return coursesInSchool;
 }
 
 int CourseRepositoryImpl::getMaxCoursesForGrade(int grade) const {
@@ -230,7 +248,7 @@ Course* CourseRepositoryImpl::findCourseById(const string& id) {
 string CourseRepositoryImpl::addCourse(int grade, Course &course) {
 
     Stage stage = getStageFromGrade(grade);
-    string finalId = generateCourseID(course.getName(),grade);
+    string finalId = generateCourseID(course.getName(),grade,course.getCourseSpecialization());
     course.setId(finalId);
     addCourseInGrade(grade, course);
     addCourseInStage(grade, course);
@@ -239,10 +257,8 @@ string CourseRepositoryImpl::addCourse(int grade, Course &course) {
 }
 
 string CourseRepositoryImpl::editCourse(const string& id, const Course& newData) {
-  Course* c = findCourseById(id);
-    if (!c){
-      return "Course not found.";
-      }
+
+    Course* c = findCourseById(id);
 
     c->setName(newData.getName());
     c->setCourseTeacherName(newData.getCourseTeacherName());
@@ -267,6 +283,16 @@ void StudentRepositoryImpl::addStudentInStage(int grade, Student &student) {
 void StudentRepositoryImpl::addStudentInSchool(Student &student) {
     studentsInSchool.push_back(student);
 }
+
+Student* StudentRepositoryImpl::findStudentByNationalNumber(const string& nationalNumber) {
+    for (auto& student : studentsInSchool) {
+        if (student.getStudentNationalNum() == nationalNumber) {
+            return &student;
+        }
+    }
+    return nullptr;
+}
+
 
 Student* StudentRepositoryImpl::findStudentById(const string& id) {
     for (auto& [grade, students] : studentsInGrade) {
@@ -314,8 +340,8 @@ string StudentRepositoryImpl::addStudent(int grade, Student &student) {
 
 
 string StudentRepositoryImpl::editStudent(const string& id, const Student& newData) {
+
     Student* s = findStudentById(id);
-    if (!s) return "Student not found.";
 
     s->setName(newData.getName());
     s->setPhoneNumber(newData.getPhoneNumber());

@@ -26,9 +26,6 @@ void TeacherController::showTeacher(const string& id){
 // Course
 CourseController::CourseController(CourseServiceImpl &service) : courseService(service) {}
 
-bool CourseController::validateCourseExisting(const string &courseId){
-    return courseService.validateCourseExisting(courseId);
-}
 
 Course* CourseController::findCourseById(const string& id){
     return courseService.findCourseById(id);

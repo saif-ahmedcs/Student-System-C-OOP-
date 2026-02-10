@@ -29,6 +29,10 @@ string BaseEntity::getPhoneNumber() const {
     }
 
 // Teacher
+
+void Teacher::setTeacherNationalNum(string n){
+ nationalNumber = n;
+}
 void Teacher::setTeacherGrade(int g){
     grade = g;
 }
@@ -55,6 +59,11 @@ void Teacher::clearAssignedCourses() {
 void Teacher::addStudentId(int id){
     studentIds.push_back(id);
     }
+
+
+string Teacher::getTeacherNationalNum() const {
+  return nationalNumber;
+}
 
 int Teacher::getTeacherGrade() const {
     return grade;
@@ -126,6 +135,9 @@ string Course::getCourseSpecialization() const {
 
 
 // Student
+void Student::setStudentNationalNum(string n){
+ nationalNumber = n;
+}
 void Student::setSchoolYear(const int &year){
      schoolYear = year;
     }
@@ -135,6 +147,11 @@ void Student::setGpa(double g){
 void Student::setStudentTeacherCourse(const Teacher &teacher, const Course &course){
     teacherCoursePairs.push_back({teacher, course});
     }
+
+string Student::getStudentNationalNum() const {
+  return nationalNumber;
+}
+
 int Student::getSchoolYear() const {
      return schoolYear;
     }

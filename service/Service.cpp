@@ -29,13 +29,26 @@ bool TeacherServiceImpl::validateTeachersLimit(int grade) {
     return teacherRepository.getTeachersInGrade(grade) < teacherRepository.getMaxTeachesForGrade(grade);
 }
 
+Teacher* TeacherServiceImpl::findTeacherByNationalNumber(const string& nationalNumber){
+  return teacherRepository.findTeacherByNationalNumber(nationalNumber);
+}
+
 Teacher* TeacherServiceImpl::findTeacherById(const string& id){
   return teacherRepository.findTeacherById(id);
 }
 
+bool TeacherServiceImpl::isTeacherAlreadyExists(const string& nationalNumber) {
+    return teacherRepository.findTeacherByNationalNumber(nationalNumber) != nullptr;
+}
+
+
 string TeacherServiceImpl::addTeacher(int grade, Teacher &teacher) {
 
     string errors = "";
+
+if (isTeacherAlreadyExists(teacher.getTeacherNationalNum())) {
+        return "Teacher already exists.";
+}
 
 if (!validateTeacherName(teacher.getName()))
     errors += "- Teacher name cannot be empty.\n";
@@ -169,14 +182,6 @@ CourseServiceImpl::CourseServiceImpl(
 
 // Validation functions
 
-bool CourseServiceImpl::validateCourseExisting(const string &courseId){
-    Course* existingCourse = courseRepository.findCourseById(courseId);
-        if (!existingCourse) {
-            return false;
-        }
-       return true;
-}
-
 bool CourseServiceImpl::validateCourseName(const string &name) {
     return !name.empty();
 }
@@ -212,7 +217,7 @@ bool CourseServiceImpl::validateCourseTeacherSpecialization(const string& teache
 }
 
 bool CourseServiceImpl::validateCoursesLimit(int grade) {
-    int currentCount = courseRepository.getCoursesInGrade(grade);
+    int currentCount = courseRepository.getNumberOfCoursesInGrade(grade);
     int maxCount = courseRepository.getMaxCoursesForGrade(grade);
     return currentCount < maxCount;
 }
@@ -222,9 +227,27 @@ Course* CourseServiceImpl::findCourseById(const string& id){
 }
 
 
+bool CourseServiceImpl::isCourseAlreadyExists(const string& name, int grade, const string& specialization) {
+
+    vector<Course> courses = courseRepository.getCoursesInSchoolVector();
+
+    for (int i = 0; i < courses.size(); i++) {
+        if (courses[i].getName() == name && courses[i].getGrade() == grade && courses[i].getCourseSpecialization() == specialization) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+
 // Add course with validation
 string CourseServiceImpl::addCourse(int grade, Course &course) {
     string errorMessages = "";
+
+    if (isCourseAlreadyExists(course.getName(), course.getGrade(), course.getCourseSpecialization())) {
+            return "Course already exists.";
+    }
 
     if (!validateCourseName(course.getName()))
         errorMessages += "- Invalid course name.\n";
@@ -339,9 +362,18 @@ bool StudentServiceImpl::validateNewGpa(float gpa){
   return gpa>=0.0 && gpa<=4.0;
 }
 
+Student* StudentServiceImpl::findStudentByNationalNumber(const string& nationalNumber){
+  return studentRepository.findStudentByNationalNumber(nationalNumber);
+}
+
 Student* StudentServiceImpl::findStudentById(const string& id){
   return studentRepository.findStudentById(id);
 }
+
+bool StudentServiceImpl::isStudentAlreadyExists(const string& nationalNumber) {
+    return studentRepository.findStudentByNationalNumber(nationalNumber) != nullptr;
+}
+
 
 bool StudentServiceImpl::validateStudentsLimit(int grade) {
     int currentCount = studentRepository.getStudentsInGrade(grade);
@@ -350,30 +382,33 @@ bool StudentServiceImpl::validateStudentsLimit(int grade) {
 }
 
 
-string StudentServiceImpl::addStudent(int grade, Student &student) {
+string StudentServiceImpl::addStudent(int grade, Student& student) {
 
-    string errors = "";
+    string errors;
+
+    if (isStudentAlreadyExists(student.getStudentNationalNum())) {
+        return "student already exists.";
+    }
 
     if (!validateName(student.getName()))
         errors += "- Name cannot be empty.\n";
 
-    if (!validateAge(student.getAge(),grade))
-        errors += "- The age entered does not match the expected range for this grade.\n";
-
-    if (!validatePhoneNumber(student.getPhoneNumber()))
-        errors += "- Phone number must be 10 --> 12 digits and contain digits only.\n";
-
     if (!validateGrade(grade))
         errors += "- Grade must be between 1 and 12.\n";
 
-    if (!validateStudentsLimit(grade))
-        errors += "- Cannot add student. Grade " + to_string(grade) + " is full.\n";
+    if (!validateAge(student.getAge(), grade))
+        errors += "- Student age does not match the expected range for the selected grade.\n";
 
-    // If any validation errors exist
-    if (!errors.empty())
-        return "Invalid student data. Please review the following errors:\n" + errors;
+    if (!validatePhoneNumber(student.getPhoneNumber()))
+        errors += "- Phone number must contain only digits and be 10 to 12 characters long.\n";
 
-    // All validations passed
+    if (validateGrade(grade) && !validateStudentsLimit(grade))
+        errors += "- Cannot add student: Grade " + to_string(grade) + " has reached its maximum capacity.\n";
+
+    if (!errors.empty()) {
+        return "Student registration failed due to the following issues:\n" + errors;
+    }
+
     return studentRepository.addStudent(grade, student);
 }
 

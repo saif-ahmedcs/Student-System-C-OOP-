@@ -28,6 +28,7 @@ public:
 // Teacher
 class Teacher : public BaseEntity {
 private:
+    string nationalNumber;
     int grade;
     string teacherSubject;
     double monthlySalary;
@@ -36,6 +37,7 @@ private:
     vector<string> assignedCourseIds;
     vector<int> studentIds;
 public:
+    void setTeacherNationalNum(string n);
     void setTeacherGrade(int grade);
     void setMonthlySalary(double salary);
     void setTeacherSubject(const string &subject);
@@ -45,6 +47,7 @@ public:
     void clearAssignedCourses();
     void addStudentId(int id);
 
+    string getTeacherNationalNum() const;
     int getTeacherGrade() const;
     double getMonthlySalary() const;
     string getTeacherSubject() const;
@@ -93,13 +96,17 @@ struct TeacherCourse {
 //Student
 class Student : public BaseEntity {
 private:
+    string nationalNumber;
     int schoolYear;
     double gpa = 0.00;
     vector<TeacherCourse> teacherCoursePairs;
 public:
+    void setStudentNationalNum(string n);
     void setSchoolYear(const int &year);
     void setGpa(double g);
     void setStudentTeacherCourse(const Teacher &teacher, const Course &course);
+
+    string getStudentNationalNum() const;
     int getSchoolYear() const;
     double getGpa() const;
     const vector<TeacherCourse>& getStudentTeacherCourses() const;

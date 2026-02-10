@@ -9,6 +9,7 @@ class CourseService; //  forward declaration
 
 class TeacherService {
 public:
+    virtual Teacher* findTeacherByNationalNumber(const string& nationalNumber) = 0;
     virtual Teacher* findTeacherById(const string& id) = 0;
     virtual string addTeacher(int grade, Teacher &teacher) = 0;
     virtual string editTeacher(const string& id, const Teacher& newData) = 0;
@@ -22,6 +23,7 @@ private:
     TeacherRepositoryImpl &teacherRepository;
     CourseService& courseService;
     // Validation
+    bool isTeacherAlreadyExists(const string& nationalNumber);
     bool validateTeacherName(const string &name);
     bool validateTeacherAge(int age);
     bool validateTeacherExperience(int experienceYears);
@@ -31,6 +33,8 @@ private:
 
 public:
     TeacherServiceImpl(TeacherRepositoryImpl &repo, CourseService &courseSrv);
+
+    Teacher* findTeacherByNationalNumber(const string& nationalNumber) override;
     Teacher* findTeacherById(const string& id) override;
     string addTeacher(int grade, Teacher &teacher) override;
     string editTeacher(const string& id, const Teacher& newData) override;
@@ -44,7 +48,6 @@ public:
 
 class CourseService {
 public:
-    virtual bool validateCourseExisting(const string &courseId) = 0;
     virtual Course* findCourseById(const string& id) = 0;
     virtual bool validateCourseTeacherStage(const string& teacherId, int courseGrade) = 0;
     virtual bool validateCourseTeacherSpecialization(const string& teacherId, const string& courseSpecialization) = 0;
@@ -60,6 +63,7 @@ private:
     CourseRepositoryImpl &courseRepository;
     TeacherRepositoryImpl& teacherRepository;
     // Validation
+    bool isCourseAlreadyExists(const string& name, int grade, const string& specialization);
     bool validateCourseName(const string &name);
     bool validateCourseTeacherStage(const string& teacherId,int courseGrade);
     bool validateCourseTeacherSpecialization(const string& teacherId,const string& courseSpecialization);
@@ -70,7 +74,6 @@ private:
 
 public:
     CourseServiceImpl(CourseRepositoryImpl& courseRepo,TeacherRepositoryImpl& teacherRepo);
-    bool validateCourseExisting(const string &courseId) override;
     Course* findCourseById(const string& id) override;
     string addCourse(int grade, Course &course) override;
     string editCourse(const string& id, const Course& newData) override;
@@ -82,6 +85,7 @@ public:
 
 class StudentService {
 public:
+    virtual Student* findStudentByNationalNumber(const string& nationalNumber) = 0;
     virtual Student* findStudentById(const string& id) = 0;
     virtual string addStudent(int grade, Student &student) = 0;
     virtual string editStudent(const string& id, const Student& newData) = 0;
@@ -94,6 +98,7 @@ private:
     StudentRepositoryImpl &studentRepository;
 
     // Validation
+    bool isStudentAlreadyExists(const string& nationalNumber);
     bool validateName(const string &name);
     bool validateAge (int age, int grade);
     bool validatePhoneNumber(const string &phone);
@@ -103,10 +108,11 @@ private:
 
 public:
     StudentServiceImpl(StudentRepositoryImpl &repo);
+
+    Student* findStudentByNationalNumber(const string& nationalNumber) override;
     Student* findStudentById(const string& id) override;
     string addStudent(int grade, Student &student) override;
     string editStudent(const string& id, const Student& newData) override;
-
     void showStudent(const string &id) override;
 
 
