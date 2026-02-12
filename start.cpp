@@ -2,7 +2,6 @@
 #include "controller/Controller.h"
 using namespace std;
 
-// ======================== Display System ========================
 void displaySystem() {
     cout << "\t********************* Welcome To The School System *********************\n\n";
     cout << "The Process you need is:\n";
@@ -10,15 +9,13 @@ void displaySystem() {
     cout << "3- About Teacher\t4- Exit\n";
 }
 
-// ======================== Show Processes ========================
 void showProcesses(const string& s) {
     cout << "Please enter the process you need!\n";
 
     if (s == "Teacher") {
-        // 5 options for Teacher
         cout << "1- Add " << s << "\t\t\t2- Remove " << s << "\n";
-        cout << "3- Edit " << s << "\t\t\t4- Show " << s << " Info\n";
-        cout << "5- Assign Courses to " << s << "\n";
+        cout << "3- Edit " << s << "\t\t\t4- Assign Courses to " << s << "\n";
+        cout << "5- Show " << s << " Info\n";
     }
     else if (s == "Course") {
         cout << "1- Add " << s << "\t\t\t2- Remove " << s << "\n";
@@ -26,7 +23,6 @@ void showProcesses(const string& s) {
         cout << "5- Assign Teacher to " << s << "\n";
     }
     else {
-        // 4 options for Student
         cout << "1- Add " << s << "\t\t2- Remove " << s << "\n";
         cout << "3- Edit " << s << "\t\t4- Show " << s << " Info\n";
     }
@@ -34,19 +30,15 @@ void showProcesses(const string& s) {
     cout << endl;
 }
 
-// ======================== Main ========================
 int main() {
-    // ---------- Repositories ----------
     StudentRepositoryImpl studentRepo;
     CourseRepositoryImpl courseRepo;
     TeacherRepositoryImpl teacherRepo;
 
-    // ---------- Services ----------
     StudentServiceImpl studentService(studentRepo);
     CourseServiceImpl courseService(courseRepo, teacherRepo);
     TeacherServiceImpl teacherService(teacherRepo, courseService);
 
-    // ---------- Controllers ----------
     StudentController studentController(studentService);
     CourseController courseController(courseService);
     TeacherController teacherController(teacherService);
@@ -63,7 +55,6 @@ int main() {
 
         switch (process) {
 
-            // ======================== Student Branch ========================
             case 1: {
                 cout << "\n\t************ STUDENT BRANCH ************\n";
                 showProcesses("Student");
@@ -106,9 +97,12 @@ int main() {
                     cout << endl;
                     cout << studentController.addStudent(grade, student) << endl;
                 }
+
                 else if (studentProcess == 3) { // Edit Student
                     cout << "\nEnter Student ID to edit: ";
-                    string id; getline(cin, id);
+                    string id;
+                    getline(cin, id);
+
                     Student* existingStudent = studentController.findStudentById(id);
                     if (!existingStudent) {
                         cout << "Student with ID " << id << " not found. Cannot edit.\n";
@@ -149,15 +143,17 @@ int main() {
                     cout << endl;
                     cout << studentController.editStudent(id, newData) << endl;
                 }
-                else if (studentProcess == 4) { // Show Student
+
+                else if (studentProcess == 4) { // Show Student Info
                     cout << "\nEnter Student ID: ";
-                    string id; getline(cin, id);
+                    string id;
+                    getline(cin, id);
                     studentController.showStudent(id);
                 }
+
                 break;
             }
 
-            // ======================== Course Branch ========================
             case 2: {
                 cout << "\n\t************ COURSE BRANCH ************\n";
                 showProcesses("Course");
@@ -192,14 +188,15 @@ int main() {
                     course.setSubjectHours(hours);
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-
                     cout << endl;
-
                     cout << courseController.addCourse(grade, course) << endl;
                 }
+
                 else if (courseProcess == 3) { // Edit Course
                     cout << "\nEnter Course Id to edit: ";
-                    string id; getline(cin, id);
+                    string id;
+                    getline(cin, id);
+
                     Course* existingCourse = courseController.findCourseById(id);
                     if (!existingCourse) {
                         cout << "Course with ID " << id << " not found. Cannot edit.\n";
@@ -232,23 +229,26 @@ int main() {
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << endl;
-
                     cout << courseController.editCourse(id, newData) << endl;
                 }
-                else if (courseProcess == 4) { // Show Course
+
+                else if (courseProcess == 4) { // Show Course Info
                     cout << "\nEnter Course Id: ";
-                    string id; getline(cin, id);
+                    string id;
+                    getline(cin, id);
+
                     Course* existingCourse = courseController.findCourseById(id);
                     if (!existingCourse) {
                         cout << "Course with ID " << id << " not found. Cannot edit.\n";
                         break;
                     }
+
                     courseController.showCourse(id);
                 }
+
                 break;
             }
 
-            // ======================== Teacher Branch ========================
             case 3: {
                 cout << "\n\t************ TEACHER BRANCH ************\n";
                 showProcesses("Teacher");
@@ -273,12 +273,14 @@ int main() {
 
                     cout << "Teacher Age: ";
                     int age;
-                    cin >> age; teacher.setAge(age);
+                    cin >> age;
+                    teacher.setAge(age);
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Teacher experience years: ";
                     int experienceYears;
-                    cin >> experienceYears; teacher.setExperienceYears(experienceYears);
+                    cin >> experienceYears;
+                    teacher.setExperienceYears(experienceYears);
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Teacher Specialization: ";
@@ -293,20 +295,25 @@ int main() {
 
                     cout << "Grade (1-12): ";
                     int grade;
-                    cin >> grade; teacher.setTeacherGrade(grade);
+                    cin >> grade;
+                    teacher.setTeacherGrade(grade);
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Monthly Salary: ";
                     double salary;
-                    cin >> salary; teacher.setMonthlySalary(salary);
+                    cin >> salary;
+                    teacher.setMonthlySalary(salary);
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << endl;
                     cout << teacherController.addTeacher(grade, teacher) << endl;
                 }
+
                 else if (teacherProcess == 3) { // Edit Teacher
                     cout << "\nEnter Teacher Id to edit: ";
-                    string id; getline(cin, id);
+                    string id;
+                    getline(cin, id);
+
                     Teacher* existingTeacher = teacherController.findTeacherById(id);
                     if (!existingTeacher) {
                         cout << "Teacher with ID " << id << " not found. Cannot edit.\n";
@@ -320,7 +327,6 @@ int main() {
                     string name;
                     getline(cin, name);
                     newData.setName(name);
-
 
                     cout << "Teacher Age: ";
                     int age;
@@ -342,7 +348,8 @@ int main() {
 
                     cout << "Teacher monthly salary : ";
                     double MonthlySalary;
-                    cin >> MonthlySalary; newData.setMonthlySalary(MonthlySalary);
+                    cin >> MonthlySalary;
+                    newData.setMonthlySalary(MonthlySalary);
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Teacher Specialization: ";
@@ -358,14 +365,11 @@ int main() {
                     cout << endl;
                     cout << teacherController.editTeacher(id, newData) << endl;
                 }
-                else if (teacherProcess == 4) { // Show Teacher Info
-                    cout << "\nEnter Teacher ID: ";
-                    string id; getline(cin, id);
-                    teacherController.showTeacher(id);
-                }
-                else if (teacherProcess == 5) { // Assign Courses
+
+                else if (teacherProcess == 4) { // Assign Courses To teacher
                     cout << "\nEnter Teacher ID to assign courses: ";
-                    string teacherId; getline(cin, teacherId);
+                    string teacherId;
+                    getline(cin, teacherId);
 
                     Teacher* teacher = teacherController.findTeacherById(teacherId);
                     if (!teacher) {
@@ -375,22 +379,57 @@ int main() {
 
                     int numCourses;
                     cout << "How many courses to assign (1-3)? ";
-                    cin >> numCourses; cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cin >> numCourses;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     if (numCourses < 1 || numCourses > 3) {
                         cout << "Invalid number of courses. Must be between 1 and 3.\n";
                         break;
                     }
 
+                    int totalCourses = teacher->getAssignedCourses().size() + numCourses;
+                    if (totalCourses > 3) {
+                        cout << "Cannot assign " << numCourses << " courses. Teacher already has "
+                             << teacher->getAssignedCourses().size() << " assigned. Maximum allowed is 3.\n";
+                        break;
+                    }
+
                     vector<string> courseIds;
                     for (int i = 0; i < numCourses; i++) {
                         cout << "Enter Course ID #" << (i + 1) << ": ";
-                        string cid; getline(cin, cid);
+                        string cid;
+                        getline(cin, cid);
+
+                        bool duplicate = false;
+                        for (int j = 0; j < courseIds.size(); j++) {
+                            if (courseIds[j] == cid) {
+                                duplicate = true;
+                                break;
+                            }
+                        }
+
+                        if (duplicate || teacher->isCourseAssigned(cid)) {
+                            continue;
+                        }
+
                         courseIds.push_back(cid);
                     }
 
-                    cout << teacherController.assignCoursesToTeacher(teacherId, courseIds) << endl;
+                    if (courseIds.empty()) {
+                        cout << "No new courses to assign. All entered courses are either duplicates or already assigned.\n";
+                    } else {
+                        cout << teacherController.assignCoursesToTeacher(teacherId, courseIds) << endl;
+                    }
+                    break;
                 }
+
+                else if (teacherProcess == 5) { // Show Teacher Info
+                    cout << "\nEnter Teacher ID: ";
+                    string id;
+                    getline(cin, id);
+                    teacherController.showTeacher(id);
+                }
+
                 break;
             }
 

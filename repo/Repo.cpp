@@ -194,6 +194,17 @@ string TeacherRepositoryImpl::editTeacher(const string& id, const Teacher& newDa
     return "Teacher data updated successfully.";
 }
 
+string TeacherRepositoryImpl::assignCoursesToTeacher(const string& teacherId, const vector<string>& courseIds) {
+
+    Teacher* teacher = findTeacherById(teacherId);
+
+    for (int i = 0; i < courseIds.size(); i++) {
+        teacher->addAssignedCourse(courseIds[i]);
+    }
+
+    return "Courses assigned to teacher successfully.";
+}
+
 
 ////////////////// CourseRepositoryImpl \\\\\\\\\\\\\\\
 

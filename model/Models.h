@@ -44,6 +44,7 @@ public:
     void setExperienceYears(int exY);
     void setTeacherSpecialization(const string& specialization);
     void addAssignedCourse(const string& courseId);
+    bool isCourseAssigned(const string& courseId) const;
     void clearAssignedCourses();
     void addStudentId(int id);
 

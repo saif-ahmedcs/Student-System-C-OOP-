@@ -18,6 +18,8 @@ public:
     virtual int getMaxTeachesForGrade(int grade) const = 0;
     virtual string addTeacher(int grade, Teacher &teacher) = 0;
     virtual string editTeacher(const string& id, const Teacher& newData) = 0;
+    virtual string assignCoursesToTeacher(const string& teacherId, const vector<string>& courseIds) = 0;
+
 
 };
 
@@ -40,6 +42,7 @@ public:
     Teacher* findTeacherById(const string& id) override;
     string addTeacher(int grade, Teacher &teacher) override;
     string editTeacher(const string& id, const Teacher& newData) override;
+    string assignCoursesToTeacher(const string& teacherId, const vector<string>& courseIds) override;
 
 };
 

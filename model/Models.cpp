@@ -51,6 +51,14 @@ void Teacher::setTeacherSpecialization(const string& specialization){
 void Teacher::addAssignedCourse(const string& courseId) {
     assignedCourseIds.push_back(courseId);
 }
+bool Teacher::isCourseAssigned(const string& courseId) const {
+    for (int i = 0; i < assignedCourseIds.size(); i++) {
+        if (assignedCourseIds[i] == courseId) {
+            return true;
+        }
+    }
+    return false;
+}
 
 void Teacher::clearAssignedCourses() {
     assignedCourseIds.clear();
