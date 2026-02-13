@@ -3,7 +3,7 @@
 using namespace std;
 
 void displaySystem() {
-    cout << "\t********************* Welcome To The School System *********************\n\n";
+    cout << "\033[41m\033[37m\t\t\********************* Welcome To The School System *********************\n\n\033[0m";
     cout << "The Process you need is:\n";
     cout << "1- About Student\t2- About Course\n";
     cout << "3- About Teacher\t4- Exit\n";
@@ -17,11 +17,6 @@ void showProcesses(const string& s) {
         cout << "3- Edit " << s << "\t\t\t4- Assign Courses to " << s << "\n";
         cout << "5- Show " << s << " Info\n";
     }
-    else if (s == "Course") {
-        cout << "1- Add " << s << "\t\t\t2- Remove " << s << "\n";
-        cout << "3- Edit " << s << "\t\t\t4- Show " << s << " Info\n";
-        cout << "5- Assign Teacher to " << s << "\n";
-    }
     else {
         cout << "1- Add " << s << "\t\t2- Remove " << s << "\n";
         cout << "3- Edit " << s << "\t\t4- Show " << s << " Info\n";
@@ -31,6 +26,7 @@ void showProcesses(const string& s) {
 }
 
 int main() {
+
     StudentRepositoryImpl studentRepo;
     CourseRepositoryImpl courseRepo;
     TeacherRepositoryImpl teacherRepo;

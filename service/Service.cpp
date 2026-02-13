@@ -144,6 +144,9 @@ string TeacherServiceImpl::assignCoursesToTeacher(const string& teacherId, const
         if (teacher->isCourseAssigned(cid)) {
             errors += "- Course " + cid + ": This course is already assigned to this teacher.\n";
         }
+
+       c->addTeacher(teacher);
+
     }
 
 
@@ -338,8 +341,17 @@ void CourseServiceImpl::showCourse(const string& id){
     cout << "Course ID: " << course->getId() << endl;
     cout << "Course Grade: " << course->getGrade() << endl;
     cout << "Subject Hours: " << course->getSubjectHours() << endl;
-    cout << "Course Teacher: " << course->getCourseTeacherName() << endl;
-    cout << "Course Teacher ID: " << course->getCourseTeacherId() <<endl;
+
+    const vector<string>& teachers = course->getTeacherNames();
+    if (teachers.empty()) cout << "Teachers: NONE\n";
+    else {
+        cout << "Teachers: ";
+        for (int i = 0; i < teachers.size(); i++) {
+            cout << teachers[i];
+            if (i != teachers.size() - 1) cout << ", ";
+        }
+        cout << endl;
+    }
     cout << "-----------------------------------\n";
 
 }

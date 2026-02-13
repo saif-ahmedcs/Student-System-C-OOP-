@@ -99,9 +99,16 @@ int Teacher::getNumberOfStudentsInTeacherCourse() const {
     }
 
 // Course
-void Course::addTeacher(const Teacher &t){
-     courseTeachers.push_back(t);
+void Course::addTeacherName(const string& teacherName) {
+    if(std::find(teacherNames.begin(), teacherNames.end(), teacherName) == teacherNames.end()) {
+        teacherNames.push_back(teacherName);
     }
+}
+
+void Course::addTeacher(Teacher* t){
+    courseTeachers.push_back(t);
+    addTeacherName(t->getName());
+}
 void Course::setGrade(const int &year){
      grade = year;
     }
@@ -118,6 +125,20 @@ void Course::setCourseSpecialization(const string& specialization){
     courseSpecialization = specialization;
     }
 
+
+
+   const vector<string>& Course::getTeacherNames() const {
+    return teacherNames;
+}
+
+
+
+
+
+
+
+
+
 string Course::getCourseTeacherName() const {
   return teacherName;
     }
@@ -125,9 +146,10 @@ string Course::getCourseTeacherId() const {
   return teacherId;
 }
 
-const vector<Teacher>& Course::getCourseTeachers() const {
+const vector<Teacher*>& Course::getCourseTeachers() const {
     return courseTeachers;
-    }
+}
+
 int Course::getGrade() const {
     return grade;
     }

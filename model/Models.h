@@ -65,22 +65,25 @@ class Course : public ShareData {
 private:
     string teacherName;
     string teacherId;
-    vector<Teacher> courseTeachers;
-    int grade;
+vector<Teacher*> courseTeachers;
+     int grade;
     int subjectHours;
     string courseSpecialization;
+    vector<string> teacherNames;
 
 public:
     void setCourseTeacherName(const string &id);
     void setCourseTeacherId (const string &id);
-    void addTeacher(const Teacher& t);
+    void addTeacher(Teacher* t);
     void setGrade(const int &year);
     void setSubjectHours(int hours);
     void setCourseSpecialization(const string& specialization);
+    void addTeacherName(const string& teacherName);//ddd
 
 
     Teacher getCourseTeacher() const;
-    const vector<Teacher>& getCourseTeachers() const;
+    const vector<string>& getTeacherNames() const; //ddddd
+    const vector<Teacher*>& getCourseTeachers() const;
     int getGrade() const;
     string getCourseTeacherName() const;
     string getCourseTeacherId() const;
