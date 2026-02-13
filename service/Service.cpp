@@ -101,61 +101,48 @@ if (!validateTeachersLimit(newData.getTeacherGrade()))
 }
 
 string TeacherServiceImpl::assignCoursesToTeacher(const string& teacherId, const vector<string>& courseIds) {
-
-
     if (courseIds.empty() || courseIds.size() > 3)
         return "Teacher must be assigned between 1 and 3 courses.";
 
     Teacher* teacher = teacherRepository.findTeacherById(teacherId);
-
     if (!teacher)
         return "Teacher not found.";
 
-
-    if ((teacher->getAssignedCourses().size() + courseIds.size()) > 3){
+    if ((teacher->getAssignedCourses().size() + courseIds.size()) > 3)
         return "Teacher cannot be assigned more than 3 courses.";
-    }
-
 
     string errors = "";
 
     for (int i = 0; i < courseIds.size(); i++) {
-
         string cid = courseIds[i];
-
-
         Course* c = courseService.findCourseById(cid);
 
         if (!c) {
-            errors += "- Course " + cid + ": Course does not exist in the system.\n";
-            continue;
+            errors += "- Course " + cid + " not found.\n";
         }
-
-        if (!courseService.validateCourseTeacherStage(teacherId, c->getGrade())) {
-            errors += "- Course " + cid + ": Teacher does not teach the educational stage of this course.\n";
+        else if (c->getTeacherNames().size() >= 3) {
+            errors += "- Course " + cid + " already has 3 teachers.\n";
         }
-
-
-        if (!courseService.validateCourseTeacherSpecialization(teacherId, c->getCourseSpecialization())) {
-            errors += "- Course " + cid + ": Teacher specialization does not match the course specialization.\n";
+        else if (!courseService.validateCourseTeacherStage(teacherId, c->getGrade())) {
+            errors += "- Course " + cid + " stage mismatch.\n";
         }
-
-
-        if (teacher->isCourseAssigned(cid)) {
-            errors += "- Course " + cid + ": This course is already assigned to this teacher.\n";
+        else if (!courseService.validateCourseTeacherSpecialization(teacherId, c->getCourseSpecialization())) {
+            errors += "- Course " + cid + " specialization mismatch.\n";
         }
-
-       c->addTeacher(teacher);
-
+        else if (teacher->isCourseAssigned(cid)) {
+            errors += "- Course " + cid + " already assigned.\n";
+        }
+        else {
+            c->addTeacher(teacher);
+        }
     }
 
-
     if (!errors.empty())
-        return "Course assignment failed due to the following errors:\n" + errors;
-
+        return "Assignment failed:\n" + errors;
 
     return teacherRepository.assignCoursesToTeacher(teacherId, courseIds);
 }
+
 
 void TeacherServiceImpl::showTeacher(const string& id){
 
@@ -348,7 +335,8 @@ void CourseServiceImpl::showCourse(const string& id){
         cout << "Teachers: ";
         for (int i = 0; i < teachers.size(); i++) {
             cout << teachers[i];
-            if (i != teachers.size() - 1) cout << ", ";
+            if (i != teachers.size() - 1)
+            cout << ", ";
         }
         cout << endl;
     }
