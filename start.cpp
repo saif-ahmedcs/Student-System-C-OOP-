@@ -18,9 +18,9 @@ void showProcesses(const string& s) {
         cout << "5- Show " << s << " Info\n";
     }
     else if (s == "Student") {
-        cout << "1- Add " << s << "\t\t2- Remove " << s << "\n";
-        cout << "3- Edit " << s << "\t\t4- Show " << s << " Info\n";
-        cout << "5- Assign Courses to " << s << "\n";
+        cout << "1- Add " << s << "\t\t\t2- Remove " << s << "\n";
+        cout << "3- Edit " << s << "\t\t\t4- Assign Courses to " << s << "\n";
+        cout << "5- Show " << s << " Info\n";
     }
     else if (s == "Course") {
         cout << "1- Add " << s << "\t\t2- Remove " << s << "\n";
@@ -150,14 +150,7 @@ int main() {
                     cout << studentController.editStudent(id, newData) << endl;
                 }
 
-                else if (studentProcess == 4) { // Show Student Info
-                    cout << "\nEnter Student ID: ";
-                    string id;
-                    getline(cin, id);
-                    studentController.showStudent(id);
-                }
-
-                else if (studentProcess == 5) { // Assign Courses to Student
+                else if (studentProcess == 4) { // Assign Courses to Student
                     cout << "\nEnter Student ID to assign: ";
                     string studentId;
                     getline(cin, studentId);
@@ -168,17 +161,16 @@ int main() {
                         break;
                     }
 
-                    // Show current courses and max allowed
                     int studentGrade = student->getSchoolYear();
                     int currentCourses = student->getNumberOfAssignedCourses();
                     int maxAllowed;
 
                     if (studentGrade >= 1 && studentGrade <= 6) {
-                        maxAllowed = 8;  // Primary
+                        maxAllowed = MaxCoursesForGradeInPrimary;
                     } else if (studentGrade >= 7 && studentGrade <= 9) {
-                        maxAllowed = 11; // Middle
+                        maxAllowed = MaxCoursesForGradeInMiddle;
                     } else if (studentGrade >= 10 && studentGrade <= 12) {
-                        maxAllowed = 13; // Secondary
+                        maxAllowed = MaxCoursesForGradeInSecondary;
                     } else {
                         cout << "Invalid grade.\n";
                         break;
@@ -212,6 +204,12 @@ int main() {
 
                     cout << endl;
                     cout << studentController.assignCoursesToStudent(studentId, courseIds) << endl;
+                }
+                else if (studentProcess == 5) { // Show Student Info
+                    cout << "\nEnter Student ID: ";
+                    string id;
+                    getline(cin, id);
+                    studentController.showStudent(id);
                 }
 
                 break;
