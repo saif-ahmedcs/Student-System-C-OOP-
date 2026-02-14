@@ -109,6 +109,20 @@ void Course::addTeacher(Teacher* t){
     courseTeachers.push_back(t);
     addTeacherName(t->getName());
 }
+
+void Course::addAssignedStudent(const string& studentId) {
+    assignedStudentIds.push_back(studentId);
+}
+
+bool Course::isStudentAssigned(const string& studentId) const {
+    for (int i = 0; i < assignedStudentIds.size(); i++) {
+        if (assignedStudentIds[i] == studentId) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void Course::setGrade(const int &year){
      grade = year;
     }
@@ -163,6 +177,14 @@ string Course::getCourseSpecialization() const {
     return courseSpecialization;
 }
 
+const vector<string>& Course::getAssignedStudents() const {
+    return assignedStudentIds;
+}
+
+int Course::getNumberOfAssignedStudents() const {
+    return assignedStudentIds.size();
+}
+
 
 // Student
 void Student::setStudentNationalNum(string n){
@@ -174,9 +196,18 @@ void Student::setSchoolYear(const int &year){
 void Student::setGpa(double g){
      gpa = g;
     }
-void Student::setStudentTeacherCourse(const Teacher &teacher, const Course &course){
-    teacherCoursePairs.push_back({teacher, course});
+void Student::addAssignedCourse(const string& courseId) {
+    assignedCourseIds.push_back(courseId);
+}
+
+bool Student::isCourseAssigned(const string& courseId) const {
+    for (int i = 0; i < assignedCourseIds.size(); i++) {
+        if (assignedCourseIds[i] == courseId) {
+            return true;
+        }
     }
+    return false;
+}
 
 string Student::getStudentNationalNum() const {
   return nationalNumber;
@@ -188,12 +219,9 @@ int Student::getSchoolYear() const {
 double Student::getGpa() const {
      return gpa;
     }
-const vector<TeacherCourse>& Student::getStudentTeacherCourses() const {
-     return teacherCoursePairs;
+const vector<string>& Student::getAssignedCourses() const {
+     return assignedCourseIds;
     }
-int Student::getNumberOfStudentTeachers() const {
-     return teacherCoursePairs.size();
-    }
-int Student::getNumberOfStudentCourses() const {
-    return teacherCoursePairs.size();
+int Student::getNumberOfAssignedCourses() const {
+     return assignedCourseIds.size();
     }

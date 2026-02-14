@@ -17,6 +17,16 @@ void showProcesses(const string& s) {
         cout << "3- Edit " << s << "\t\t\t4- Assign Courses to " << s << "\n";
         cout << "5- Show " << s << " Info\n";
     }
+    else if (s == "Student") {
+        cout << "1- Add " << s << "\t\t2- Remove " << s << "\n";
+        cout << "3- Edit " << s << "\t\t4- Show " << s << " Info\n";
+        cout << "5- Assign Courses to " << s << "\n";
+    }
+    else if (s == "Course") {
+        cout << "1- Add " << s << "\t\t2- Remove " << s << "\n";
+        cout << "3- Edit " << s << "\t\t4- Show " << s << " Info\n";
+        cout << "5- Show Assigned Students\n";
+    }
     else {
         cout << "1- Add " << s << "\t\t2- Remove " << s << "\n";
         cout << "3- Edit " << s << "\t\t4- Show " << s << " Info\n";
@@ -31,8 +41,8 @@ int main() {
     CourseRepositoryImpl courseRepo;
     TeacherRepositoryImpl teacherRepo;
 
-    StudentServiceImpl studentService(studentRepo);
-    CourseServiceImpl courseService(courseRepo, teacherRepo);
+    CourseServiceImpl courseService(courseRepo, teacherRepo, studentRepo);
+    StudentServiceImpl studentService(studentRepo, courseRepo);
     TeacherServiceImpl teacherService(teacherRepo, courseService);
 
     StudentController studentController(studentService);
@@ -147,6 +157,63 @@ int main() {
                     studentController.showStudent(id);
                 }
 
+                else if (studentProcess == 5) { // Assign Courses to Student
+                    cout << "\nEnter Student ID to assign: ";
+                    string studentId;
+                    getline(cin, studentId);
+
+                    Student* student = studentController.findStudentById(studentId);
+                    if (!student) {
+                        cout << "Student with ID " << studentId << " not found.\n";
+                        break;
+                    }
+
+                    // Show current courses and max allowed
+                    int studentGrade = student->getSchoolYear();
+                    int currentCourses = student->getNumberOfAssignedCourses();
+                    int maxAllowed;
+
+                    if (studentGrade >= 1 && studentGrade <= 6) {
+                        maxAllowed = 8;  // Primary
+                    } else if (studentGrade >= 7 && studentGrade <= 9) {
+                        maxAllowed = 11; // Middle
+                    } else if (studentGrade >= 10 && studentGrade <= 12) {
+                        maxAllowed = 13; // Secondary
+                    } else {
+                        cout << "Invalid grade.\n";
+                        break;
+                    }
+
+                    cout << "Student has " << currentCourses << " courses. Max allowed: " << maxAllowed << endl;
+
+                    if (currentCourses >= maxAllowed) {
+                        cout << "Student already has maximum number of courses!\n";
+                        break;
+                    }
+
+                    int remaining = maxAllowed - currentCourses;
+                    int numCourses;
+                    cout << "How many courses to assign (1-" << remaining << ")? ";
+                    cin >> numCourses;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    if (numCourses < 1 || numCourses > remaining) {
+                        cout << "Invalid number of courses. Must be between 1 and " << remaining << ".\n";
+                        break;
+                    }
+
+                    vector<string> courseIds;
+                    for (int i = 0; i < numCourses; i++) {
+                        cout << "Enter Course ID #" << (i + 1) << ": ";
+                        string cid;
+                        getline(cin, cid);
+                        courseIds.push_back(cid);
+                    }
+
+                    cout << endl;
+                    cout << studentController.assignCoursesToStudent(studentId, courseIds) << endl;
+                }
+
                 break;
             }
 
@@ -240,6 +307,20 @@ int main() {
                     }
 
                     courseController.showCourse(id);
+                }
+
+                else if (courseProcess == 5) { // Show Assigned Students
+                    cout << "\nEnter Course ID: ";
+                    string id;
+                    getline(cin, id);
+
+                    Course* existingCourse = courseController.findCourseById(id);
+                    if (!existingCourse) {
+                        cout << "Course with ID " << id << " not found.\n";
+                        break;
+                    }
+
+                    courseController.showCourseStudents(id);
                 }
 
                 break;
@@ -385,8 +466,7 @@ int main() {
 
                     int totalCourses = teacher->getAssignedCourses().size() + numCourses;
                     if (totalCourses > 3) {
-                        cout << "Cannot assign " << numCourses << " courses. Teacher already has "
-                             << teacher->getAssignedCourses().size() << " assigned. Maximum allowed is 3.\n";
+                        cout << "Cannot assign " << numCourses << " courses. Teacher already has " << teacher->getAssignedCourses().size() << " assigned. Maximum allowed is 3.\n";
                         break;
                     }
 

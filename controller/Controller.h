@@ -30,6 +30,7 @@ public:
     string addCourse(int grade, Course &course);
     string editCourse(const string& id, const Course& newData);
     void showCourse(const string& id);
+    void showCourseStudents(const string& courseId);
 
 
 };
@@ -45,6 +46,7 @@ public:
     string addStudent(int grade, Student &student);
     string editStudent(const string& id, const Student& newData);
     void showStudent(const string& id);
+    string assignCoursesToStudent(const string& studentId, const vector<string>& courseIds);
 
 };
 

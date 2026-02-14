@@ -184,10 +184,12 @@ void TeacherServiceImpl::showTeacher(const string& id){
 
 CourseServiceImpl::CourseServiceImpl(
     CourseRepositoryImpl& courseRepo,
-    TeacherRepositoryImpl& teacherRepo
+    TeacherRepositoryImpl& teacherRepo,
+    StudentRepositoryImpl& studentRepo
 )
 : courseRepository(courseRepo),
-  teacherRepository(teacherRepo)
+  teacherRepository(teacherRepo),
+  studentRepository(studentRepo)
 {}
 
 // Validation functions
@@ -251,7 +253,6 @@ bool CourseServiceImpl::isCourseAlreadyExists(const string& name, int grade, con
 
 
 
-// Add course with validation
 string CourseServiceImpl::addCourse(int grade, Course &course) {
     string errorMessages = "";
 
@@ -276,7 +277,6 @@ string CourseServiceImpl::addCourse(int grade, Course &course) {
         return "- Maximum number of courses reached for this grade.\n";
     }
 
-    // Everything valid, add to repository
 
     return courseRepository.addCourse(grade, course);
 }
@@ -309,7 +309,6 @@ string CourseServiceImpl::editCourse(const string& id, const Course& newData){
      if (!validateCoursesLimit(newData.getGrade()))
        return "- Maximum number of courses reached for this grade.\n";
 
-    // Everything valid, add to repository
      return courseRepository.editCourse(id, newData);
 }
 
@@ -344,11 +343,45 @@ void CourseServiceImpl::showCourse(const string& id){
 
 }
 
+void CourseServiceImpl::showCourseStudents(const string& courseId) {
+    Course* course = courseRepository.findCourseById(courseId);
 
+    if (!course) {
+        cout << "-----------------------\n";
+        cout << "Course not found.\n";
+        cout << "-----------------------\n";
+        return;
+    }
+
+    const vector<string>& assignedStudents = course->getAssignedStudents();
+
+    cout << "\n======================================\n";
+    cout << "Course: " << course->getName() << " (ID: " << course->getId() << ")\n";
+    cout << "Grade: " << course->getGrade() << endl;
+    cout << "======================================\n";
+    cout << "Total Assigned Students: " << assignedStudents.size() << endl;
+    cout << "--------------------------------------\n";
+
+    if (assignedStudents.empty()) {
+        cout << "No students assigned in this course yet.\n";
+    } else {
+        cout << "Assigned Students:\n\n";
+        for (int i = 0; i < assignedStudents.size(); i++) {
+            Student* student = studentRepository.findStudentById(assignedStudents[i]);
+            if (student) {
+                cout << (i + 1) << ". " << student->getName()
+                     << " (ID: " << student->getId() << ")"
+                     << " - Grade: " << student->getSchoolYear() << endl;
+            }
+        }
+    }
+    cout << "======================================\n";
+}
 
 ////////////////// StudentServiceImpl \\\\\\\\\\\\\\\
 
-StudentServiceImpl::StudentServiceImpl(StudentRepositoryImpl &repo) : studentRepository(repo) {}
+StudentServiceImpl::StudentServiceImpl(StudentRepositoryImpl &repo, CourseRepositoryImpl &courseRepo)
+    : studentRepository(repo), courseRepository(courseRepo) {}
 
 bool StudentServiceImpl::validateName(const string &name) {
     return !name.empty();
@@ -454,6 +487,59 @@ string StudentServiceImpl::editStudent(const string& id, const Student& newData)
         return "Invalid data. Please fix the following errors:\n" + errors;
 
     return studentRepository.editStudent(id, newData);
+}
+
+string StudentServiceImpl::assignCoursesToStudent(const string& studentId, const vector<string>& courseIds) {
+
+    Student* student = studentRepository.findStudentById(studentId);
+    if (!student)
+        return "Student not found.";
+
+    int studentGrade = student->getSchoolYear();
+    int currentCourses = student->getNumberOfAssignedCourses();
+    int maxAllowed;
+
+    if (studentGrade >= 1 && studentGrade <= 6) {
+        maxAllowed = MaxCoursesForGradeInPrimary;
+    }
+    else if (studentGrade >= 7 && studentGrade <= 9) {
+        maxAllowed = MaxCoursesForGradeInMiddle;
+    }
+    else if (studentGrade >= 10 && studentGrade <= 12) {
+        maxAllowed = MaxCoursesForGradeInSecondary;
+    }
+    else {
+        return "Invalid grade.";
+    }
+
+    if (currentCourses + courseIds.size() > maxAllowed) {
+        return "Cannot assign " + to_string(courseIds.size()) + " courses. Student already has " + to_string(currentCourses) + " courses. Maximum allowed is " + to_string(maxAllowed) + " for this grade.";
+    }
+
+    string errors = "";
+
+    for (int i = 0; i < courseIds.size(); i++) {
+        string cid = courseIds[i];
+        Course* c = courseRepository.findCourseById(cid);
+
+        if (!c) {
+            errors += "- Course " + cid + " not found.\n";
+        }
+        else if (c->getGrade() != student->getSchoolYear()) {
+            errors += "- Course " + cid + " grade mismatch.\n";
+        }
+        else if (student->isCourseAssigned(cid)) {
+            errors += "- Course " + cid + " already assigned.\n";
+        }
+        else {
+            c->addAssignedStudent(studentId);
+        }
+    }
+
+    if (!errors.empty())
+        return "Assignment failed:\n" + errors;
+
+    return studentRepository.assignCoursesToStudent(studentId, courseIds);
 }
 
 void StudentServiceImpl::showStudent(const string& studentId) {

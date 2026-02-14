@@ -1,22 +1,21 @@
 #include "Repo.h"
 
-int MaxTeachersForGradeInPrimary = 7;
-int MaxTeachersForGradeInMiddle = 9;
-int MaxTeachersForGradeInSecondary = 12;
+////////////////// Global \\\\\\\\\\\\\\\
 
-int MaxCoursesForGradeInPrimary = 8;
-int MaxCoursesForGradeInMiddle = 11;
-int MaxCoursesForGradeInSecondary = 13;
+const int MaxTeachersForGradeInPrimary = 7;
+const int MaxTeachersForGradeInMiddle = 9;
+const int MaxTeachersForGradeInSecondary = 12;
 
-int MaxStudentsForGradeInPrimary = 120;
-int MaxStudentsForGradeInMiddle = 100;
-int MaxStudentsForGradeInSecondary = 90;
+const int MaxCoursesForGradeInPrimary = 8;
+const int MaxCoursesForGradeInMiddle = 11;
+const int MaxCoursesForGradeInSecondary = 13;
 
-////////////////// Global functions \\\\\\\\\\\\\\\
-
+const int MaxStudentsForGradeInPrimary = 120;
+const int MaxStudentsForGradeInMiddle = 100;
+const int MaxStudentsForGradeInSecondary = 90;
 
 // Determines the educational stage (Primary, Middle, Secondary)
-// based on the given grade number (1–12). Throws an exception for invalid grades.
+// based on the given grade number (1 12). Throws an exception for invalid grades.
 Stage getStageFromGrade(int grade) {
     if (grade >= 1 && grade <= 6) return Stage::Primary;
     if (grade >= 7 && grade <= 9) return Stage::Middle;
@@ -280,6 +279,21 @@ string CourseRepositoryImpl::editCourse(const string& id, const Course& newData)
 
 }
 
+string CourseRepositoryImpl::assignStudentToCourse(const string& studentId, const string& courseId) {
+    Course* course = findCourseById(courseId);
+
+    if (!course) {
+        return "Error: Course with ID " + courseId + " not found.";
+    }
+
+    if (course->isStudentAssigned(studentId)) {
+        return "Error: Student is already assigned in this course.";
+    }
+
+    course->addAssignedStudent(studentId);
+    return "Student assigned in course successfully.";
+}
+
 ////////////////// StudentRepositoryImpl \\\\\\\\\\\\\\\
 
 void StudentRepositoryImpl::addStudentInGrade(int grade, Student &student) {
@@ -361,4 +375,14 @@ string StudentRepositoryImpl::editStudent(const string& id, const Student& newDa
     s->setSchoolYear(newData.getSchoolYear());
 
     return "Student data updated successfully.";
+}
+
+string StudentRepositoryImpl::assignCoursesToStudent(const string& studentId, const vector<string>& courseIds) {
+    Student* student = findStudentById(studentId);
+
+    for (int i = 0; i < courseIds.size(); i++) {
+        student->addAssignedCourse(courseIds[i]);
+    }
+
+    return "Courses assigned to student successfully.";
 }

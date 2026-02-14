@@ -4,6 +4,19 @@
 #include "../model/Models.h"
 using namespace std;
 
+extern const int MaxTeachersForGradeInPrimary;
+extern const int MaxTeachersForGradeInMiddle;
+extern const int MaxTeachersForGradeInSecondary;
+
+extern const int MaxCoursesForGradeInPrimary;
+extern const int MaxCoursesForGradeInMiddle;
+extern const int MaxCoursesForGradeInSecondary;
+
+extern const int MaxStudentsForGradeInPrimary;
+extern const int MaxStudentsForGradeInMiddle;
+extern const int MaxStudentsForGradeInSecondary;
+
+
 enum Stage { Primary = 1, Middle, Secondary };
 
 Stage getStageFromGrade(int grade); // global function
@@ -56,6 +69,7 @@ public:
     virtual int getMaxCoursesForGrade(int grade) const = 0;
     virtual string addCourse(int grade, Course &course) = 0;
     virtual string editCourse(const string& id, const Course& newData) = 0;
+    virtual string assignStudentToCourse(const string& studentId, const string& courseId) = 0;
 
 };
 
@@ -76,6 +90,7 @@ public:
     Course* findCourseById(const string& id) override;
     string addCourse(int grade, Course &course) override;
     string editCourse(const string& id, const Course& newData) override;
+    string assignStudentToCourse(const string& studentId, const string& courseId) override;
 
 
 
@@ -93,6 +108,7 @@ public:
 
     virtual string addStudent(int grade, Student &student) = 0;
     virtual string editStudent(const string& id, const Student& newData) = 0;
+    virtual string assignCoursesToStudent(const string& studentId, const vector<string>& courseIds) = 0;
 
 };
 
@@ -115,6 +131,7 @@ public:
 
     string addStudent(int grade, Student &student) override;
     string editStudent(const string& id, const Student& newData) override;
+    string assignCoursesToStudent(const string& studentId, const vector<string>& courseIds) override;
 
 };
 

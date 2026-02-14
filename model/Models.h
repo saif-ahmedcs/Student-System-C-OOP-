@@ -70,6 +70,7 @@ vector<Teacher*> courseTeachers;
     int subjectHours;
     string courseSpecialization;
     vector<string> teacherNames;
+    vector<string> assignedStudentIds;
 
 public:
     void setCourseTeacherName(const string &id);
@@ -79,6 +80,8 @@ public:
     void setSubjectHours(int hours);
     void setCourseSpecialization(const string& specialization);
     void addTeacherName(const string& teacherName);//ddd
+    void addAssignedStudent(const string& studentId);
+    bool isStudentAssigned(const string& studentId) const;
 
 
     Teacher getCourseTeacher() const;
@@ -90,11 +93,8 @@ public:
     string getCourseSpecialization() const;
     int getSubjectHours() const;
     int getNumberOfCourseTeachers() const;
-};
-
-struct TeacherCourse {
-    Teacher teacher;
-    Course course;
+    const vector<string>& getAssignedStudents() const;
+    int getNumberOfAssignedStudents() const;
 };
 
 //Student
@@ -103,19 +103,19 @@ private:
     string nationalNumber;
     int schoolYear;
     double gpa = 0.00;
-    vector<TeacherCourse> teacherCoursePairs;
+    vector<string> assignedCourseIds;
 public:
     void setStudentNationalNum(string n);
     void setSchoolYear(const int &year);
     void setGpa(double g);
-    void setStudentTeacherCourse(const Teacher &teacher, const Course &course);
+    void addAssignedCourse(const string& courseId);
+    bool isCourseAssigned(const string& courseId) const;
 
     string getStudentNationalNum() const;
     int getSchoolYear() const;
     double getGpa() const;
-    const vector<TeacherCourse>& getStudentTeacherCourses() const;
-    int getNumberOfStudentTeachers() const;
-    int getNumberOfStudentCourses() const;
+    const vector<string>& getAssignedCourses() const;
+    int getNumberOfAssignedCourses() const;
 };
 
 #endif

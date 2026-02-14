@@ -42,6 +42,10 @@ void CourseController::showCourse(const string& id){
     return courseService.showCourse(id);
 }
 
+void CourseController::showCourseStudents(const string& courseId){
+    return courseService.showCourseStudents(courseId);
+}
+
 // Student
 StudentController::StudentController(StudentServiceImpl &service) : studentService(service) {}
 
@@ -59,4 +63,8 @@ string StudentController::editStudent(const string& id, const Student& newData) 
 
 void StudentController::showStudent(const string& id){
     return studentService.showStudent(id);
+}
+
+string StudentController::assignCoursesToStudent(const string& studentId, const vector<string>& courseIds){
+    return studentService.assignCoursesToStudent(studentId, courseIds);
 }

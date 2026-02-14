@@ -54,6 +54,7 @@ public:
     virtual string addCourse(int grade, Course &course) = 0;
     virtual string editCourse(const string& id, const Course& newData) = 0;
     virtual void showCourse(const string &id) = 0;
+    virtual void showCourseStudents(const string &courseId) = 0;
 
 
 };
@@ -62,6 +63,7 @@ class CourseServiceImpl : public CourseService {
 private:
     CourseRepositoryImpl &courseRepository;
     TeacherRepositoryImpl& teacherRepository;
+    StudentRepositoryImpl& studentRepository;
     // Validation
     bool isCourseAlreadyExists(const string& name, int grade, const string& specialization);
     bool validateCourseName(const string &name);
@@ -73,11 +75,12 @@ private:
 
 
 public:
-    CourseServiceImpl(CourseRepositoryImpl& courseRepo,TeacherRepositoryImpl& teacherRepo);
+    CourseServiceImpl(CourseRepositoryImpl& courseRepo,TeacherRepositoryImpl& teacherRepo, StudentRepositoryImpl& studentRepo);
     Course* findCourseById(const string& id) override;
     string addCourse(int grade, Course &course) override;
     string editCourse(const string& id, const Course& newData) override;
     void showCourse(const string &id) override;
+    void showCourseStudents(const string &courseId) override;
 
 };
 
@@ -90,12 +93,14 @@ public:
     virtual string addStudent(int grade, Student &student) = 0;
     virtual string editStudent(const string& id, const Student& newData) = 0;
     virtual void showStudent(const string &id) = 0;
+    virtual string assignCoursesToStudent(const string& studentId, const vector<string>& courseIds) = 0;
 
 };
 
 class StudentServiceImpl : public StudentService {
 private:
     StudentRepositoryImpl &studentRepository;
+    CourseRepositoryImpl &courseRepository;
 
     // Validation
     bool isStudentAlreadyExists(const string& nationalNumber);
@@ -107,13 +112,14 @@ private:
     bool validateNewGpa(float gpa);
 
 public:
-    StudentServiceImpl(StudentRepositoryImpl &repo);
+    StudentServiceImpl(StudentRepositoryImpl &repo, CourseRepositoryImpl &courseRepo);
 
     Student* findStudentByNationalNumber(const string& nationalNumber) override;
     Student* findStudentById(const string& id) override;
     string addStudent(int grade, Student &student) override;
     string editStudent(const string& id, const Student& newData) override;
     void showStudent(const string &id) override;
+    string assignCoursesToStudent(const string& studentId, const vector<string>& courseIds) override;
 
 
 };
