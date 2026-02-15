@@ -253,6 +253,7 @@ bool CourseServiceImpl::isCourseAlreadyExists(const string& name, int grade, con
 
 
 
+// Add course with validation
 string CourseServiceImpl::addCourse(int grade, Course &course) {
     string errorMessages = "";
 
@@ -277,6 +278,7 @@ string CourseServiceImpl::addCourse(int grade, Course &course) {
         return "- Maximum number of courses reached for this grade.\n";
     }
 
+    // Everything valid, add to repository
 
     return courseRepository.addCourse(grade, course);
 }
@@ -309,6 +311,7 @@ string CourseServiceImpl::editCourse(const string& id, const Course& newData){
      if (!validateCoursesLimit(newData.getGrade()))
        return "- Maximum number of courses reached for this grade.\n";
 
+    // Everything valid, add to repository
      return courseRepository.editCourse(id, newData);
 }
 
@@ -375,8 +378,10 @@ void CourseServiceImpl::showCourseStudents(const string& courseId) {
             }
         }
     }
-    cout << "======================================\n";
+    cout << "======================================\n\n";
 }
+
+
 
 ////////////////// StudentServiceImpl \\\\\\\\\\\\\\\
 
@@ -413,6 +418,13 @@ bool StudentServiceImpl::validateGrade(int grade) {
 
 bool StudentServiceImpl::validateNewGpa(float gpa){
   return gpa>=0.0 && gpa<=4.0;
+}
+
+int StudentServiceImpl::getMaxCoursesForGrade(int grade) {
+    if (grade >= 1 && grade <= 6) return 8;
+    if (grade >= 7 && grade <= 9) return 11;
+    if (grade >= 10 && grade <= 12) return 13;
+    return 0;
 }
 
 Student* StudentServiceImpl::findStudentByNationalNumber(const string& nationalNumber){
@@ -489,59 +501,6 @@ string StudentServiceImpl::editStudent(const string& id, const Student& newData)
     return studentRepository.editStudent(id, newData);
 }
 
-string StudentServiceImpl::assignCoursesToStudent(const string& studentId, const vector<string>& courseIds) {
-
-    Student* student = studentRepository.findStudentById(studentId);
-    if (!student)
-        return "Student not found.";
-
-    int studentGrade = student->getSchoolYear();
-    int currentCourses = student->getNumberOfAssignedCourses();
-    int maxAllowed;
-
-    if (studentGrade >= 1 && studentGrade <= 6) {
-        maxAllowed = MaxCoursesForGradeInPrimary;
-    }
-    else if (studentGrade >= 7 && studentGrade <= 9) {
-        maxAllowed = MaxCoursesForGradeInMiddle;
-    }
-    else if (studentGrade >= 10 && studentGrade <= 12) {
-        maxAllowed = MaxCoursesForGradeInSecondary;
-    }
-    else {
-        return "Invalid grade.";
-    }
-
-    if (currentCourses + courseIds.size() > maxAllowed) {
-        return "Cannot assign " + to_string(courseIds.size()) + " courses. Student already has " + to_string(currentCourses) + " courses. Maximum allowed is " + to_string(maxAllowed) + " for this grade.";
-    }
-
-    string errors = "";
-
-    for (int i = 0; i < courseIds.size(); i++) {
-        string cid = courseIds[i];
-        Course* c = courseRepository.findCourseById(cid);
-
-        if (!c) {
-            errors += "- Course " + cid + " not found.\n";
-        }
-        else if (c->getGrade() != student->getSchoolYear()) {
-            errors += "- Course " + cid + " grade mismatch.\n";
-        }
-        else if (student->isCourseAssigned(cid)) {
-            errors += "- Course " + cid + " already assigned.\n";
-        }
-        else {
-            c->addAssignedStudent(studentId);
-        }
-    }
-
-    if (!errors.empty())
-        return "Assignment failed:\n" + errors;
-
-    return studentRepository.assignCoursesToStudent(studentId, courseIds);
-}
-
 void StudentServiceImpl::showStudent(const string& studentId) {
 
     Student* student = studentRepository.findStudentById(studentId);
@@ -559,4 +518,55 @@ void StudentServiceImpl::showStudent(const string& studentId) {
     cout << "Age: " << student->getAge() << endl;
     cout << "Phone Number: " << student->getPhoneNumber() << endl;
     cout << "GPA: " << student->getGpa() << endl;
+}
+
+string StudentServiceImpl::assignCoursesToStudent(const string& studentId, const vector<string>& courseIds) {
+
+    Student* student = studentRepository.findStudentById(studentId);
+    if (!student)
+        return "Student not found.";
+
+    int studentGrade = student->getSchoolYear();
+    int currentCourses = student->getNumberOfAssignedCourses();
+    int maxAllowed = getMaxCoursesForGrade(studentGrade);
+
+    if (maxAllowed == 0) {
+        return "Invalid grade.";
+    }
+
+    if (currentCourses >= maxAllowed) {
+        return "Student already has maximum courses (" + to_string(maxAllowed) + ").";
+    }
+
+    if (currentCourses + courseIds.size() > maxAllowed) {
+        int remaining = maxAllowed - currentCourses;
+        return "Cannot assign " + to_string(courseIds.size()) + " courses. "
+               "Student has " + to_string(currentCourses) + "/" + to_string(maxAllowed) + " courses. "
+               "Can only add " + to_string(remaining) + " more.";
+    }
+
+    string errors = "";
+
+    for (int i = 0; i < courseIds.size(); i++) {
+        string cid = courseIds[i];
+        Course* c = courseRepository.findCourseById(cid);
+
+        if (!c) {
+            errors += "- Course " + cid + " not found.\n";
+        }
+        else if (c->getGrade() != studentGrade) {
+            errors += "- Course " + cid + " grade mismatch.\n";
+        }
+        else if (student->isCourseAssigned(cid)) {
+            errors += "- Course " + cid + " already assigned.\n";
+        }
+        else {
+            c->addAssignedStudent(studentId);
+        }
+    }
+
+    if (!errors.empty())
+        return "Assignment failed:\n" + errors;
+
+    return studentRepository.assignCoursesToStudent(studentId, courseIds);
 }

@@ -4,19 +4,6 @@
 #include "../model/Models.h"
 using namespace std;
 
-extern const int MaxTeachersForGradeInPrimary;
-extern const int MaxTeachersForGradeInMiddle;
-extern const int MaxTeachersForGradeInSecondary;
-
-extern const int MaxCoursesForGradeInPrimary;
-extern const int MaxCoursesForGradeInMiddle;
-extern const int MaxCoursesForGradeInSecondary;
-
-extern const int MaxStudentsForGradeInPrimary;
-extern const int MaxStudentsForGradeInMiddle;
-extern const int MaxStudentsForGradeInSecondary;
-
-
 enum Stage { Primary = 1, Middle, Secondary };
 
 Stage getStageFromGrade(int grade); // global function

@@ -1,18 +1,19 @@
 #include "Repo.h"
 
-////////////////// Global \\\\\\\\\\\\\\\
+int MaxTeachersForGradeInPrimary = 7;
+int MaxTeachersForGradeInMiddle = 9;
+int MaxTeachersForGradeInSecondary = 12;
 
-const int MaxTeachersForGradeInPrimary = 7;
-const int MaxTeachersForGradeInMiddle = 9;
-const int MaxTeachersForGradeInSecondary = 12;
+int MaxCoursesForGradeInPrimary = 8;
+int MaxCoursesForGradeInMiddle = 11;
+int MaxCoursesForGradeInSecondary = 13;
 
-const int MaxCoursesForGradeInPrimary = 8;
-const int MaxCoursesForGradeInMiddle = 11;
-const int MaxCoursesForGradeInSecondary = 13;
+int MaxStudentsForGradeInPrimary = 120;
+int MaxStudentsForGradeInMiddle = 100;
+int MaxStudentsForGradeInSecondary = 90;
 
-const int MaxStudentsForGradeInPrimary = 120;
-const int MaxStudentsForGradeInMiddle = 100;
-const int MaxStudentsForGradeInSecondary = 90;
+////////////////// Global functions \\\\\\\\\\\\\\\
+
 
 // Determines the educational stage (Primary, Middle, Secondary)
 // based on the given grade number (1 12). Throws an exception for invalid grades.

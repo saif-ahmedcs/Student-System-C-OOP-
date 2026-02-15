@@ -110,6 +110,7 @@ private:
     bool validateGrade(int grade);
     bool validateStudentsLimit(int grade);
     bool validateNewGpa(float gpa);
+    int getMaxCoursesForGrade(int grade);
 
 public:
     StudentServiceImpl(StudentRepositoryImpl &repo, CourseRepositoryImpl &courseRepo);
