@@ -498,23 +498,27 @@ string StudentServiceImpl::assignCoursesToStudent(const string& studentId, const
 
     Student* student = studentRepository.findStudentById(studentId);
 
+    if (courseIds.empty())
+        return "No courses provided.";
+
+
     int studentGrade = student->getSchoolYear();
     int currentCourses = student->getNumberOfAssignedCourses();
-    int maxAllowed = courseRepository.getMaxCoursesForGrade(studentGrade);
+    int requiredCourses = courseRepository.getMaxCoursesForGrade(studentGrade);
 
-    if (maxAllowed == 0) {
+    if (requiredCourses == 0) {
         return "Invalid grade.";
     }
 
-    if (currentCourses >= maxAllowed) {
-        return "Student already has maximum courses (" + to_string(maxAllowed) + ").";
+    if (currentCourses >= requiredCourses) {
+        return "Student already has all required courses (" + to_string(requiredCourses) + ").";
     }
 
-    if (currentCourses + courseIds.size() > maxAllowed) {
-        int remaining = maxAllowed - currentCourses;
+    if (currentCourses + courseIds.size() > requiredCourses) {
+        int remaining = requiredCourses - currentCourses;
         return "Cannot assign " + to_string(courseIds.size()) + " courses. "
-               "Student has " + to_string(currentCourses) + "/" + to_string(maxAllowed) + " courses. "
-               "Can only add " + to_string(remaining) + " more.";
+               "Student has " + to_string(currentCourses) + "/" + to_string(requiredCourses) + " courses. "
+               "Only " + to_string(remaining) + " more needed.";
     }
 
     string errors = "";

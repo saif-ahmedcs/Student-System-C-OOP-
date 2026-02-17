@@ -170,7 +170,7 @@ int main() {
                     cin >> numCourses;
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-                    if (numCourses < 1) {
+                    if (numCourses < 1 ) {
                         cout << "Invalid number.\n";
                         break;
                     }
