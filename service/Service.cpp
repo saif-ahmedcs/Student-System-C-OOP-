@@ -420,13 +420,6 @@ bool StudentServiceImpl::validateNewGpa(float gpa){
   return gpa>=0.0 && gpa<=4.0;
 }
 
-int StudentServiceImpl::getMaxCoursesForGrade(int grade) {
-    if (grade >= 1 && grade <= 6) return 8;
-    if (grade >= 7 && grade <= 9) return 11;
-    if (grade >= 10 && grade <= 12) return 13;
-    return 0;
-}
-
 Student* StudentServiceImpl::findStudentByNationalNumber(const string& nationalNumber){
   return studentRepository.findStudentByNationalNumber(nationalNumber);
 }
@@ -501,34 +494,13 @@ string StudentServiceImpl::editStudent(const string& id, const Student& newData)
     return studentRepository.editStudent(id, newData);
 }
 
-void StudentServiceImpl::showStudent(const string& studentId) {
-
-    Student* student = studentRepository.findStudentById(studentId);
-      if (!student){
-      cout << "-----------------------\n";
-      cout << "Student not found.\n";
-      cout << "-----------------------\n";
-      return;
-      }
-
-    cout << "-----------------------------------\n";
-    cout << "Student Name: " << student->getName() << endl;
-    cout << "Student ID: " << student->getId() << endl;
-    cout << "School Grade: " << student->getSchoolYear() << endl;
-    cout << "Age: " << student->getAge() << endl;
-    cout << "Phone Number: " << student->getPhoneNumber() << endl;
-    cout << "GPA: " << student->getGpa() << endl;
-}
-
 string StudentServiceImpl::assignCoursesToStudent(const string& studentId, const vector<string>& courseIds) {
 
     Student* student = studentRepository.findStudentById(studentId);
-    if (!student)
-        return "Student not found.";
 
     int studentGrade = student->getSchoolYear();
     int currentCourses = student->getNumberOfAssignedCourses();
-    int maxAllowed = getMaxCoursesForGrade(studentGrade);
+    int maxAllowed = courseRepository.getMaxCoursesForGrade(studentGrade);
 
     if (maxAllowed == 0) {
         return "Invalid grade.";
@@ -570,3 +542,23 @@ string StudentServiceImpl::assignCoursesToStudent(const string& studentId, const
 
     return studentRepository.assignCoursesToStudent(studentId, courseIds);
 }
+
+void StudentServiceImpl::showStudent(const string& studentId) {
+
+    Student* student = studentRepository.findStudentById(studentId);
+      if (!student){
+      cout << "-----------------------\n";
+      cout << "Student not found.\n";
+      cout << "-----------------------\n";
+      return;
+      }
+
+    cout << "-----------------------------------\n";
+    cout << "Student Name: " << student->getName() << endl;
+    cout << "Student ID: " << student->getId() << endl;
+    cout << "School Grade: " << student->getSchoolYear() << endl;
+    cout << "Age: " << student->getAge() << endl;
+    cout << "Phone Number: " << student->getPhoneNumber() << endl;
+    cout << "GPA: " << student->getGpa() << endl;
+}
+

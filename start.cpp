@@ -159,6 +159,11 @@ int main() {
                     string studentId;
                     getline(cin, studentId);
 
+                    Student* student = studentController.findStudentById(studentId);
+                    if (!student) {
+                        cout << "Student with ID " << studentId << " not found.\n";
+                        break;
+                    }
 
                     cout << "How many courses to assign? ";
                     int numCourses;
