@@ -7,6 +7,10 @@ Teacher* TeacherController::findTeacherById(const string& id){
     return teacherService.findTeacherById(id);
 }
 
+int TeacherController::getMaxTeachersForGrade(int grade)const {
+    return teacherService.getMaxTeachersForGrade(grade);
+}
+
 string TeacherController::addTeacher(int grade, Teacher &teacher) {
     return teacherService.addTeacher(grade, teacher);
 }
@@ -31,6 +35,11 @@ Course* CourseController::findCourseById(const string& id){
     return courseService.findCourseById(id);
 }
 
+int CourseController::getMaxCoursesForGrade(int grade)const {
+    return courseService.getMaxCoursesForGrade(grade);
+}
+
+
 string CourseController::addCourse(int grade, Course &course) {
     return courseService.addCourse(grade, course);
 }
@@ -51,6 +60,9 @@ StudentController::StudentController(StudentServiceImpl &service) : studentServi
 
 Student* StudentController::findStudentById(const string& id){
     return studentService.findStudentById(id);
+}
+int StudentController::getMaxStudentsForGrade(int grade)const {
+    return studentService.getMaxStudentsForGrade(grade);
 }
 
 string StudentController::addStudent(int grade, Student &student) {

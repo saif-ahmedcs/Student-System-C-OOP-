@@ -165,13 +165,18 @@ int main() {
                         break;
                     }
 
+                    int studentGrade = student->getSchoolYear();
+                    int maxCourses = courseController.getMaxCoursesForGrade(studentGrade);
+                    int currentCourses = student->getNumberOfAssignedCourses();
+                    int remaining = maxCourses - currentCourses;
+
                     cout << "How many courses to assign? ";
                     int numCourses;
                     cin >> numCourses;
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-                    if (numCourses < 1 ) {
-                        cout << "Invalid number.\n";
+                    if (numCourses < 1 || numCourses > remaining) {
+                        cout << "Invalid number. You can assign up to " << remaining << " more course(s).\n";
                         break;
                     }
 

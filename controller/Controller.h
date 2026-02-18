@@ -12,6 +12,7 @@ public:
     TeacherController(TeacherServiceImpl &service);
 
     Teacher *findTeacherById(const string& id);
+    int getMaxTeachersForGrade(int grade) const;
     string addTeacher(int grade, Teacher &teacher);
     string editTeacher(const string& id, const Teacher& newData);
     string assignCoursesToTeacher(const string& teacherId,const vector<string>& courseIds);
@@ -26,7 +27,9 @@ private:
 
 public:
     CourseController(CourseServiceImpl &service);
+
     Course *findCourseById(const string& id);
+    int getMaxCoursesForGrade(int grade) const;
     string addCourse(int grade, Course &course);
     string editCourse(const string& id, const Course& newData);
     void showCourse(const string& id);
@@ -42,7 +45,9 @@ private:
 
 public:
     StudentController(StudentServiceImpl &service);
+
     Student *findStudentById(const string& id);
+    int getMaxStudentsForGrade(int grade) const;
     string addStudent(int grade, Student &student);
     string editStudent(const string& id, const Student& newData);
     void showStudent(const string& id);

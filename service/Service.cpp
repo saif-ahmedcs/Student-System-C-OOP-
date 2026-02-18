@@ -26,7 +26,7 @@ bool TeacherServiceImpl::validateTeacherGrade(int grade) {
 }
 
 bool TeacherServiceImpl::validateTeachersLimit(int grade) {
-    return teacherRepository.getTeachersInGrade(grade) < teacherRepository.getMaxTeachesForGrade(grade);
+    return teacherRepository.getTeachersInGrade(grade) < teacherRepository.getMaxTeachersForGrade(grade);
 }
 
 Teacher* TeacherServiceImpl::findTeacherByNationalNumber(const string& nationalNumber){
@@ -36,6 +36,11 @@ Teacher* TeacherServiceImpl::findTeacherByNationalNumber(const string& nationalN
 Teacher* TeacherServiceImpl::findTeacherById(const string& id){
   return teacherRepository.findTeacherById(id);
 }
+
+int TeacherServiceImpl::getMaxTeachersForGrade(int grade) const {
+    return teacherRepository.getMaxTeachersForGrade(grade);
+}
+
 
 bool TeacherServiceImpl::isTeacherAlreadyExists(const string& nationalNumber) {
     return teacherRepository.findTeacherByNationalNumber(nationalNumber) != nullptr;
@@ -234,9 +239,26 @@ bool CourseServiceImpl::validateCoursesLimit(int grade) {
     return currentCount < maxCount;
 }
 
+bool CourseServiceImpl::validateCourseStudentsLimit(int grade, int currentStudents) {
+
+    int maxStudentsForGrade = studentRepository.getMaxStudentsForGrade(grade);
+
+    if (currentStudents >= maxStudentsForGrade) {
+        return false;
+    }
+
+    return true;
+}
+
+
 Course* CourseServiceImpl::findCourseById(const string& id){
   return courseRepository.findCourseById(id);
 }
+
+int CourseServiceImpl::getMaxCoursesForGrade(int grade) const {
+    return courseRepository.getMaxCoursesForGrade(grade);
+}
+
 
 
 bool CourseServiceImpl::isCourseAlreadyExists(const string& name, int grade, const string& specialization) {
@@ -428,10 +450,13 @@ Student* StudentServiceImpl::findStudentById(const string& id){
   return studentRepository.findStudentById(id);
 }
 
+int StudentServiceImpl::getMaxStudentsForGrade(int grade) const {
+    return studentRepository.getMaxStudentsForGrade(grade);
+}
+
 bool StudentServiceImpl::isStudentAlreadyExists(const string& nationalNumber) {
     return studentRepository.findStudentByNationalNumber(nationalNumber) != nullptr;
 }
-
 
 bool StudentServiceImpl::validateStudentsLimit(int grade) {
     int currentCount = studentRepository.getStudentsInGrade(grade);
@@ -498,32 +523,34 @@ string StudentServiceImpl::assignCoursesToStudent(const string& studentId, const
 
     Student* student = studentRepository.findStudentById(studentId);
 
+    if (!student)
+        return "Student not found.";
+
     if (courseIds.empty())
         return "No courses provided.";
-
 
     int studentGrade = student->getSchoolYear();
     int currentCourses = student->getNumberOfAssignedCourses();
     int requiredCourses = courseRepository.getMaxCoursesForGrade(studentGrade);
 
-    if (requiredCourses == 0) {
+    if (requiredCourses == 0)
         return "Invalid grade.";
-    }
 
-    if (currentCourses >= requiredCourses) {
+    if (currentCourses >= requiredCourses)
         return "Student already has all required courses (" + to_string(requiredCourses) + ").";
-    }
 
     if (currentCourses + courseIds.size() > requiredCourses) {
         int remaining = requiredCourses - currentCourses;
         return "Cannot assign " + to_string(courseIds.size()) + " courses. "
-               "Student has " + to_string(currentCourses) + "/" + to_string(requiredCourses) + " courses. "
+               "Student has " + to_string(currentCourses) + "/" +
+               to_string(requiredCourses) + " courses. "
                "Only " + to_string(remaining) + " more needed.";
     }
 
     string errors = "";
 
     for (int i = 0; i < courseIds.size(); i++) {
+
         string cid = courseIds[i];
         Course* c = courseRepository.findCourseById(cid);
 
@@ -537,7 +564,16 @@ string StudentServiceImpl::assignCoursesToStudent(const string& studentId, const
             errors += "- Course " + cid + " already assigned.\n";
         }
         else {
-            c->addAssignedStudent(studentId);
+
+            int currentStudents = c->getNumberOfAssignedStudents();
+            int maxStudentsForGrade = studentRepository.getMaxStudentsForGrade(studentGrade) - 1;
+
+            if (currentStudents >= maxStudentsForGrade) {
+                errors += "- Course " + cid + " reached maximum students limit.\n";
+            }
+            else {
+                c->addAssignedStudent(studentId);
+            }
         }
     }
 

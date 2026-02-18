@@ -11,6 +11,7 @@ class TeacherService {
 public:
     virtual Teacher* findTeacherByNationalNumber(const string& nationalNumber) = 0;
     virtual Teacher* findTeacherById(const string& id) = 0;
+    virtual int getMaxTeachersForGrade(int grade) const = 0;
     virtual string addTeacher(int grade, Teacher &teacher) = 0;
     virtual string editTeacher(const string& id, const Teacher& newData) = 0;
     virtual string assignCoursesToTeacher(const string& teacherId,const vector<string>& courseIds) = 0;
@@ -36,6 +37,7 @@ public:
 
     Teacher* findTeacherByNationalNumber(const string& nationalNumber) override;
     Teacher* findTeacherById(const string& id) override;
+    int getMaxTeachersForGrade(int grade) const override;
     string addTeacher(int grade, Teacher &teacher) override;
     string editTeacher(const string& id, const Teacher& newData) override;
     string assignCoursesToTeacher(const string& teacherId,const vector<string>& courseIds) override;
@@ -49,6 +51,7 @@ public:
 class CourseService {
 public:
     virtual Course* findCourseById(const string& id) = 0;
+    virtual int getMaxCoursesForGrade(int grade) const = 0;
     virtual bool validateCourseTeacherStage(const string& teacherId, int courseGrade) = 0;
     virtual bool validateCourseTeacherSpecialization(const string& teacherId, const string& courseSpecialization) = 0;
     virtual string addCourse(int grade, Course &course) = 0;
@@ -72,11 +75,14 @@ private:
     bool validateSubjectHours(int hours);
     bool validateGrade(int grade);
     bool validateCoursesLimit(int grade);
+    bool validateCourseStudentsLimit(int grade, int currentStudents);
+
 
 
 public:
     CourseServiceImpl(CourseRepositoryImpl& courseRepo,TeacherRepositoryImpl& teacherRepo, StudentRepositoryImpl& studentRepo);
     Course* findCourseById(const string& id) override;
+    int getMaxCoursesForGrade(int grade) const override;
     string addCourse(int grade, Course &course) override;
     string editCourse(const string& id, const Course& newData) override;
     void showCourse(const string &id) override;
@@ -90,6 +96,7 @@ class StudentService {
 public:
     virtual Student* findStudentByNationalNumber(const string& nationalNumber) = 0;
     virtual Student* findStudentById(const string& id) = 0;
+    virtual int getMaxStudentsForGrade(int grade) const = 0;
     virtual string addStudent(int grade, Student &student) = 0;
     virtual string editStudent(const string& id, const Student& newData) = 0;
     virtual void showStudent(const string &id) = 0;
@@ -116,6 +123,7 @@ public:
 
     Student* findStudentByNationalNumber(const string& nationalNumber) override;
     Student* findStudentById(const string& id) override;
+    int getMaxStudentsForGrade(int grade) const override;
     string addStudent(int grade, Student &student) override;
     string editStudent(const string& id, const Student& newData) override;
     void showStudent(const string &id) override;

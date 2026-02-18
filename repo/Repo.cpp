@@ -8,7 +8,7 @@ int MaxCoursesForGradeInPrimary = 8;
 int MaxCoursesForGradeInMiddle = 11;
 int MaxCoursesForGradeInSecondary = 13;
 
-int MaxStudentsForGradeInPrimary = 120;
+int MaxStudentsForGradeInPrimary = 110;
 int MaxStudentsForGradeInMiddle = 100;
 int MaxStudentsForGradeInSecondary = 90;
 
@@ -137,7 +137,7 @@ int TeacherRepositoryImpl::getTeachersInGrade(int grade) const {
     return 0;
 }
 
-int TeacherRepositoryImpl::getMaxTeachesForGrade(int grade) const {
+int TeacherRepositoryImpl::getMaxTeachersForGrade(int grade) const {
     Stage stage = getStageFromGrade(grade);
 
     switch(stage) {
