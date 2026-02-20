@@ -196,13 +196,16 @@ void Student::setSchoolYear(const int &year){
 void Student::setGpa(double g){
      gpa = g;
     }
-void Student::addAssignedCourse(const string& courseId) {
-    assignedCourseIds.push_back(courseId);
+void Student::addAssignedCourse(const string& courseId, const string& teacherName) {
+    StudentCourse sc;
+    sc.courseId = courseId;
+    sc.teacherName = teacherName;
+    assignedCourses.push_back(sc);
 }
 
 bool Student::isCourseAssigned(const string& courseId) const {
-    for (int i = 0; i < assignedCourseIds.size(); i++) {
-        if (assignedCourseIds[i] == courseId) {
+    for (int i = 0; i < assignedCourses.size(); i++) {
+        if (assignedCourses[i].courseId == courseId) {
             return true;
         }
     }
@@ -219,9 +222,9 @@ int Student::getSchoolYear() const {
 double Student::getGpa() const {
      return gpa;
     }
-const vector<string>& Student::getAssignedCourses() const {
-     return assignedCourseIds;
+const vector<StudentCourse>& Student::getAssignedCourses() const {
+     return assignedCourses;
     }
 int Student::getNumberOfAssignedCourses() const {
-     return assignedCourseIds.size();
+     return assignedCourses.size();
     }

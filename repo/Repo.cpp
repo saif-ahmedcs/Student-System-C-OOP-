@@ -378,11 +378,11 @@ string StudentRepositoryImpl::editStudent(const string& id, const Student& newDa
     return "Student data updated successfully.";
 }
 
-string StudentRepositoryImpl::assignCoursesToStudent(const string& studentId, const vector<string>& courseIds) {
+string StudentRepositoryImpl::assignCoursesToStudent(const string& studentId, const vector<string>& courseIds, const vector<string>& teacherNames) {
     Student* student = findStudentById(studentId);
 
     for (int i = 0; i < courseIds.size(); i++) {
-        student->addAssignedCourse(courseIds[i]);
+        student->addAssignedCourse(courseIds[i], teacherNames[i]);
     }
 
     return "Courses assigned to student successfully.";

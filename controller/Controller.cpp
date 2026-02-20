@@ -77,6 +77,6 @@ void StudentController::showStudent(const string& id){
     return studentService.showStudent(id);
 }
 
-string StudentController::assignCoursesToStudent(const string& studentId, const vector<string>& courseIds){
-    return studentService.assignCoursesToStudent(studentId, courseIds);
+string StudentController::assignCoursesToStudent(const string& studentId, const vector<string>& courseIds, const vector<string>& teacherNames){
+    return studentService.assignCoursesToStudent(studentId, courseIds, teacherNames);
 }

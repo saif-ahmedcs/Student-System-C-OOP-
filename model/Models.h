@@ -97,24 +97,29 @@ public:
     int getNumberOfAssignedStudents() const;
 };
 
+struct StudentCourse {
+    string courseId;
+    string teacherName;
+};
+
 //Student
 class Student : public BaseEntity {
 private:
     string nationalNumber;
     int schoolYear;
     double gpa = 0.00;
-    vector<string> assignedCourseIds;
+    vector<StudentCourse> assignedCourses;
 public:
     void setStudentNationalNum(string n);
     void setSchoolYear(const int &year);
     void setGpa(double g);
-    void addAssignedCourse(const string& courseId);
+    void addAssignedCourse(const string& courseId, const string& teacherName);
     bool isCourseAssigned(const string& courseId) const;
 
     string getStudentNationalNum() const;
     int getSchoolYear() const;
     double getGpa() const;
-    const vector<string>& getAssignedCourses() const;
+    const vector<StudentCourse>& getAssignedCourses() const;
     int getNumberOfAssignedCourses() const;
 };
 

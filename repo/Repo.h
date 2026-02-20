@@ -95,7 +95,7 @@ public:
 
     virtual string addStudent(int grade, Student &student) = 0;
     virtual string editStudent(const string& id, const Student& newData) = 0;
-    virtual string assignCoursesToStudent(const string& studentId, const vector<string>& courseIds) = 0;
+    virtual string assignCoursesToStudent(const string& studentId, const vector<string>& courseIds, const vector<string>& teacherNames) = 0;
 
 };
 
@@ -118,7 +118,7 @@ public:
 
     string addStudent(int grade, Student &student) override;
     string editStudent(const string& id, const Student& newData) override;
-    string assignCoursesToStudent(const string& studentId, const vector<string>& courseIds) override;
+    string assignCoursesToStudent(const string& studentId, const vector<string>& courseIds, const vector<string>& teacherNames) override;
 
 };
 

@@ -519,8 +519,7 @@ string StudentServiceImpl::editStudent(const string& id, const Student& newData)
     return studentRepository.editStudent(id, newData);
 }
 
-string StudentServiceImpl::assignCoursesToStudent(const string& studentId, const vector<string>& courseIds) {
-
+string StudentServiceImpl::assignCoursesToStudent(const string& studentId, const vector<string>& courseIds, const vector<string>& teacherNames) {
     Student* student = studentRepository.findStudentById(studentId);
 
     if (!student)
@@ -528,6 +527,9 @@ string StudentServiceImpl::assignCoursesToStudent(const string& studentId, const
 
     if (courseIds.empty())
         return "No courses provided.";
+
+    if (courseIds.size() != teacherNames.size())
+        return "Number of courses and teachers must match.";
 
     int studentGrade = student->getSchoolYear();
     int currentCourses = student->getNumberOfAssignedCourses();
@@ -541,10 +543,9 @@ string StudentServiceImpl::assignCoursesToStudent(const string& studentId, const
 
     if (currentCourses + courseIds.size() > requiredCourses) {
         int remaining = requiredCourses - currentCourses;
-        return "Cannot assign " + to_string(courseIds.size()) + " courses. "
-               "Student has " + to_string(currentCourses) + "/" +
-               to_string(requiredCourses) + " courses. "
-               "Only " + to_string(remaining) + " more needed.";
+        return "Cannot assign " + to_string(courseIds.size()) +
+               " courses. Student has " + to_string(currentCourses) + "/" + to_string(requiredCourses) + " courses. Only " +
+               to_string(remaining) + " more needed.";
     }
 
     string errors = "";
@@ -552,36 +553,72 @@ string StudentServiceImpl::assignCoursesToStudent(const string& studentId, const
     for (int i = 0; i < courseIds.size(); i++) {
 
         string cid = courseIds[i];
+        string teacherName = teacherNames[i];
+
         Course* c = courseRepository.findCourseById(cid);
 
         if (!c) {
             errors += "- Course " + cid + " not found.\n";
+            continue;
         }
-        else if (c->getGrade() != studentGrade) {
+
+        if (c->getGrade() != studentGrade) {
             errors += "- Course " + cid + " grade mismatch.\n";
+            continue;
         }
-        else if (student->isCourseAssigned(cid)) {
+
+        if (student->isCourseAssigned(cid)) {
             errors += "- Course " + cid + " already assigned.\n";
+            continue;
         }
-        else {
 
-            int currentStudents = c->getNumberOfAssignedStudents();
-            int maxStudentsForGrade = studentRepository.getMaxStudentsForGrade(studentGrade) - 1;
+        vector<string> courseTeachers = c->getTeacherNames();
 
-            if (currentStudents >= maxStudentsForGrade) {
-                errors += "- Course " + cid + " reached maximum students limit.\n";
+        if (courseTeachers.empty()) {
+            errors += "- Course " + cid + " has no teachers assigned.\n";
+            continue;
+        }
+
+        if (teacherName.empty()) {
+            errors += "- No teacher selected for course " + cid + ".\n";
+            continue;
+        }
+
+        bool teacherFound = false;
+
+
+        for (int j = 0; j < courseTeachers.size(); j++) {
+            if (courseTeachers[j] == teacherName) {
+                teacherFound = true;
+                break;
             }
-            else {
-                c->addAssignedStudent(studentId);
-            }
+        }
+
+        if (!teacherFound) {
+            errors += "- Teacher " + teacherName + " not assigned to course " + cid + ".\n";
+            continue;
+        }
+
+        int currentStudents = c->getNumberOfAssignedStudents();
+        int maxStudentsForGrade = studentRepository.getMaxStudentsForGrade(studentGrade);
+
+        if (currentStudents >= maxStudentsForGrade) {
+            errors += "- Course " + cid + " reached maximum students limit.\n";
+            continue;
         }
     }
+
+
+
 
     if (!errors.empty())
         return "Assignment failed:\n" + errors;
 
-    return studentRepository.assignCoursesToStudent(studentId, courseIds);
+
+    return studentRepository.assignCoursesToStudent(studentId, courseIds, teacherNames);
 }
+
+
 
 void StudentServiceImpl::showStudent(const string& studentId) {
 
@@ -600,5 +637,36 @@ void StudentServiceImpl::showStudent(const string& studentId) {
     cout << "Age: " << student->getAge() << endl;
     cout << "Phone Number: " << student->getPhoneNumber() << endl;
     cout << "GPA: " << student->getGpa() << endl;
+
+    vector<StudentCourse> courses = student->getAssignedCourses();
+    int courseCount = courses.size();
+
+    cout << "Registered Courses: " << courseCount << endl;
+
+    if (courseCount == 0) {
+        cout << "-----------------------------------\n";
+        cout << "No courses registered yet.\n";
+        cout << "-----------------------------------\n";
+
+    } else {
+        for (int i = 0; i < courseCount; i++) {
+            Course* course = courseRepository.findCourseById(courses[i].courseId);
+            if (course) {
+                cout << "Course #" << (i + 1) << ": " << course->getName() << endl;
+                cout << "Teacher Name: " << courses[i].teacherName << endl;
+                cout << endl;
+            }
+        }
+    }
+
+    int studentGrade = student->getSchoolYear();
+    int requiredCourses = courseRepository.getMaxCoursesForGrade(studentGrade);
+    int remaining = requiredCourses - courseCount;
+
+    cout << "-----------------------------------\n";
+    cout << "Required courses for this grade: " << requiredCourses << endl;
+    cout << "Courses still needed: " << remaining << endl;
+    cout << "-----------------------------------\n";
 }
+
 
