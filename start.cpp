@@ -3,7 +3,7 @@
 using namespace std;
 
 void displaySystem() {
-    cout << "\033[41m\033[37m\t\t\\********************* Welcome To The School System *********************\n\n\033[0m";
+    cout << "\033[41m\033[37m\t\t\********************* Welcome To The School System *********************\n\n\033[0m";
     cout << "The Process you need is:\n";
     cout << "1- About Student\t2- About Course\n";
     cout << "3- About Teacher\t4- Exit\n";
@@ -24,14 +24,9 @@ void showProcesses(const string& s) {
     }
     else if (s == "Course") {
         cout << "1- Add " << s << "\t\t2- Remove " << s << "\n";
-        cout << "3- Edit " << s << "\t\t4- Show Assigned Students\n";
-        cout << "5- Show " << s << " Info\n";
+        cout << "3- Edit " << s << "\t\t4- Show ALL Assigned Students\n";
+        cout << "5- Show " << s << " Info\t6- Show Course students (By Teacher)\n";
     }
-    else {
-        cout << "1- Add " << s << "\t\t2- Remove " << s << "\n";
-        cout << "3- Edit " << s << "\t\t4- Show " << s << " Info\n";
-    }
-
     cout << endl;
 }
 
@@ -69,8 +64,7 @@ int main() {
                 cin >> studentProcess;
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 cout << endl;
-
-                if (studentProcess < 1 || studentProcess > 5) {
+                if (studentProcess < 1 || studentProcess > 5){
                     cout << "ERROR! INVALID OPTION PLEASE TRY AGAIN" << endl;
                 }
 
@@ -160,26 +154,10 @@ int main() {
                     string studentId;
                     getline(cin, studentId);
 
-                    Student* existingStudent = studentController.findStudentById(studentId);
-                    if (!existingStudent) {
-                        cout << "Student with ID " << studentId << " not found. Cannot edit.\n";
-                        break;
-                    }
-
-                    int studentGrade = existingStudent->getSchoolYear();
-                    int maxCourses = courseController.getMaxCoursesForGrade(studentGrade);
-                    int currentCourses = existingStudent->getNumberOfAssignedCourses();
-                    int remaining = maxCourses - currentCourses;
-
                     cout << "How many courses to assign? ";
                     int numCourses;
                     cin >> numCourses;
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-                    if (numCourses < 1 || numCourses > remaining) {
-                        cout << "Invalid number. You can assign up to " << remaining << " more courses.\n";
-                        break;
-                    }
 
                     vector<string> courseIds;
                     vector<string> teacherNames;
@@ -191,14 +169,11 @@ int main() {
                         getline(cin, cid);
 
                         Course* course = courseController.findCourseById(cid);
-                        string selectedTeacher = "";
-
                         if (course) {
                             vector<string> availableTeachers = course->getTeacherNames();
 
-                            if (!availableTeachers.empty()) {
+                            if (availableTeachers.size() > 0) {
                                 cout << "Available teachers for " << course->getName() << ":\n";
-
                                 for (int j = 0; j < 3; j++) {
                                     if (j < availableTeachers.size()) {
                                         cout << (j + 1) << ". " << availableTeachers[j] << endl;
@@ -207,6 +182,7 @@ int main() {
                                     }
                                 }
 
+                                string selectedTeacher;
                                 if (availableTeachers.size() == 1) {
                                     selectedTeacher = availableTeachers[0];
                                     cout << "Auto-selected: " << selectedTeacher << endl;
@@ -218,13 +194,19 @@ int main() {
 
                                     if (teacherChoice >= 1 && teacherChoice <= availableTeachers.size()) {
                                         selectedTeacher = availableTeachers[teacherChoice - 1];
+                                    } else {
+                                        selectedTeacher = "";
                                     }
                                 }
+                                teacherNames.push_back(selectedTeacher);
+                            } else {
+                                teacherNames.push_back("");
                             }
+                        } else {
+                            teacherNames.push_back("");
                         }
 
                         courseIds.push_back(cid);
-                        teacherNames.push_back(selectedTeacher);
                     }
 
                     cout << endl;
@@ -250,9 +232,10 @@ int main() {
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 cout << endl;
 
-                if (courseProcess < 1 || courseProcess > 5) {
+                    if (courseProcess < 1 || courseProcess > 6){
                     cout << "ERROR! INVALID OPTION PLEASE TRY AGAIN" << endl;
                 }
+
 
                 if (courseProcess == 1) { // Add Course
                     Course course;
@@ -323,7 +306,6 @@ int main() {
                     cout << endl;
                     cout << courseController.editCourse(id, newData) << endl;
                 }
-
                 else if (courseProcess == 4) { // Show Assigned Students
                     cout << "\nEnter Course ID: ";
                     string id;
@@ -337,7 +319,6 @@ int main() {
 
                     courseController.showCourseStudents(id);
                 }
-
                 else if (courseProcess == 5) { // Show Course Info
                     cout << "\nEnter Course Id: ";
                     string id;
@@ -351,7 +332,13 @@ int main() {
 
                     courseController.showCourse(id);
                 }
+                else if (courseProcess == 6) { // Show Students by Teacher
+                    cout << "\nEnter Course ID: ";
+                    string courseId;
+                    getline(cin, courseId);
 
+                    courseController.showCourseStudentsByTeacher(courseId);
+                }
                 break;
             }
 
@@ -364,9 +351,9 @@ int main() {
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 cout << endl;
 
-                if (teacherProcess < 1 || teacherProcess > 5) {
+                if (teacherProcess < 1 || teacherProcess > 5){
                     cout << "ERROR! INVALID OPTION PLEASE TRY AGAIN" << endl;
-                }
+                    }
 
                 if (teacherProcess == 1) { // Add Teacher
                     Teacher teacher;
@@ -531,7 +518,6 @@ int main() {
                     } else {
                         cout << teacherController.assignCoursesToTeacher(teacherId, courseIds) << endl;
                     }
-
                     break;
                 }
 

@@ -58,6 +58,7 @@ public:
     virtual string editCourse(const string& id, const Course& newData) = 0;
     virtual void showCourse(const string &id) = 0;
     virtual void showCourseStudents(const string &courseId) = 0;
+    virtual void showCourseStudentsByTeacher(const string &courseId) = 0;
 
 
 };
@@ -87,6 +88,7 @@ public:
     string editCourse(const string& id, const Course& newData) override;
     void showCourse(const string &id) override;
     void showCourseStudents(const string &courseId) override;
+    void showCourseStudentsByTeacher(const string &courseId) override;
 
 };
 

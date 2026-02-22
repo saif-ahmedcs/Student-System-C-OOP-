@@ -55,6 +55,10 @@ void CourseController::showCourseStudents(const string& courseId){
     return courseService.showCourseStudents(courseId);
 }
 
+void CourseController::showCourseStudentsByTeacher(const string& courseId){
+    return courseService.showCourseStudentsByTeacher(courseId);
+}
+
 // Student
 StudentController::StudentController(StudentServiceImpl &service) : studentService(service) {}
 

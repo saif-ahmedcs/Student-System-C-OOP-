@@ -34,6 +34,7 @@ public:
     string editCourse(const string& id, const Course& newData);
     void showCourse(const string& id);
     void showCourseStudents(const string& courseId);
+    void showCourseStudentsByTeacher(const string& courseId);
 
 
 };
