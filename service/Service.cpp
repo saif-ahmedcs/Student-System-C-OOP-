@@ -374,49 +374,64 @@ void CourseServiceImpl::showCourseStudents(const string& courseId) {
     Course* course = courseRepository.findCourseById(courseId);
 
     if (!course) {
-        cout << "-----------------------\n";
+        cout << "\n\033[35m==================================================\033[0m\n";
         cout << "Course not found.\n";
-        cout << "-----------------------\n";
+        cout << "\033[35m==================================================\033[0m\n";
         return;
     }
 
     const vector<string>& assignedStudents = course->getAssignedStudents();
 
-    cout << "\n======================================\n";
-    cout << "Course: " << course->getName() << " (ID: " << course->getId() << ")\n";
-    cout << "Grade: " << course->getGrade() << endl;
-    cout << "======================================\n";
-    cout << "Total Assigned Students: " << assignedStudents.size() << endl;
-    cout << "--------------------------------------\n";
+    cout << "\n\033[35m==================================================\033[0m\n";
+    cout << left << setw(14) << "Course Name" << ": " << course->getName() << endl;
+    cout << left << setw(14) << "Course ID" << ": " << course->getId() << endl;
+    cout << left << setw(14) << "Grade" << ": " << course->getGrade() << endl;
+    cout << "\033[35m==================================================\033[0m\n";
 
     if (assignedStudents.empty()) {
+        cout << "\n\033[35m==================================================\033[0m\n";
         cout << "No students assigned in this course yet.\n";
+        cout << "\033[35m==================================================\033[0m\n";
     }
-
     else {
-        cout << "Assigned Students:\n\n";
+        cout << "\nTotal Assigned Students: " << assignedStudents.size() << endl;
+        cout << "\033[35m--------------------------------------------------\033[0m\n";
+        cout << "\033[35m|\033[0m " << left << setw(5) << "No."
+             << "\033[35m|\033[0m " << left << setw(25) << "Student Name"
+             << "\033[35m|\033[0m " << left << setw(13) << "Student ID"
+             << "\033[35m|\033[0m\n";
+        cout << "\033[35m--------------------------------------------------\033[0m\n";
+
         for (int i = 0; i < assignedStudents.size(); i++) {
             Student* student = studentRepository.findStudentById(assignedStudents[i]);
             if (student) {
-                cout << (i + 1) << ". " << student->getName() << " (ID: " << student->getId() << ")" << " - Grade: " << student->getSchoolYear() << endl;
+                cout << "\033[35m|\033[0m " << left << setw(5) << (i + 1)
+                     << "\033[35m|\033[0m " << left << setw(25) << student->getName()
+                     << "\033[35m|\033[0m " << left << setw(13) << student->getId()
+                     << "\033[35m|\033[0m\n";
             }
         }
+
+        cout << "\033[35m--------------------------------------------------\033[0m\n";
     }
-    cout << "======================================\n\n";
 }
 
 void CourseServiceImpl::showCourseStudentsByTeacher(const string& courseId) {
     Course* course = courseRepository.findCourseById(courseId);
 
     if (!course) {
+        cout << "\n\033[35m==================================================\033[0m\n";
         cout << "Course not found.\n";
+        cout << "\033[35m==================================================\033[0m\n";
         return;
     }
 
     vector<string> teachers = course->getTeacherNames();
 
     if (teachers.size() == 0) {
+        cout << "\n\033[35m==================================================\033[0m\n";
         cout << "No teachers assigned to this course.\n";
+        cout << "\033[35m==================================================\033[0m\n";
         return;
     }
 
@@ -424,8 +439,6 @@ void CourseServiceImpl::showCourseStudentsByTeacher(const string& courseId) {
 
     if (teachers.size() == 1) {
         selectedTeacher = teachers[0];
-        cout << "\nCourse: " << course->getName() << endl;
-        cout << "Teacher: " << selectedTeacher << endl;
     }
     else {
         cout << "\nTeachers for " << course->getName() << ":\n";
@@ -440,17 +453,19 @@ void CourseServiceImpl::showCourseStudentsByTeacher(const string& courseId) {
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
         if (choice < 1 || choice > teachers.size()) {
+            cout << "\n\033[35m==================================================\033[0m\n";
             cout << "Invalid choice.\n";
+            cout << "\033[35m==================================================\033[0m\n";
             return;
         }
 
         selectedTeacher = teachers[choice - 1];
-
-        cout << "\nCourse: " << course->getName() << endl;
-        cout << "Teacher: " << selectedTeacher << endl;
     }
 
-    cout << "-----------------------------------\n";
+    cout << "\n\033[35m==================================================\033[0m\n";
+    cout << left << setw(14) << "Course Name" << ": " << course->getName() << endl;
+    cout << left << setw(14) << "Teacher Name" << ": " << selectedTeacher << endl;
+    cout << "\033[35m==================================================\033[0m\n";
 
     vector<string> allStudents = course->getAssignedStudents();
     vector<Student*> studentsWithTeacher;
@@ -474,17 +489,28 @@ void CourseServiceImpl::showCourseStudentsByTeacher(const string& courseId) {
     }
 
     if (studentsWithTeacher.size() == 0) {
+        cout << "\n\033[35m==================================================\033[0m\n";
         cout << "No students registered with this teacher.\n";
+        cout << "\033[35m==================================================\033[0m\n";
     }
     else {
-        cout << "Students (" << studentsWithTeacher.size() << "):\n";
+        cout << "\nRegistered Students (" << studentsWithTeacher.size() << "):\n";
+        cout << "\033[35m--------------------------------------------------\033[0m\n";
+        cout << "\033[35m|\033[0m " << left << setw(5) << "No."
+             << "\033[35m|\033[0m " << left << setw(25) << "Student Name"
+             << "\033[35m|\033[0m " << left << setw(13) << "Student ID"
+             << "\033[35m|\033[0m\n";
+        cout << "\033[35m--------------------------------------------------\033[0m\n";
 
         for (int i = 0; i < studentsWithTeacher.size(); i++) {
-            cout << (i + 1) << ". " << studentsWithTeacher[i]->getName() << " (ID: " << studentsWithTeacher[i]->getId() << ")" << endl;
+            cout << "\033[35m|\033[0m " << left << setw(5) << (i + 1)
+                 << "\033[35m|\033[0m " << left << setw(25) << studentsWithTeacher[i]->getName()
+                 << "\033[35m|\033[0m " << left << setw(13) << studentsWithTeacher[i]->getId()
+                 << "\033[35m|\033[0m\n";
         }
 
+        cout << "\033[35m--------------------------------------------------\033[0m\n";
     }
-    cout << "-----------------------------------\n";
 }
 
 
