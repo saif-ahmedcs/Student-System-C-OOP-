@@ -1,137 +1,110 @@
 #ifndef SERVICE_H
 #define SERVICE_H
+
 #include "../repo/Repo.h"
+#include "../validator/Validator.h"
+#include <string>
+#include <vector>
 
+// ─────────────────────────────────────────────────────────────────────────
+//  Service interfaces
+//
+//  Responsibility: business rules for a single entity type, plus
+//  cross-entity assignment operations .
+//
+//  Business rules enforced here:
+//    - Duplicate checks (national number, course name+grade+spec)
+//    - Grade capacity limits per entity type
+//    - Teacher-course assignment rules (stage, specialization, limits)
+//    - Student-course assignment rules (grade match, capacity, count)
+// ─────────────────────────────────────────────────────────────────────────
 
-class CourseService; //  forward declaration
-
-////////////////// Teacher \\\\\\\\\\\\\\\
-
+// ─────────────────────────────────────────────
+//  TeacherService
+// ─────────────────────────────────────────────
 class TeacherService {
 public:
-    virtual Teacher* findTeacherByNationalNumber(const string& nationalNumber) = 0;
-    virtual Teacher* findTeacherById(const string& id) = 0;
+    virtual Teacher* findTeacherByNationalNumber(const std::string& nationalNumber) = 0;
+    virtual Teacher* findTeacherById(const std::string& id) = 0;
     virtual int getMaxTeachersForGrade(int grade) const = 0;
-    virtual string addTeacher(int grade, Teacher &teacher) = 0;
-    virtual string editTeacher(const string& id, const Teacher& newData) = 0;
-    virtual string assignCoursesToTeacher(const string& teacherId,const vector<string>& courseIds) = 0;
-    virtual void showTeacher(const string& id) = 0;
-
+    virtual std::string addTeacher(int grade, Teacher& teacher) = 0;
+    virtual std::string editTeacher(const std::string& id, const Teacher& newData) = 0;
+    virtual std::string assignCoursesToTeacher(const std::string& teacherId, const std::vector<std::string>& courseIds) = 0;
+    virtual ~TeacherService() = default;
 };
 
 class TeacherServiceImpl : public TeacherService {
 private:
-    TeacherRepositoryImpl &teacherRepository;
-    CourseService& courseService;
-    // Validation
-    bool isTeacherAlreadyExists(const string& nationalNumber);
-    bool validateTeacherName(const string &name);
-    bool validateTeacherAge(int age);
-    bool validateTeacherExperience(int experienceYears);
-    bool validateTeacherGrade(int grade);
-    bool validateTeachersLimit(int grade);
-
+    TeacherRepository& teacherRepository;
+    CourseRepository& courseRepository;
+    TeacherValidator& teacherValidator;
 
 public:
-    TeacherServiceImpl(TeacherRepositoryImpl &repo, CourseService &courseSrv);
+    TeacherServiceImpl(TeacherRepository& teacherRepo, CourseRepository&  courseRepo, TeacherValidator&  validator);
 
-    Teacher* findTeacherByNationalNumber(const string& nationalNumber) override;
-    Teacher* findTeacherById(const string& id) override;
+    Teacher* findTeacherByNationalNumber(const std::string& nationalNumber) override;
+    Teacher* findTeacherById(const std::string& id) override;
     int getMaxTeachersForGrade(int grade) const override;
-    string addTeacher(int grade, Teacher &teacher) override;
-    string editTeacher(const string& id, const Teacher& newData) override;
-    string assignCoursesToTeacher(const string& teacherId,const vector<string>& courseIds) override;
-    void showTeacher(const string& id) override;
-
-
+    std::string addTeacher(int grade, Teacher& teacher) override;
+    std::string editTeacher(const std::string& id, const Teacher& newData) override;
+    std::string assignCoursesToTeacher(const std::string& teacherId, const std::vector<std::string>& courseIds) override;
 };
 
-////////////////// Course \\\\\\\\\\\\\\\
-
+// ─────────────────────────────────────────────
+//  CourseService
+// ─────────────────────────────────────────────
 class CourseService {
 public:
-    virtual Course* findCourseById(const string& id) = 0;
+    virtual Course* findCourseById(const std::string& id) = 0;
     virtual int getMaxCoursesForGrade(int grade) const = 0;
-    virtual bool validateCourseTeacherStage(const string& teacherId, int courseGrade) = 0;
-    virtual bool validateCourseTeacherSpecialization(const string& teacherId, const string& courseSpecialization) = 0;
-    virtual string addCourse(int grade, Course &course) = 0;
-    virtual string editCourse(const string& id, const Course& newData) = 0;
-    virtual void showCourse(const string &id) = 0;
-    virtual void showCourseStudents(const string &courseId) = 0;
-    virtual void showCourseStudentsByTeacher(const string &courseId) = 0;
-
-
+    virtual std::string addCourse(int grade, Course& course) = 0;
+    virtual std::string editCourse(const std::string& id, const Course& newData) = 0;
+    virtual ~CourseService() = default;
 };
 
 class CourseServiceImpl : public CourseService {
 private:
-    CourseRepositoryImpl &courseRepository;
-    TeacherRepositoryImpl& teacherRepository;
-    StudentRepositoryImpl& studentRepository;
-    // Validation
-    bool isCourseAlreadyExists(const string& name, int grade, const string& specialization);
-    bool validateCourseName(const string &name);
-    bool validateCourseTeacherStage(const string& teacherId,int courseGrade);
-    bool validateCourseTeacherSpecialization(const string& teacherId,const string& courseSpecialization);
-    bool validateSubjectHours(int hours);
-    bool validateGrade(int grade);
-    bool validateCoursesLimit(int grade);
-    bool validateCourseStudentsLimit(int grade, int currentStudents);
-
-
+    CourseRepository& courseRepository;
+    CourseValidator& courseValidator;
 
 public:
-    CourseServiceImpl(CourseRepositoryImpl& courseRepo,TeacherRepositoryImpl& teacherRepo, StudentRepositoryImpl& studentRepo);
-    Course* findCourseById(const string& id) override;
-    int getMaxCoursesForGrade(int grade) const override;
-    string addCourse(int grade, Course &course) override;
-    string editCourse(const string& id, const Course& newData) override;
-    void showCourse(const string &id) override;
-    void showCourseStudents(const string &courseId) override;
-    void showCourseStudentsByTeacher(const string &courseId) override;
+    CourseServiceImpl(CourseRepository& courseRepo, CourseValidator& validator);
 
+    Course* findCourseById(const std::string& id) override;
+    int getMaxCoursesForGrade(int grade) const override;
+    std::string addCourse(int grade, Course& course) override;
+    std::string editCourse(const std::string& id, const Course& newData) override;
 };
 
-////////////////// Student \\\\\\\\\\\\\\\
-
+// ─────────────────────────────────────────────
+//  StudentService
+// ─────────────────────────────────────────────
 class StudentService {
 public:
-    virtual Student* findStudentByNationalNumber(const string& nationalNumber) = 0;
-    virtual Student* findStudentById(const string& id) = 0;
+    virtual Student* findStudentByNationalNumber(const std::string& nationalNumber) = 0;
+    virtual Student* findStudentById(const std::string& id) = 0;
     virtual int getMaxStudentsForGrade(int grade) const = 0;
-    virtual string addStudent(int grade, Student &student) = 0;
-    virtual string editStudent(const string& id, const Student& newData) = 0;
-    virtual void showStudent(const string &id) = 0;
-    virtual string assignCoursesToStudent(const string& studentId, const vector<string>& courseIds, const vector<string>& teacherNames) = 0;
-
+    virtual std::string addStudent(int grade, Student& student) = 0;
+    virtual std::string editStudent(const std::string& id, const Student& newData) = 0;
+    virtual std::string assignCoursesToStudent(const std::string& studentId, const std::vector<std::string>& courseIds, const std::vector<std::string>& teacherNames) = 0;
+    virtual ~StudentService() = default;
 };
 
 class StudentServiceImpl : public StudentService {
 private:
-    StudentRepositoryImpl &studentRepository;
-    CourseRepositoryImpl &courseRepository;
-
-    // Validation
-    bool isStudentAlreadyExists(const string& nationalNumber);
-    bool validateName(const string &name);
-    bool validateAge (int age, int grade);
-    bool validatePhoneNumber(const string &phone);
-    bool validateGrade(int grade);
-    bool validateStudentsLimit(int grade);
-    bool validateNewGpa(float gpa);
+    StudentRepository& studentRepository;
+    CourseRepository& courseRepository;
+    StudentValidator& studentValidator;
 
 public:
-    StudentServiceImpl(StudentRepositoryImpl &repo, CourseRepositoryImpl &courseRepo);
+    StudentServiceImpl(StudentRepository& studentRepo, CourseRepository& courseRepo, StudentValidator& validator);
 
-    Student* findStudentByNationalNumber(const string& nationalNumber) override;
-    Student* findStudentById(const string& id) override;
+    Student* findStudentByNationalNumber(const std::string& nationalNumber) override;
+    Student* findStudentById(const std::string& id) override;
     int getMaxStudentsForGrade(int grade) const override;
-    string addStudent(int grade, Student &student) override;
-    string editStudent(const string& id, const Student& newData) override;
-    void showStudent(const string &id) override;
-    string assignCoursesToStudent(const string& studentId, const vector<string>& courseIds, const vector<string>& teacherNames) override;
-
-
+    std::string addStudent(int grade, Student& student) override;
+    std::string editStudent(const std::string& id, const Student& newData) override;
+    std::string assignCoursesToStudent(const std::string& studentId, const std::vector<std::string>& courseIds, const std::vector<std::string>& teacherNames) override;
 };
 
 #endif

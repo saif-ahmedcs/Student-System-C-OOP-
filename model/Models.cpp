@@ -1,62 +1,83 @@
 #include "Models.h"
 
-// ShareData
-void ShareData::setName(const string &n){
+// ─────────────────────────────────────────────
+//  ShareData
+// ─────────────────────────────────────────────
+void ShareData::setName(const std::string& n) {
      name = n;
-    }
-void ShareData::setId(const string &i){
-    id = i;
-    }
-string ShareData::getName() const {
+}
+
+void ShareData::setId(const std::string& i)   {
+     id = i;
+}
+std::string ShareData::getName() const {
     return name;
-    }
-string ShareData::getId() const {
-     return id;
-    }
+}
 
-// BaseEntity
-void BaseEntity::setAge(int a){
+std::string ShareData::getId()   const {
+    return id;
+}
+
+// ─────────────────────────────────────────────
+//  BaseEntity
+// ─────────────────────────────────────────────
+void BaseEntity::setAge(int a) {
     age = a;
-    }
-void BaseEntity::setPhoneNumber(const string &p){
+}
+
+void BaseEntity::setPhoneNumber(const std::string& p) {
      phoneNumber = p;
-    }
+}
+
+void BaseEntity::setNationalNumber(const std::string& n) {
+    nationalNumber = n;
+}
+
 int BaseEntity::getAge() const {
-     return age;
-    }
-string BaseEntity::getPhoneNumber() const {
+    return age;
+}
+
+std::string BaseEntity::getPhoneNumber() const {
      return phoneNumber;
-    }
+}
 
-// Teacher
+std::string BaseEntity::getNationalNumber() const {
+    return nationalNumber;
+}
 
-void Teacher::setTeacherNationalNum(string n){
- nationalNumber = n;
+
+// ─────────────────────────────────────────────
+//  Teacher
+// ─────────────────────────────────────────────
+void Teacher::setGrade(int g) {
+     grade = g;
 }
-void Teacher::setTeacherGrade(int g){
-    grade = g;
+void Teacher::setMonthlySalary(double s) {
+    monthlySalary   = s;
 }
-void Teacher::setMonthlySalary(double s){
-     monthlySalary = s;
-    }
-void Teacher::setTeacherSubject(const string &sub){
-     teacherSubject = sub;
-    }
-void Teacher::setExperienceYears(int e){
-  experienceYears = e;
+void Teacher::setSubject(const std::string& sub) {
+    subject = sub;
 }
-void Teacher::setTeacherSpecialization(const string& specialization){
-    teacherSpecialization = specialization;
+
+void Teacher::setExperienceYears(int y) {
+    experienceYears = y;
 }
-void Teacher::addAssignedCourse(const string& courseId) {
+
+void Teacher::setSpecialization(const std::string& spec) {
+    specialization  = spec;
+}
+
+bool Teacher::assignCourse(const std::string& courseId) {
+    if (isCourseAssigned(courseId))
+        return false;
     assignedCourseIds.push_back(courseId);
+    return true;
 }
-bool Teacher::isCourseAssigned(const string& courseId) const {
-    for (int i = 0; i < assignedCourseIds.size(); i++) {
-        if (assignedCourseIds[i] == courseId) {
+
+bool Teacher::isCourseAssigned(const std::string& courseId) const {
+    for (int i = 0; i < (int)assignedCourseIds.size(); i++)
+        if (assignedCourseIds[i] == courseId)
             return true;
-        }
-    }
     return false;
 }
 
@@ -64,167 +85,147 @@ void Teacher::clearAssignedCourses() {
     assignedCourseIds.clear();
 }
 
-void Teacher::addStudentId(int id){
+void Teacher::addStudentId(int id) {
     studentIds.push_back(id);
-    }
-
-
-string Teacher::getTeacherNationalNum() const {
-  return nationalNumber;
 }
 
-int Teacher::getTeacherGrade() const {
+int Teacher::getGrade() const {
     return grade;
 }
+
 double Teacher::getMonthlySalary() const {
     return monthlySalary;
-    }
-string Teacher::getTeacherSubject() const {
-    return teacherSubject;
-    }
-int Teacher::getTeacherExperienceYears() const {
+}
+
+std::string Teacher::getSubject() const {
+    return subject;
+}
+
+int Teacher::getExperienceYears() const {
     return experienceYears;
 }
-string Teacher::getTeacherSpecialization() const {
-    return teacherSpecialization;
+
+std::string Teacher::getSpecialization() const {
+    return specialization;
 }
-const vector<string>& Teacher::getAssignedCourses() const {
+
+const std::vector<std::string>& Teacher::getAssignedCourses() const {
     return assignedCourseIds;
 }
-const vector<int>& Teacher::getStudentsIds() const {
+
+const std::vector<int>& Teacher::getStudentIds() const {
     return studentIds;
-    }
-int Teacher::getNumberOfStudentsInTeacherCourse() const {
-     return studentIds.size();
-    }
-
-// Course
-void Course::addTeacherName(const string& teacherName) {
-    if(std::find(teacherNames.begin(), teacherNames.end(), teacherName) == teacherNames.end()) {
-        teacherNames.push_back(teacherName);
-    }
 }
 
-void Course::addTeacher(Teacher* t){
-    courseTeachers.push_back(t);
-    addTeacherName(t->getName());
+int Teacher::getNumberOfStudentsInCourse() const {
+    return (int)studentIds.size();
 }
 
-void Course::addAssignedStudent(const string& studentId) {
+// ─────────────────────────────────────────────
+//  Course
+// ─────────────────────────────────────────────
+void Course::setGrade(int g) {
+    grade = g;
+}
+void Course::setSubjectHours(int h) {
+    subjectHours = h;
+}
+void Course::setSpecialization(const std::string& spec) {
+    specialization = spec;
+}
+
+bool Course::assignTeacher(const std::string& tid, const std::string& tname) {
+    for (int i = 0; i < (int)teacherIds.size(); i++)
+        if (teacherIds[i] == tid)
+            return false;
+    teacherIds.push_back(tid);
+    teacherNames.push_back(tname);
+    return true;
+}
+
+bool Course::assignStudent(const std::string& studentId) {
+    if (isStudentAssigned(studentId))
+        return false;
     assignedStudentIds.push_back(studentId);
+    return true;
 }
 
-bool Course::isStudentAssigned(const string& studentId) const {
-    for (int i = 0; i < assignedStudentIds.size(); i++) {
-        if (assignedStudentIds[i] == studentId) {
-            return true;
-        }
-    }
+bool Course::isStudentAssigned(const std::string& studentId) const {
+    for (int i = 0; i < (int)assignedStudentIds.size(); i++)
+        if (assignedStudentIds[i] == studentId) return true;
     return false;
-}
-
-void Course::setGrade(const int &year){
-     grade = year;
-    }
-void Course::setSubjectHours(int hours){
-    subjectHours = hours;
-    }
-void Course::setCourseTeacherName(const string &s){
-    teacherName=s;
-    }
-void Course::setCourseTeacherId(const string& id){
-    teacherId = id;
-    }
-void Course::setCourseSpecialization(const string& specialization){
-    courseSpecialization = specialization;
-    }
-
-
-
-   const vector<string>& Course::getTeacherNames() const {
-    return teacherNames;
-}
-
-
-
-
-
-
-
-
-
-string Course::getCourseTeacherName() const {
-  return teacherName;
-    }
-string Course::getCourseTeacherId() const {
-  return teacherId;
-}
-
-const vector<Teacher*>& Course::getCourseTeachers() const {
-    return courseTeachers;
 }
 
 int Course::getGrade() const {
     return grade;
-    }
+}
 int Course::getSubjectHours() const {
     return subjectHours;
-    }
-int Course::getNumberOfCourseTeachers() const {
-    return courseTeachers.size();
-    }
-string Course::getCourseSpecialization() const {
-    return courseSpecialization;
+}
+std::string Course::getSpecialization() const {
+    return specialization;
 }
 
-const vector<string>& Course::getAssignedStudents() const {
+int Course::getNumberOfTeachers() const {
+    return (int)teacherIds.size();
+}
+
+const std::vector<std::string>& Course::getTeacherIds() const {
+    return teacherIds;
+}
+
+const std::vector<std::string>& Course::getTeacherNames() const {
+    return teacherNames;
+}
+
+const std::vector<std::string>& Course::getAssignedStudents() const {
     return assignedStudentIds;
 }
 
 int Course::getNumberOfAssignedStudents() const {
-    return assignedStudentIds.size();
+    return (int)assignedStudentIds.size();
 }
 
-
-// Student
-void Student::setStudentNationalNum(string n){
- nationalNumber = n;
+// ─────────────────────────────────────────────
+//  Student
+// ─────────────────────────────────────────────
+void Student::setGrade(int g) {
+    grade = g;
 }
-void Student::setSchoolYear(const int &year){
-     schoolYear = year;
-    }
-void Student::setGpa(double g){
-     gpa = g;
-    }
-void Student::addAssignedCourse(const string& courseId, const string& teacherName) {
+
+void Student::setGpa(double g) {
+    gpa   = g;
+}
+
+bool Student::assignCourse(const std::string& courseId, const std::string& teacherName) {
+    if (isCourseAssigned(courseId))
+        return false;
     StudentCourse sc;
     sc.courseId = courseId;
     sc.teacherName = teacherName;
     assignedCourses.push_back(sc);
+    return true;
 }
 
-bool Student::isCourseAssigned(const string& courseId) const {
-    for (int i = 0; i < assignedCourses.size(); i++) {
-        if (assignedCourses[i].courseId == courseId) {
+bool Student::isCourseAssigned(const std::string& courseId) const {
+    for (int i = 0; i < (int)assignedCourses.size(); i++)
+        if (assignedCourses[i].courseId == courseId)
             return true;
-        }
-    }
     return false;
 }
 
-string Student::getStudentNationalNum() const {
-  return nationalNumber;
+int Student::getGrade() const {
+    return grade;
 }
 
-int Student::getSchoolYear() const {
-     return schoolYear;
-    }
 double Student::getGpa() const {
-     return gpa;
-    }
-const vector<StudentCourse>& Student::getAssignedCourses() const {
-     return assignedCourses;
-    }
+    return gpa;
+}
+
+const std::vector<StudentCourse>& Student::getAssignedCourses() const {
+    return assignedCourses;
+}
+
 int Student::getNumberOfAssignedCourses() const {
-     return assignedCourses.size();
-    }
+    return (int)assignedCourses.size();
+}

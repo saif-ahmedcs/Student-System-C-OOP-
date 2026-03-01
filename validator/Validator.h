@@ -1,0 +1,42 @@
+#ifndef VALIDATOR_H
+#define VALIDATOR_H
+
+#include "../utils/SchoolUtils.h"
+#include "../SchoolConstants.h"
+#include <string>
+
+// ─────────────────────────────────────────────────────────────────────────
+//  Validator classes — input validation ONLY
+//
+//  Each validator answers one question: "is this input value acceptable?"
+//  Validators do NOT:
+//    - query repositories
+//    - enforce business limits (max courses, capacities)
+//    - check for duplicates
+// ─────────────────────────────────────────────────────────────────────────
+
+class TeacherValidator {
+public:
+    bool validateName(const std::string& name) const;
+    bool validateAge(int age) const;
+    bool validateExperienceYears(int years) const;
+    bool validateGrade(int grade) const;
+};
+
+class CourseValidator {
+public:
+    bool validateCourseName(const std::string& name) const;
+    bool validateSubjectHours(int hours) const;
+    bool validateGrade(int grade) const;
+};
+
+class StudentValidator {
+public:
+    bool validateName(const std::string& name) const;
+    bool validateAge(int age, int grade) const;
+    bool validatePhoneNumber(const std::string& phone) const;
+    bool validateGrade(int grade) const;
+    bool validateGpa(float gpa) const;
+};
+
+#endif

@@ -1,29 +1,8 @@
 #include "Repo.h"
+#include "../SchoolConstants.h"
+#include <string>
+using namespace std;
 
-int MaxTeachersForGradeInPrimary = 7;
-int MaxTeachersForGradeInMiddle = 9;
-int MaxTeachersForGradeInSecondary = 12;
-
-int MaxCoursesForGradeInPrimary = 8;
-int MaxCoursesForGradeInMiddle = 11;
-int MaxCoursesForGradeInSecondary = 13;
-
-int MaxStudentsForGradeInPrimary = 110;
-int MaxStudentsForGradeInMiddle = 100;
-int MaxStudentsForGradeInSecondary = 90;
-
-////////////////// Global functions \\\\\\\\\\\\\\\
-
-
-// Determines the educational stage (Primary, Middle, Secondary)
-// based on the given grade number (1 12). Throws an exception for invalid grades.
-Stage getStageFromGrade(int grade) {
-    if (grade >= 1 && grade <= 6) return Stage::Primary;
-    if (grade >= 7 && grade <= 9) return Stage::Middle;
-    if (grade >= 10 && grade <= 12) return Stage::Secondary;
-}
-
-// Generates a unique student ID based on the student's grade.
 string generateStudentID(int grade){
 
 static int id[13]={0};
@@ -115,275 +94,238 @@ string generateTeacherID(int grade) {
 }
 
 
-////////////////// TeacherRepositoryImpl \\\\\\\\\\\\\\\
-
-void TeacherRepositoryImpl::addTeacherInGrade(int grade, Teacher &teacher) {
-    teachersInGrade[grade].push_back(teacher);
-}
-
-void TeacherRepositoryImpl::addTeacherInStage(int grade, Teacher &teacher) {
-    Stage stage = getStageFromGrade(grade);
-    teachersInStage[stage].push_back(teacher);
-}
-
-void TeacherRepositoryImpl::addTeacherInSchool(Teacher &teacher) {
-    teachersInSchool.push_back(teacher);
-}
-
+// ─────────────────────────────────────────────
+//  TeacherRepositoryImpl
+// ─────────────────────────────────────────────
 int TeacherRepositoryImpl::getTeachersInGrade(int grade) const {
-    auto it = teachersInGrade.find(grade);
-    if (it != teachersInGrade.end())
-        return it->second.size();
-    return 0;
+    auto it = gradeIndex.find(grade);
+    return it != gradeIndex.end() ? (int)it->second.size() : 0;
 }
 
 int TeacherRepositoryImpl::getMaxTeachersForGrade(int grade) const {
-    Stage stage = getStageFromGrade(grade);
-
-    switch(stage) {
-        case Stage::Primary: return MaxTeachersForGradeInPrimary;
-        case Stage::Middle: return MaxTeachersForGradeInMiddle;
-        case Stage::Secondary: return MaxTeachersForGradeInSecondary;
+    switch (getStageFromGrade(grade)) {
+        case Stage::Primary:
+            return SchoolConstants::MAX_TEACHERS_IN_PRIMARY;
+        case Stage::Middle:
+            return SchoolConstants::MAX_TEACHERS_IN_MIDDLE;
+        case Stage::Secondary:
+            return SchoolConstants::MAX_TEACHERS_IN_SECONDARY;
     }
-
     return 0;
 }
 
-Teacher* TeacherRepositoryImpl::findTeacherByNationalNumber(const string& nationalNumber) {
-    for (auto& teacher : teachersInSchool) {
-        if (teacher.getTeacherNationalNum() == nationalNumber) {
+Teacher* TeacherRepositoryImpl::findTeacherByNationalNumber(const std::string& nationalNumber) {
+    for (int i = 0; i < (int)allTeachers.size(); i++) {
+        Teacher& teacher = allTeachers[i];
+        if (teacher.getNationalNumber() == nationalNumber)
             return &teacher;
-        }
     }
     return nullptr;
 }
 
-Teacher* TeacherRepositoryImpl::findTeacherById(const string& id) {
-    for (auto& [grade, teachers] : teachersInGrade) {
-        for (auto& t : teachers) {
-            if (t.getId() == id)
-                return &t;
-        }
+Teacher* TeacherRepositoryImpl::findTeacherById(const std::string& id) {
+    for (int i = 0; i < (int)allTeachers.size(); i++) {
+        Teacher& teacher = allTeachers[i];
+        if (teacher.getId() == id)
+            return &teacher;
     }
     return nullptr;
 }
 
-
-string TeacherRepositoryImpl::addTeacher(int grade, Teacher &teacher) {
-
-    Stage stage = getStageFromGrade(grade);
+string TeacherRepositoryImpl::addTeacher(int grade, Teacher& teacher) {
     string finalId = generateTeacherID(grade);
     teacher.setId(finalId);
-    addTeacherInGrade(grade, teacher);
-    addTeacherInStage(grade, teacher);
-    addTeacherInSchool(teacher);
+
+    allTeachers.push_back(teacher);
+    int idx = (int)allTeachers.size() - 1;
+
+    gradeIndex[grade].push_back(idx);
+    stageIndex[getStageFromGrade(grade)].push_back(idx);
+
     return "Teacher added successfully. Assigned ID: " + finalId;
 }
 
-string TeacherRepositoryImpl::editTeacher(const string& id, const Teacher& newData){
-
+string TeacherRepositoryImpl::editTeacher(const string& id, const Teacher& newData) {
     Teacher* t = findTeacherById(id);
+    if (!t) return "Teacher not found.";
 
-        t->setName(newData.getName());
-        t->setAge(newData.getAge());
-        t->setTeacherGrade(newData.getTeacherGrade());
-        t->setTeacherSubject(newData.getTeacherSubject());
-        t->setExperienceYears(newData.getTeacherExperienceYears());
-        t->setMonthlySalary(newData.getMonthlySalary());
+    t->setName(newData.getName());
+    t->setAge(newData.getAge());
+    t->setGrade(newData.getGrade());
+    t->setSubject(newData.getSubject());
+    t->setExperienceYears(newData.getExperienceYears());
+    t->setMonthlySalary(newData.getMonthlySalary());
+    t->setSpecialization(newData.getSpecialization());
 
     return "Teacher data updated successfully.";
 }
 
 string TeacherRepositoryImpl::assignCoursesToTeacher(const string& teacherId, const vector<string>& courseIds) {
-
     Teacher* teacher = findTeacherById(teacherId);
+    if (!teacher)
+        return "Teacher not found.";
 
-    for (int i = 0; i < courseIds.size(); i++) {
-        teacher->addAssignedCourse(courseIds[i]);
+    for (size_t i = 0; i < courseIds.size(); i++) {
+        teacher->assignCourse(courseIds[i]);
     }
 
     return "Courses assigned to teacher successfully.";
 }
 
-
-////////////////// CourseRepositoryImpl \\\\\\\\\\\\\\\
-
-void CourseRepositoryImpl::addCourseInGrade(int grade, Course &course) {
-    coursesInGrade[grade].push_back(course);
-}
-
-void CourseRepositoryImpl::addCourseInStage(int grade, Course &course) {
-    Stage stage = getStageFromGrade(grade);
-    coursesInStage[stage].push_back(course);
-}
-
-void CourseRepositoryImpl::addCourseInSchool(Course &course) {
-    coursesInSchool.push_back(course);
-}
-
+// ─────────────────────────────────────────────
+//  CourseRepositoryImpl
+// ─────────────────────────────────────────────
 int CourseRepositoryImpl::getNumberOfCoursesInGrade(int grade) const {
-    auto it = coursesInGrade.find(grade);
-    if (it != coursesInGrade.end())
-        return it->second.size();
+    for (auto it = gradeIndex.begin(); it != gradeIndex.end(); ++it) {
+        if (it->first == grade) {
+            return (int)it->second.size();
+        }
+    }
     return 0;
 }
 
 vector<Course> CourseRepositoryImpl::getCoursesInSchoolVector() {
-    return coursesInSchool;
+    return allCourses;
 }
 
 int CourseRepositoryImpl::getMaxCoursesForGrade(int grade) const {
-    Stage stage = getStageFromGrade(grade);
-
-    switch(stage) {
-        case Stage::Primary: return MaxCoursesForGradeInPrimary;
-        case Stage::Middle: return MaxCoursesForGradeInMiddle;
-        case Stage::Secondary: return MaxCoursesForGradeInSecondary;
+    switch (getStageFromGrade(grade)) {
+        case Stage::Primary:
+            return SchoolConstants::MAX_COURSES_IN_PRIMARY;
+        case Stage::Middle:
+            return SchoolConstants::MAX_COURSES_IN_MIDDLE;
+        case Stage::Secondary:
+            return SchoolConstants::MAX_COURSES_IN_SECONDARY;
     }
-
     return 0;
 }
 
 Course* CourseRepositoryImpl::findCourseById(const string& id) {
-    for (auto& [grade, courses] : coursesInGrade) {
-        for (auto& c : courses) {
-            if (c.getId() == id)
-                return &c;
-        }
+    for (int i = 0; i < allCourses.size(); i++) {
+        if (allCourses[i].getId() == id)
+            return &allCourses[i];
     }
     return nullptr;
 }
 
-
-
-string CourseRepositoryImpl::addCourse(int grade, Course &course) {
-
-    Stage stage = getStageFromGrade(grade);
-    string finalId = generateCourseID(course.getName(),grade,course.getCourseSpecialization());
+string CourseRepositoryImpl::addCourse(int grade, Course& course) {
+    string finalId = generateCourseID(course.getName(), grade, course.getSpecialization());
     course.setId(finalId);
-    addCourseInGrade(grade, course);
-    addCourseInStage(grade, course);
-    addCourseInSchool(course);
-    return string("Course added successfully to grade ") + to_string(grade) + " System." + "ID: " + finalId;
+
+    allCourses.push_back(course);
+    int idx = (int)allCourses.size() - 1;
+
+    gradeIndex[grade].push_back(idx);
+    stageIndex[getStageFromGrade(grade)].push_back(idx);
+
+    return "Course added successfully to grade " + to_string(grade) + ". ID: " + finalId;
 }
 
 string CourseRepositoryImpl::editCourse(const string& id, const Course& newData) {
-
     Course* c = findCourseById(id);
+    if (!c)
+        return "Course not found.";
 
     c->setName(newData.getName());
-    c->setCourseTeacherName(newData.getCourseTeacherName());
     c->setGrade(newData.getGrade());
     c->setSubjectHours(newData.getSubjectHours());
 
-      return "Course data updated successfully.";
+    return "Course data updated successfully.";
+}
 
+string CourseRepositoryImpl::assignTeacherToCourse(const string& courseId, const string& teacherId, const string& teacherName) {
+    Course* course = findCourseById(courseId);
+    if (!course)
+        return "Error: Course " + courseId + " not found.";
+    if (!course->assignTeacher(teacherId, teacherName))
+        return "Error: Teacher already assigned to course " + courseId + ".";
+    return "Teacher assigned to course successfully.";
 }
 
 string CourseRepositoryImpl::assignStudentToCourse(const string& studentId, const string& courseId) {
     Course* course = findCourseById(courseId);
+    if (!course)
+        return "Error: Course " + courseId + " not found.";
+    if (!course->assignStudent(studentId))
+        return "Error: Student already assigned to course " + courseId + ".";
 
-    if (!course) {
-        return "Error: Course with ID " + courseId + " not found.";
-    }
-
-    if (course->isStudentAssigned(studentId)) {
-        return "Error: Student is already assigned in this course.";
-    }
-
-    course->addAssignedStudent(studentId);
-    return "Student assigned in course successfully.";
+    return "Student assigned to course successfully.";
 }
 
-////////////////// StudentRepositoryImpl \\\\\\\\\\\\\\\
-
-void StudentRepositoryImpl::addStudentInGrade(int grade, Student &student) {
-    studentsInGrade[grade].push_back(student);
-}
-
-void StudentRepositoryImpl::addStudentInStage(int grade, Student &student) {
-    Stage stage = getStageFromGrade(grade);
-    studentsInStage[stage].push_back(student);
-}
-
-void StudentRepositoryImpl::addStudentInSchool(Student &student) {
-    studentsInSchool.push_back(student);
-}
-
-Student* StudentRepositoryImpl::findStudentByNationalNumber(const string& nationalNumber) {
-    for (auto& student : studentsInSchool) {
-        if (student.getStudentNationalNum() == nationalNumber) {
-            return &student;
-        }
+// ─────────────────────────────────────────────
+//  StudentRepositoryImpl
+// ─────────────────────────────────────────────
+Student* StudentRepositoryImpl::findStudentByNationalNumber(const string& nn) {
+    for (int i = 0; i < (int)allStudents.size(); i++) {
+        if (allStudents[i].getNationalNumber() == nn)
+            return &allStudents[i];
     }
     return nullptr;
 }
 
-
 Student* StudentRepositoryImpl::findStudentById(const string& id) {
-    for (auto& [grade, students] : studentsInGrade) {
-        for (auto& s : students) {
-            if (s.getId() == id) {
-                return &s;
-            }
-        }
+    for (int i = 0; i < (int)allStudents.size(); i++) {
+        if (allStudents[i].getId() == id)
+            return &allStudents[i];
     }
     return nullptr;
 }
 
 int StudentRepositoryImpl::getStudentsInGrade(int grade) const {
-    auto it = studentsInGrade.find(grade);
-    if (it != studentsInGrade.end()) {
-        return it->second.size();
+    for (auto it = gradeIndex.begin(); it != gradeIndex.end(); ++it) {
+        if (it->first == grade)
+            return (int)it->second.size();
     }
     return 0;
 }
 
 int StudentRepositoryImpl::getMaxStudentsForGrade(int grade) const {
-    Stage stage = getStageFromGrade(grade);
-
-    switch(stage) {
-        case Stage::Primary: return MaxStudentsForGradeInPrimary;
-        case Stage::Middle: return MaxStudentsForGradeInMiddle;
-        case Stage::Secondary: return MaxStudentsForGradeInSecondary;
+    switch (getStageFromGrade(grade)) {
+        case Stage::Primary:
+            return SchoolConstants::MAX_STUDENTS_IN_PRIMARY;
+        case Stage::Middle:
+            return SchoolConstants::MAX_STUDENTS_IN_MIDDLE;
+        case Stage::Secondary:
+            return SchoolConstants::MAX_STUDENTS_IN_SECONDARY;
     }
-
     return 0;
 }
 
-
-
-string StudentRepositoryImpl::addStudent(int grade, Student &student) {
-
+string StudentRepositoryImpl::addStudent(int grade, Student& student) {
     string finalId = generateStudentID(grade);
     student.setId(finalId);
-    addStudentInGrade(grade, student);
-    addStudentInStage(grade, student);
-    addStudentInSchool(student);
+
+    allStudents.push_back(student);
+    int idx = (int)allStudents.size() - 1;
+
+    gradeIndex[grade].push_back(idx);
+    stageIndex[getStageFromGrade(grade)].push_back(idx);
 
     return "Student added successfully. Assigned ID: " + finalId;
 }
 
-
 string StudentRepositoryImpl::editStudent(const string& id, const Student& newData) {
-
     Student* s = findStudentById(id);
+    if (!s)
+        return "Student not found.";
 
     s->setName(newData.getName());
     s->setPhoneNumber(newData.getPhoneNumber());
     s->setGpa(newData.getGpa());
     s->setAge(newData.getAge());
-    s->setSchoolYear(newData.getSchoolYear());
+    s->setGrade(newData.getGrade());
 
     return "Student data updated successfully.";
 }
 
 string StudentRepositoryImpl::assignCoursesToStudent(const string& studentId, const vector<string>& courseIds, const vector<string>& teacherNames) {
     Student* student = findStudentById(studentId);
+    if (!student)
+        return "Student not found.";
 
-    for (int i = 0; i < courseIds.size(); i++) {
-        student->addAssignedCourse(courseIds[i], teacherNames[i]);
-    }
+    for (int i = 0; i < (int)courseIds.size(); i++)
+        student->assignCourse(courseIds[i], teacherNames[i]);
+
 
     return "Courses assigned to student successfully.";
 }

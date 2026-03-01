@@ -2,58 +2,55 @@
 #define CONTROLLER_H
 
 #include "../service/Service.h"
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include <vector>
 
-// Teacher
 class TeacherController {
 private:
-    TeacherServiceImpl &teacherService;
-
+    TeacherService& teacherService;
 public:
-    TeacherController(TeacherServiceImpl &service);
+    explicit TeacherController(TeacherService& service);
 
-    Teacher *findTeacherById(const string& id);
+    Teacher* findTeacherById(const std::string& id);
     int getMaxTeachersForGrade(int grade) const;
-    string addTeacher(int grade, Teacher &teacher);
-    string editTeacher(const string& id, const Teacher& newData);
-    string assignCoursesToTeacher(const string& teacherId,const vector<string>& courseIds);
-    void showTeacher(const string& id);
-
+    std::string addTeacher(int grade, Teacher& teacher);
+    std::string editTeacher(const std::string& id, const Teacher& newData);
+    std::string assignCoursesToTeacher(const std::string& teacherId, const std::vector<std::string>& courseIds);
+    void showTeacher(const std::string& id);
 };
 
-//Course
 class CourseController {
 private:
-    CourseServiceImpl &courseService;
-
+    CourseService&  courseService;
+    StudentService& studentService;
 public:
-    CourseController(CourseServiceImpl &service);
+    CourseController(CourseService& cSrv, StudentService& sSrv);
 
-    Course *findCourseById(const string& id);
+    Course* findCourseById(const std::string& id);
+    std::vector<std::string> getCourseTeacherNames(const std::string& courseId);
     int getMaxCoursesForGrade(int grade) const;
-    string addCourse(int grade, Course &course);
-    string editCourse(const string& id, const Course& newData);
-    void showCourse(const string& id);
-    void showCourseStudents(const string& courseId);
-    void showCourseStudentsByTeacher(const string& courseId);
-
-
+    std::string addCourse(int grade, Course& course);
+    std::string editCourse(const std::string& id, const Course& newData);
+    void showCourse(const std::string& id);
+    void showCourseStudents(const std::string& courseId);
+    void showCourseStudentsByTeacher(const std::string& courseId);
 };
 
-//Student
 class StudentController {
 private:
-    StudentServiceImpl &studentService;
-
+    StudentService& studentService;
+    CourseService& courseService;
 public:
-    StudentController(StudentServiceImpl &service);
+    StudentController(StudentService& sSrv, CourseService& cSrv);
 
-    Student *findStudentById(const string& id);
+    Student* findStudentById(const std::string& id);
     int getMaxStudentsForGrade(int grade) const;
-    string addStudent(int grade, Student &student);
-    string editStudent(const string& id, const Student& newData);
-    void showStudent(const string& id);
-    string assignCoursesToStudent(const string& studentId, const vector<string>& courseIds, const vector<string>& teacherNames);
-
+    std::string addStudent(int grade, Student& student);
+    std::string editStudent(const std::string& id, const Student& newData);
+    std::string assignCoursesToStudent(const std::string& studentId, const std::vector<std::string>& courseIds, const std::vector<std::string>& teacherNames);
+    void showStudent(const std::string& id);
 };
 
 #endif

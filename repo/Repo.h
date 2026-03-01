@@ -2,124 +2,106 @@
 #define REPO_H
 
 #include "../model/Models.h"
-using namespace std;
+#include <map>
+#include <vector>
+#include <string>
 
-enum Stage { Primary = 1, Middle, Secondary };
+// ─────────────────────────────────────────────────────────────────────────
+//  Repository interfaces
+//
+//  Responsibility: data storage and retrieval ONLY.
+// ─────────────────────────────────────────────────────────────────────────
 
-Stage getStageFromGrade(int grade); // global function
-
-////////////////// Teacher \\\\\\\\\\\\\\\\\\
-
+// ─────────────────────────────────────────────
+//  TeacherRepository
+// ─────────────────────────────────────────────
 class TeacherRepository {
 public:
-    virtual Teacher* findTeacherByNationalNumber(const string& nationalNumber) = 0;
-    virtual Teacher* findTeacherById(const string& id) = 0;
+    virtual Teacher* findTeacherByNationalNumber(const std::string& nationalNumber) = 0;
+    virtual Teacher* findTeacherById(const std::string& id) = 0;
     virtual int getTeachersInGrade(int grade) const = 0;
     virtual int getMaxTeachersForGrade(int grade) const = 0;
-    virtual string addTeacher(int grade, Teacher &teacher) = 0;
-    virtual string editTeacher(const string& id, const Teacher& newData) = 0;
-    virtual string assignCoursesToTeacher(const string& teacherId, const vector<string>& courseIds) = 0;
-
-
+    virtual std::string addTeacher(int grade, Teacher& teacher) = 0;
+    virtual std::string editTeacher(const std::string& id, const Teacher& newData) = 0;
+    virtual std::string assignCoursesToTeacher(const std::string& teacherId, const std::vector<std::string>& courseIds) = 0;
+    virtual ~TeacherRepository() = default;
 };
 
 class TeacherRepositoryImpl : public TeacherRepository {
 private:
-    map<int, vector<Teacher>> teachersInGrade;
-    map<Stage, vector<Teacher>> teachersInStage;
-    vector<Teacher> teachersInSchool;
-
+    std::vector<Teacher> allTeachers;
+    std::map<int, std::vector<int>> gradeIndex;
+    std::map<Stage, std::vector<int>> stageIndex;
 public:
-    void addTeacherInGrade(int grade, Teacher &teacher);
-    void addTeacherInStage(int grade, Teacher &teacher);
-    void addTeacherInSchool(Teacher &teacher);
-
+    Teacher* findTeacherByNationalNumber(const std::string& nationalNumber) override;
+    Teacher* findTeacherById(const std::string& id) override;
     int getTeachersInGrade(int grade) const override;
-
     int getMaxTeachersForGrade(int grade) const override;
-
-    Teacher* findTeacherByNationalNumber(const string& nationalNumber) override;
-    Teacher* findTeacherById(const string& id) override;
-    string addTeacher(int grade, Teacher &teacher) override;
-    string editTeacher(const string& id, const Teacher& newData) override;
-    string assignCoursesToTeacher(const string& teacherId, const vector<string>& courseIds) override;
-
+    std::string addTeacher(int grade, Teacher& teacher) override;
+    std::string editTeacher(const std::string& id, const Teacher& newData) override;
+    std::string assignCoursesToTeacher(const std::string& teacherId, const std::vector<std::string>& courseIds) override;
 };
 
-////////////////// Course \\\\\\\\\\\\\\\\\\
-
+// ─────────────────────────────────────────────
+//  CourseRepository
+// ─────────────────────────────────────────────
 class CourseRepository {
 public:
-    virtual Course* findCourseById(const string& id) = 0;
+    virtual Course* findCourseById(const std::string& id) = 0;
     virtual int getNumberOfCoursesInGrade(int grade) const = 0;
-    virtual vector<Course> getCoursesInSchoolVector() = 0;
+    virtual std::vector<Course> getCoursesInSchoolVector() = 0;
     virtual int getMaxCoursesForGrade(int grade) const = 0;
-    virtual string addCourse(int grade, Course &course) = 0;
-    virtual string editCourse(const string& id, const Course& newData) = 0;
-    virtual string assignStudentToCourse(const string& studentId, const string& courseId) = 0;
-
+    virtual std::string addCourse(int grade, Course& course) = 0;
+    virtual std::string editCourse(const std::string& id, const Course& newData) = 0;
+    virtual std::string assignTeacherToCourse(const std::string& courseId, const std::string& teacherId, const std::string& teacherName) = 0;
+    virtual std::string assignStudentToCourse(const std::string& studentId, const std::string& courseId) = 0;
+    virtual ~CourseRepository() = default;
 };
 
 class CourseRepositoryImpl : public CourseRepository {
 private:
-    map<int, vector<Course>> coursesInGrade;
-    map<Stage, vector<Course>> coursesInStage;
-    vector<Course> coursesInSchool;
-
+    std::vector<Course> allCourses;
+    std::map<int, std::vector<int>> gradeIndex;
+    std::map<Stage, std::vector<int>> stageIndex;
 public:
-    void addCourseInGrade(int grade, Course &course);
-    void addCourseInStage(int grade, Course &course);
-    void addCourseInSchool(Course &course);
-
+    Course* findCourseById(const std::string& id) override;
     int getNumberOfCoursesInGrade(int grade) const override;
-    vector<Course> getCoursesInSchoolVector() override ;
+    std::vector<Course> getCoursesInSchoolVector() override;
     int getMaxCoursesForGrade(int grade) const override;
-    Course* findCourseById(const string& id) override;
-    string addCourse(int grade, Course &course) override;
-    string editCourse(const string& id, const Course& newData) override;
-    string assignStudentToCourse(const string& studentId, const string& courseId) override;
-
-
-
+    std::string addCourse(int grade, Course& course) override;
+    std::string editCourse(const std::string& id, const Course& newData) override;
+    std::string assignTeacherToCourse(const std::string& courseId, const std::string& teacherId, const std::string& teacherName) override;
+    std::string assignStudentToCourse(const std::string& studentId, const std::string& courseId) override;
 };
 
-////////////////// Student \\\\\\\\\\\\\\\\\\
-
+// ─────────────────────────────────────────────
+//  StudentRepository
+// ─────────────────────────────────────────────
 class StudentRepository {
 public:
-    virtual Student* findStudentByNationalNumber(const string& nationalNumber) = 0;
-    virtual Student* findStudentById(const string& id) = 0;
-
+    virtual Student* findStudentByNationalNumber(const std::string& nationalNumber) = 0;
+    virtual Student* findStudentById(const std::string& id) = 0;
     virtual int getStudentsInGrade(int grade) const = 0;
     virtual int getMaxStudentsForGrade(int grade) const = 0;
-
-    virtual string addStudent(int grade, Student &student) = 0;
-    virtual string editStudent(const string& id, const Student& newData) = 0;
-    virtual string assignCoursesToStudent(const string& studentId, const vector<string>& courseIds, const vector<string>& teacherNames) = 0;
-
+    virtual std::string addStudent(int grade, Student& student) = 0;
+    virtual std::string editStudent(const std::string& id, const Student& newData) = 0;
+    virtual std::string assignCoursesToStudent(const std::string& studentId, const std::vector<std::string>& courseIds, const std::vector<std::string>& teacherNames) = 0;
+    virtual ~StudentRepository() = default;
 };
 
 class StudentRepositoryImpl : public StudentRepository {
 private:
-    map<int, vector<Student>> studentsInGrade;
-    map<Stage, vector<Student>> studentsInStage;
-    vector<Student> studentsInSchool;
-
+    std::vector<Student> allStudents;
+    std::map<int, std::vector<int>> gradeIndex;
+    std::map<Stage, std::vector<int>> stageIndex;
 public:
-    void addStudentInGrade(int grade, Student &student);
-    void addStudentInStage(int grade, Student &student);
-    void addStudentInSchool(Student &student);
-
-    Student* findStudentByNationalNumber(const string& nationalNumber) override;
-    Student* findStudentById(const string& id) override;
-
+    Student* findStudentByNationalNumber(const std::string& nationalNumber) override;
+    Student* findStudentById(const std::string& id) override;
     int getStudentsInGrade(int grade) const override;
     int getMaxStudentsForGrade(int grade) const override;
-
-    string addStudent(int grade, Student &student) override;
-    string editStudent(const string& id, const Student& newData) override;
-    string assignCoursesToStudent(const string& studentId, const vector<string>& courseIds, const vector<string>& teacherNames) override;
-
+    std::string addStudent(int grade, Student& student) override;
+    std::string editStudent(const std::string& id, const Student& newData) override;
+    std::string assignCoursesToStudent(const std::string& studentId, const std::vector<std::string>& courseIds, const std::vector<std::string>& teacherNames) override;
 };
 
 #endif
