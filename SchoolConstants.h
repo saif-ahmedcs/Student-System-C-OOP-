@@ -39,6 +39,11 @@ namespace SchoolConstants {
     constexpr int MIN_PHONE_LENGTH = 10;
     constexpr int MAX_PHONE_LENGTH = 12;
 
+    // ── Minimum available student seats required before teacher assignment ─
+    constexpr int MIN_AVAILABLE_SEATS_PRIMARY    = 35;
+    constexpr int MIN_AVAILABLE_SEATS_MIDDLE     = 32;
+    constexpr int MIN_AVAILABLE_SEATS_SECONDARY  = 30;
+
     // ── Grade capacity limits (max entities per grade) ────────────────────
     constexpr int MAX_TEACHERS_IN_PRIMARY    =  7;
     constexpr int MAX_TEACHERS_IN_MIDDLE     =  9;

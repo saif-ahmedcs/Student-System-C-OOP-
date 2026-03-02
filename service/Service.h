@@ -48,6 +48,14 @@ public:
     std::string addTeacher(int grade, Teacher& teacher) override;
     std::string editTeacher(const std::string& id, const Teacher& newData) override;
     std::string assignCoursesToTeacher(const std::string& teacherId, const std::vector<std::string>& courseIds) override;
+
+private:
+    // Returns the minimum number of available seats required before a teacher
+    // can be assigned to a course, based on the course's school stage.
+    int getMinAvailableSeatsForStage(Stage stage) const;
+
+    // Returns the maximum student capacity for a course's stage.
+    int getMaxStudentsForStage(Stage stage) const;
 };
 
 // ─────────────────────────────────────────────

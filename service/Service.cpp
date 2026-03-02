@@ -8,6 +8,24 @@ using namespace std;
 TeacherServiceImpl::TeacherServiceImpl(TeacherRepository& teacherRepo, CourseRepository& courseRepo, TeacherValidator&  validator)
     : teacherRepository(teacherRepo), courseRepository(courseRepo), teacherValidator(validator) {}
 
+int TeacherServiceImpl::getMinAvailableSeatsForStage(Stage stage) const {
+    switch (stage) {
+        case Stage::Primary:   return SchoolConstants::MIN_AVAILABLE_SEATS_PRIMARY;
+        case Stage::Middle:    return SchoolConstants::MIN_AVAILABLE_SEATS_MIDDLE;
+        case Stage::Secondary: return SchoolConstants::MIN_AVAILABLE_SEATS_SECONDARY;
+    }
+    return 0;
+}
+
+int TeacherServiceImpl::getMaxStudentsForStage(Stage stage) const {
+    switch (stage) {
+        case Stage::Primary:   return SchoolConstants::MAX_STUDENTS_IN_PRIMARY;
+        case Stage::Middle:    return SchoolConstants::MAX_STUDENTS_IN_MIDDLE;
+        case Stage::Secondary: return SchoolConstants::MAX_STUDENTS_IN_SECONDARY;
+    }
+    return 0;
+}
+
 Teacher* TeacherServiceImpl::findTeacherByNationalNumber(const string& nationalNumber) {
     return teacherRepository.findTeacherByNationalNumber(nationalNumber);
 }
@@ -110,12 +128,27 @@ string TeacherServiceImpl::assignCoursesToTeacher(const string& teacherId,
         if (teacher->isCourseAssigned(cid)) {
             errors += "- Course " + cid + " is already assigned to this teacher.\n"; continue;
         }
+
+        // ── Business rule: sufficient unregistered seats must remain ──────
+        {
+            Stage courseStage = getStageFromGrade(c->getGrade());
+            int maxSeats = getMaxStudentsForStage(courseStage);
+            int enrolled = c->getNumberOfAssignedStudents();
+            int available = maxSeats - enrolled;
+            int required = getMinAvailableSeatsForStage(courseStage);
+            if (available < required) {
+                errors += "- Course " + cid + " does not have enough available seats (" + to_string(available) + " available, " + to_string(required) + " required).\n";
+                continue;
+            }
+        }
     }
     if (!errors.empty())
         return "Assignment failed:\n" + errors;
 
-    for (int i = 0; i < (int)courseIds.size(); i++)
+
+    for (int i = 0; i < (int)courseIds.size(); i++){
         courseRepository.assignTeacherToCourse(courseIds[i], teacher->getId(), teacher->getName());
+    }
 
     return teacherRepository.assignCoursesToTeacher(teacherId, courseIds);
 }
