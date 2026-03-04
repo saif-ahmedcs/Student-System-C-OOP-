@@ -11,12 +11,6 @@
 //
 //  Responsibility: business rules for a single entity type, plus
 //  cross-entity assignment operations .
-//
-//  Business rules enforced here:
-//    - Duplicate checks (national number, course name+grade+spec)
-//    - Grade capacity limits per entity type
-//    - Teacher-course assignment rules (stage, specialization, limits)
-//    - Student-course assignment rules (grade match, capacity, count)
 // ─────────────────────────────────────────────────────────────────────────
 
 // ─────────────────────────────────────────────
@@ -30,6 +24,8 @@ public:
     virtual std::string addTeacher(int grade, Teacher& teacher) = 0;
     virtual std::string editTeacher(const std::string& id, const Teacher& newData) = 0;
     virtual std::string assignCoursesToTeacher(const std::string& teacherId, const std::vector<std::string>& courseIds) = 0;
+    virtual std::string removeTeacher(const std::string& id) = 0;
+
     virtual ~TeacherService() = default;
 };
 
@@ -48,13 +44,10 @@ public:
     std::string addTeacher(int grade, Teacher& teacher) override;
     std::string editTeacher(const std::string& id, const Teacher& newData) override;
     std::string assignCoursesToTeacher(const std::string& teacherId, const std::vector<std::string>& courseIds) override;
+    std::string removeTeacher(const std::string& id) override;
 
 private:
-    // Returns the minimum number of available seats required before a teacher
-    // can be assigned to a course, based on the course's school stage.
     int getMinAvailableSeatsForStage(Stage stage) const;
-
-    // Returns the maximum student capacity for a course's stage.
     int getMaxStudentsForStage(Stage stage) const;
 };
 

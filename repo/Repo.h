@@ -24,6 +24,8 @@ public:
     virtual std::string addTeacher(int grade, Teacher& teacher) = 0;
     virtual std::string editTeacher(const std::string& id, const Teacher& newData) = 0;
     virtual std::string assignCoursesToTeacher(const std::string& teacherId, const std::vector<std::string>& courseIds) = 0;
+    virtual std::string removeTeacher(const std::string& id) = 0;
+
     virtual ~TeacherRepository() = default;
 };
 
@@ -40,6 +42,7 @@ public:
     std::string addTeacher(int grade, Teacher& teacher) override;
     std::string editTeacher(const std::string& id, const Teacher& newData) override;
     std::string assignCoursesToTeacher(const std::string& teacherId, const std::vector<std::string>& courseIds) override;
+    std::string removeTeacher(const std::string& id) override;
 };
 
 // ─────────────────────────────────────────────

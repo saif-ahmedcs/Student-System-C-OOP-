@@ -61,6 +61,9 @@ public:
     void clearAssignedCourses();
     void addStudentId(int id);
 
+    bool removeCourse(const std::string& courseId);
+    void removeAllCourses();
+
     int getGrade() const;
     double getMonthlySalary() const;
     std::string getSubject() const;
@@ -90,6 +93,10 @@ public:
     bool assignTeacher(const std::string& teacherId, const std::string& teacherName);
     bool assignStudent(const std::string& studentId);
     bool isStudentAssigned(const std::string& studentId) const;
+
+    // New helpers for safe teacher removal
+    bool removeTeacherById(const std::string& teacherId);
+    bool removeTeacherByName(const std::string& teacherName);
 
     int getGrade() const;
     int getSubjectHours() const;

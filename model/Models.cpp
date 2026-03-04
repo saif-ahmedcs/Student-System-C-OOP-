@@ -89,6 +89,21 @@ void Teacher::addStudentId(int id) {
     studentIds.push_back(id);
 }
 
+// New: remove helpers
+bool Teacher::removeCourse(const std::string& courseId) {
+    for (int i = 0; i < (int)assignedCourseIds.size(); i++) {
+        if (assignedCourseIds[i] == courseId) {
+            assignedCourseIds.erase(assignedCourseIds.begin() + i);
+            return true;
+        }
+    }
+    return false;
+}
+
+void Teacher::removeAllCourses() {
+    assignedCourseIds.clear();
+}
+
 int Teacher::getGrade() const {
     return grade;
 }
@@ -154,6 +169,36 @@ bool Course::isStudentAssigned(const std::string& studentId) const {
     for (int i = 0; i < (int)assignedStudentIds.size(); i++)
         if (assignedStudentIds[i] == studentId) return true;
     return false;
+}
+
+bool Course::removeTeacherById(const std::string& teacherId) {
+    bool removed = false;
+    for (int i = 0; i < (int)teacherIds.size(); i++) {
+        if (teacherIds[i] == teacherId) {
+            teacherIds.erase(teacherIds.begin() + i);
+            if (i < (int)teacherNames.size()) {
+                teacherNames.erase(teacherNames.begin() + i);
+            }
+            removed = true;
+            i--;
+        }
+    }
+    return removed;
+}
+
+bool Course::removeTeacherByName(const std::string& teacherName) {
+    bool removed = false;
+    for (int i = 0; i < (int)teacherNames.size(); i++) {
+        if (teacherNames[i] == teacherName) {
+            teacherNames.erase(teacherNames.begin() + i);
+            if (i < (int)teacherIds.size()) {
+                teacherIds.erase(teacherIds.begin() + i);
+            }
+            removed = true;
+            i--;
+        }
+    }
+    return removed;
 }
 
 int Course::getGrade() const {

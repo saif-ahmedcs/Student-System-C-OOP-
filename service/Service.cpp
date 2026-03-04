@@ -10,18 +10,24 @@ TeacherServiceImpl::TeacherServiceImpl(TeacherRepository& teacherRepo, CourseRep
 
 int TeacherServiceImpl::getMinAvailableSeatsForStage(Stage stage) const {
     switch (stage) {
-        case Stage::Primary:   return SchoolConstants::MIN_AVAILABLE_SEATS_PRIMARY;
-        case Stage::Middle:    return SchoolConstants::MIN_AVAILABLE_SEATS_MIDDLE;
-        case Stage::Secondary: return SchoolConstants::MIN_AVAILABLE_SEATS_SECONDARY;
+        case Stage::Primary:
+            return SchoolConstants::MIN_AVAILABLE_SEATS_PRIMARY;
+        case Stage::Middle:
+            return SchoolConstants::MIN_AVAILABLE_SEATS_MIDDLE;
+        case Stage::Secondary:
+            return SchoolConstants::MIN_AVAILABLE_SEATS_SECONDARY;
     }
     return 0;
 }
 
 int TeacherServiceImpl::getMaxStudentsForStage(Stage stage) const {
     switch (stage) {
-        case Stage::Primary:   return SchoolConstants::MAX_STUDENTS_IN_PRIMARY;
-        case Stage::Middle:    return SchoolConstants::MAX_STUDENTS_IN_MIDDLE;
-        case Stage::Secondary: return SchoolConstants::MAX_STUDENTS_IN_SECONDARY;
+        case Stage::Primary:
+            return SchoolConstants::MAX_STUDENTS_IN_PRIMARY;
+        case Stage::Middle:
+            return SchoolConstants::MAX_STUDENTS_IN_MIDDLE;
+        case Stage::Secondary:
+            return SchoolConstants::MAX_STUDENTS_IN_SECONDARY;
     }
     return 0;
 }
@@ -39,11 +45,10 @@ int TeacherServiceImpl::getMaxTeachersForGrade(int grade) const {
 }
 
 string TeacherServiceImpl::addTeacher(int grade, Teacher& teacher) {
-    // ── duplicate check (business rule) ──────────────────────────────────
+
     if (teacherRepository.findTeacherByNationalNumber(teacher.getNationalNumber()))
         return "Teacher already exists.";
 
-    // ── input validation ──────────────────────────────────────────────────
     string errors;
     if (!teacherValidator.validateName(teacher.getName()))
         errors += "- Teacher name cannot be empty.\n";
@@ -56,7 +61,6 @@ string TeacherServiceImpl::addTeacher(int grade, Teacher& teacher) {
     if (!errors.empty())
         return "Teacher cannot be added:\n" + errors;
 
-    // ── capacity check (business rule) ───────────────────────────────────
     if (teacherRepository.getTeachersInGrade(grade) >= teacherRepository.getMaxTeachersForGrade(grade))
         return "Maximum number of teachers reached for this grade.";
 
@@ -84,31 +88,20 @@ string TeacherServiceImpl::editTeacher(const string& id, const Teacher& newData)
 
 // ─────────────────────────────────────────────────────────────────────────
 //  assignCoursesToTeacher
-//
-//  Business rules enforced here:
-//    - Teacher exists
-//    - Total courses after assignment does not exceed MAX_COURSES_PER_TEACHER
-//    - Each course exists
-//    - Each course does not already have MAX_TEACHERS_PER_COURSE
-//    - Teacher and course are in the same school stage
-//    - Teacher and course specializations match
-//    - Course is not already assigned to this teacher
 // ─────────────────────────────────────────────────────────────────────────
-string TeacherServiceImpl::assignCoursesToTeacher(const string& teacherId,
-                                                   const vector<string>& courseIds) {
+string TeacherServiceImpl::assignCoursesToTeacher(const string& teacherId, const vector<string>& courseIds) {
     if (courseIds.empty() || (int)courseIds.size() > SchoolConstants::MAX_COURSES_PER_TEACHER)
-        return "Teacher must be assigned between 1 and " +
-               to_string(SchoolConstants::MAX_COURSES_PER_TEACHER) + " courses.";
+        return "Teacher must be assigned between 1 and " + to_string(SchoolConstants::MAX_COURSES_PER_TEACHER) + " courses.";
 
     Teacher* teacher = teacherRepository.findTeacherById(teacherId);
-    if (!teacher) return "Teacher not found.";
+    if (!teacher)
+        return "Teacher not found.";
 
-    if ((int)(teacher->getAssignedCourses().size() + courseIds.size()) >
-              SchoolConstants::MAX_COURSES_PER_TEACHER)
-        return "Teacher cannot be assigned more than " +
-               to_string(SchoolConstants::MAX_COURSES_PER_TEACHER) + " courses.";
+    if ((int)(teacher->getAssignedCourses().size() + courseIds.size()) > SchoolConstants::MAX_COURSES_PER_TEACHER)
+        return "Teacher cannot be assigned more than " + to_string(SchoolConstants::MAX_COURSES_PER_TEACHER) + " courses.";
 
     string errors;
+
     for (int i = 0; i < (int)courseIds.size(); i++) {
         const string& cid = courseIds[i];
         Course* c = courseRepository.findCourseById(cid);
@@ -129,28 +122,68 @@ string TeacherServiceImpl::assignCoursesToTeacher(const string& teacherId,
             errors += "- Course " + cid + " is already assigned to this teacher.\n"; continue;
         }
 
-        // ── Business rule: sufficient unregistered seats must remain ──────
-        {
-            Stage courseStage = getStageFromGrade(c->getGrade());
-            int maxSeats = getMaxStudentsForStage(courseStage);
-            int enrolled = c->getNumberOfAssignedStudents();
-            int available = maxSeats - enrolled;
-            int required = getMinAvailableSeatsForStage(courseStage);
-            if (available < required) {
-                errors += "- Course " + cid + " does not have enough available seats (" + to_string(available) + " available, " + to_string(required) + " required).\n";
-                continue;
-            }
+        // unregistered seats must remain
+        Stage courseStage = getStageFromGrade(c->getGrade());
+        int maxSeats = getMaxStudentsForStage(courseStage);
+        int enrolled = c->getNumberOfAssignedStudents();
+        int available = maxSeats - enrolled;
+        int required = getMinAvailableSeatsForStage(courseStage);
+        if (available < required) {
+            errors += "- Course " + cid + " does not have enough available seats (" + to_string(available) + " available, " + to_string(required) + " required).\n";
+            continue;
         }
     }
     if (!errors.empty())
         return "Assignment failed:\n" + errors;
 
-
-    for (int i = 0; i < (int)courseIds.size(); i++){
+    for (int i = 0; i < (int)courseIds.size(); i++) {
         courseRepository.assignTeacherToCourse(courseIds[i], teacher->getId(), teacher->getName());
     }
 
     return teacherRepository.assignCoursesToTeacher(teacherId, courseIds);
+}
+
+
+string TeacherServiceImpl::removeTeacher(const string& id) {
+    Teacher* teacher = teacherRepository.findTeacherById(id);
+    if (!teacher) {
+        return "Teacher not found.";
+    }
+
+    const vector<string>& assignedCourses = teacher->getAssignedCourses();
+    string blockingCourses;
+
+    // Block removal if any course still has students
+    for (int i = 0; i < (int)assignedCourses.size(); i++) {
+        const string& courseId = assignedCourses[i];
+        Course* course = courseRepository.findCourseById(courseId);
+        if (!course) {
+            continue;
+        }
+        if (course->getNumberOfAssignedStudents() > 0) {
+            blockingCourses += "- " + course->getName() + " (ID: " + course->getId() + ")\n";
+        }
+    }
+
+    if (!blockingCourses.empty()) {
+        return "Cannot remove teacher. The teacher still has students registered in the following courses:\n" + blockingCourses + "Please reassign or remove those students/courses first.";
+    }
+
+    // Clean up relationships from courses (no students enrolled)
+    for (int i = 0; i < (int)assignedCourses.size(); i++) {
+        const string& courseId = assignedCourses[i];
+        Course* course = courseRepository.findCourseById(courseId);
+        if (!course) {
+            continue;
+        }
+        course->removeTeacherById(teacher->getId());
+    }
+
+    // Clear teacher's own assigned courses
+    teacher->removeAllCourses();
+
+    // Remove from repository (updates indices)
+    return teacherRepository.removeTeacher(id);
 }
 
 // ─────────────────────────────────────────────
@@ -168,14 +201,15 @@ int CourseServiceImpl::getMaxCoursesForGrade(int grade) const {
 }
 
 string CourseServiceImpl::addCourse(int grade, Course& course) {
-    // ── duplicate check (business rule) ──────────────────────────────────
+
     vector<Course> existing = courseRepository.getCoursesInSchoolVector();
     for (int i = 0; i < (int)existing.size(); i++) {
-        if (existing[i].getName() == course.getName() && existing[i].getGrade() == course.getGrade() && existing[i].getSpecialization() == course.getSpecialization())
+        if (existing[i].getName() == course.getName() &&
+            existing[i].getGrade() == course.getGrade() &&
+            existing[i].getSpecialization() == course.getSpecialization())
             return "Course already exists.";
     }
 
-    // ── input validation ──────────────────────────────────────────────────
     string errors;
     if (!courseValidator.validateCourseName(course.getName()))
         errors += "- Invalid course name.\n";
@@ -186,7 +220,6 @@ string CourseServiceImpl::addCourse(int grade, Course& course) {
     if (!errors.empty())
         return "Course cannot be added:\n" + errors;
 
-    // ── capacity check (business rule) ───────────────────────────────────
     if (courseRepository.getNumberOfCoursesInGrade(grade) >= courseRepository.getMaxCoursesForGrade(grade))
         return "Maximum number of courses reached for this grade.";
 
@@ -229,11 +262,9 @@ int StudentServiceImpl::getMaxStudentsForGrade(int grade) const {
 }
 
 string StudentServiceImpl::addStudent(int grade, Student& student) {
-    // ── duplicate check (business rule) ──────────────────────────────────
     if (studentRepository.findStudentByNationalNumber(student.getNationalNumber()))
         return "Student already exists.";
 
-    // ── input validation ──────────────────────────────────────────────────
     string errors;
     if (!studentValidator.validateName(student.getName()))
         errors += "- Name cannot be empty.\n";
@@ -246,7 +277,6 @@ string StudentServiceImpl::addStudent(int grade, Student& student) {
     if (!errors.empty())
         return "Student registration failed:\n" + errors;
 
-    // ── capacity check (business rule) ───────────────────────────────────
     if (studentRepository.getStudentsInGrade(grade) >= studentRepository.getMaxStudentsForGrade(grade))
         return "Grade " + to_string(grade) + " has reached its maximum capacity.";
 
@@ -276,14 +306,6 @@ string StudentServiceImpl::editStudent(const string& id, const Student& newData)
 
 // ─────────────────────────────────────────────────────────────────────────
 //  assignCoursesToStudent
-//
-//  Business rules enforced here:
-//    - Student exists
-//    - Required course count for the grade is not exceeded
-//    - Each course exists and matches the student's grade
-//    - Course is not already assigned to the student
-//    - Selected teacher is actually assigned to the course
-//    - Course capacity is not exceeded
 // ─────────────────────────────────────────────────────────────────────────
 string StudentServiceImpl::assignCoursesToStudent(const string& studentId, const vector<string>& courseIds, const vector<string>& teacherNames) {
     if (courseIds.empty())
@@ -341,8 +363,9 @@ string StudentServiceImpl::assignCoursesToStudent(const string& studentId, const
         const vector<string>& teachers = c->getTeacherNames();
 
         for (int j = 0; j < (int)teachers.size(); j++) {
-            if (teachers[j] == teacherName) { teacherBelongsToCourse = true;
-             break;
+            if (teachers[j] == teacherName) {
+                teacherBelongsToCourse = true;
+                break;
             }
         }
 
@@ -360,7 +383,6 @@ string StudentServiceImpl::assignCoursesToStudent(const string& studentId, const
     if (validatedIds.empty())
         return "Assignment failed:\n" + errors;
 
-    // Validation passed — persist both sides of the relationship.
     for (int i = 0; i < (int)validatedIds.size(); i++)
         courseRepository.assignStudentToCourse(studentId, validatedIds[i]);
 

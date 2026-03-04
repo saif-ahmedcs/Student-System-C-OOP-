@@ -385,7 +385,29 @@ int main() {
                 }
                 // ── Remove Teacher ─────────────────────────────────────
                 else if (teacherProcess == 2) {
-                    cout << "Remove Teacher is not yet supported in this version.\n";
+                    cout << "\nEnter Teacher ID to remove: ";
+                    string id; getline(cin, id);
+
+                    Teacher* t = teacherController.findTeacherById(id);
+                    if (!t) {
+                        cout << "Teacher not found.\n";
+                    } else {
+                        cout << "\nYou are about to remove teacher: " << t->getName()
+                             << " (ID: " << t->getId() << ")\n";
+                        cout << "This will unassign the teacher from any courses that currently "
+                                "have no students enrolled.\n";
+                        cout << "Are you sure? (y/n): ";
+
+                        char confirm;
+                        cin >> confirm;
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                        if (confirm == 'y' || confirm == 'Y') {
+                            cout << teacherController.removeTeacher(id) << "\n";
+                        } else {
+                            cout << "Operation cancelled.\n";
+                        }
+                    }
                 }
                 // ── Edit Teacher ───────────────────────────────────────
                 else if (teacherProcess == 3) {

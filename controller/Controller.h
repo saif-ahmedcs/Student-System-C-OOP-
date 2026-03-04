@@ -19,6 +19,7 @@ public:
     std::string editTeacher(const std::string& id, const Teacher& newData);
     std::string assignCoursesToTeacher(const std::string& teacherId, const std::vector<std::string>& courseIds);
     void showTeacher(const std::string& id);
+    std::string removeTeacher(const std::string& id);
 };
 
 class CourseController {

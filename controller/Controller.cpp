@@ -56,6 +56,10 @@ void TeacherController::showTeacher(const string& id) {
     cout << "--------------------------\n";
 }
 
+string TeacherController::removeTeacher(const string& id) {
+    return teacherService.removeTeacher(id);
+}
+
 // ─── CourseController ───────────────────────────────────────────────────
 
 CourseController::CourseController(CourseService& cSrv, StudentService& sSrv)
@@ -195,7 +199,7 @@ void CourseController::showCourseStudentsByTeacher(const string& courseId) {
         Student* s = studentService.findStudentById(allStudents[i]);
         if (!s) {
             continue;
-          }
+        }
 
         const vector<StudentCourse>& sc = s->getAssignedCourses();
 

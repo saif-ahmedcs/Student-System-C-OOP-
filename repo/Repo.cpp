@@ -44,7 +44,7 @@ string generateCourseID(const string& courseName, int grade, const string& speci
     string idStart = "";
 
 
-    for (int i = 0; i < courseName.length(); i++) {
+    for (int i = 0; i < (int)courseName.length(); i++) {
         if (courseName[i] != ' ')
             idStart += tolower(courseName[i]);
     }
@@ -53,7 +53,7 @@ string generateCourseID(const string& courseName, int grade, const string& speci
     idStart +='-';
 
 
-    for (int i = 0; i < specialization.length(); i++) {
+    for (int i = 0; i < (int)specialization.length(); i++) {
         if (specialization[i] != ' ')
             idStart += tolower(specialization[i]);
     }
@@ -98,8 +98,11 @@ string generateTeacherID(int grade) {
 //  TeacherRepositoryImpl
 // ─────────────────────────────────────────────
 int TeacherRepositoryImpl::getTeachersInGrade(int grade) const {
-    auto it = gradeIndex.find(grade);
-    return it != gradeIndex.end() ? (int)it->second.size() : 0;
+    std::map<int, std::vector<int>>::const_iterator it = gradeIndex.find(grade);
+    if (it != gradeIndex.end()) {
+        return (int)it->second.size();
+    }
+    return 0;
 }
 
 int TeacherRepositoryImpl::getMaxTeachersForGrade(int grade) const {
@@ -165,18 +168,74 @@ string TeacherRepositoryImpl::assignCoursesToTeacher(const string& teacherId, co
     if (!teacher)
         return "Teacher not found.";
 
-    for (size_t i = 0; i < courseIds.size(); i++) {
+    for (int i = 0; i < (int)courseIds.size(); i++) {
         teacher->assignCourse(courseIds[i]);
     }
 
     return "Courses assigned to teacher successfully.";
 }
 
+string TeacherRepositoryImpl::removeTeacher(const string& id) {
+    int removeIndex = -1;
+    for (int i = 0; i < (int)allTeachers.size(); i++) {
+        if (allTeachers[i].getId() == id) {
+            removeIndex = i;
+            break;
+        }
+    }
+    if (removeIndex == -1) {
+        return "Teacher not found.";
+    }
+
+    int grade = allTeachers[removeIndex].getGrade();
+    Stage stage = getStageFromGrade(grade);
+
+    // Update gradeIndex
+    std::map<int, std::vector<int>>::iterator git = gradeIndex.find(grade);
+
+    if (git != gradeIndex.end()) {
+        std::vector<int>& indices = git->second;
+        for (int i = 0; i < (int)indices.size(); i++) {
+            if (indices[i] == removeIndex) {
+                indices.erase(indices.begin() + i);
+                i--;
+            } else if (indices[i] > removeIndex) {
+                indices[i] = indices[i] - 1;
+            }
+        }
+        if (indices.empty()) {
+            gradeIndex.erase(git);
+        }
+    }
+
+    // Update stageIndex
+    std::map<Stage, std::vector<int>>::iterator sit = stageIndex.find(stage);
+    if (sit != stageIndex.end()) {
+        std::vector<int>& indices = sit->second;
+        for (int i = 0; i < (int)indices.size(); i++) {
+            if (indices[i] == removeIndex) {
+                indices.erase(indices.begin() + i);
+                i--;
+            } else if (indices[i] > removeIndex) {
+                indices[i] = indices[i] - 1;
+            }
+        }
+        if (indices.empty()) {
+            stageIndex.erase(sit);
+        }
+    }
+
+    // remove teacher
+    allTeachers.erase(allTeachers.begin() + removeIndex);
+    return "Teacher removed successfully.";
+}
+
 // ─────────────────────────────────────────────
 //  CourseRepositoryImpl
 // ─────────────────────────────────────────────
 int CourseRepositoryImpl::getNumberOfCoursesInGrade(int grade) const {
-    for (auto it = gradeIndex.begin(); it != gradeIndex.end(); ++it) {
+    for (std::map<int, std::vector<int>>::const_iterator it = gradeIndex.begin();
+         it != gradeIndex.end(); ++it) {
         if (it->first == grade) {
             return (int)it->second.size();
         }
@@ -201,7 +260,7 @@ int CourseRepositoryImpl::getMaxCoursesForGrade(int grade) const {
 }
 
 Course* CourseRepositoryImpl::findCourseById(const string& id) {
-    for (int i = 0; i < allCourses.size(); i++) {
+    for (int i = 0; i < (int)allCourses.size(); i++) {
         if (allCourses[i].getId() == id)
             return &allCourses[i];
     }
@@ -272,7 +331,8 @@ Student* StudentRepositoryImpl::findStudentById(const string& id) {
 }
 
 int StudentRepositoryImpl::getStudentsInGrade(int grade) const {
-    for (auto it = gradeIndex.begin(); it != gradeIndex.end(); ++it) {
+    for (std::map<int, std::vector<int>>::const_iterator it = gradeIndex.begin();
+         it != gradeIndex.end(); ++it) {
         if (it->first == grade)
             return (int)it->second.size();
     }
@@ -325,7 +385,6 @@ string StudentRepositoryImpl::assignCoursesToStudent(const string& studentId, co
 
     for (int i = 0; i < (int)courseIds.size(); i++)
         student->assignCourse(courseIds[i], teacherNames[i]);
-
 
     return "Courses assigned to student successfully.";
 }
