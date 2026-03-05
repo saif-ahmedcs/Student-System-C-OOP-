@@ -101,7 +101,6 @@ string TeacherServiceImpl::assignCoursesToTeacher(const string& teacherId, const
         return "Teacher cannot be assigned more than " + to_string(SchoolConstants::MAX_COURSES_PER_TEACHER) + " courses.";
 
     string errors;
-
     for (int i = 0; i < (int)courseIds.size(); i++) {
         const string& cid = courseIds[i];
         Course* c = courseRepository.findCourseById(cid);
@@ -122,7 +121,6 @@ string TeacherServiceImpl::assignCoursesToTeacher(const string& teacherId, const
             errors += "- Course " + cid + " is already assigned to this teacher.\n"; continue;
         }
 
-        // unregistered seats must remain
         Stage courseStage = getStageFromGrade(c->getGrade());
         int maxSeats = getMaxStudentsForStage(courseStage);
         int enrolled = c->getNumberOfAssignedStudents();
@@ -143,6 +141,84 @@ string TeacherServiceImpl::assignCoursesToTeacher(const string& teacherId, const
     return teacherRepository.assignCoursesToTeacher(teacherId, courseIds);
 }
 
+// ─────────────────────────────────────────────────────────────────────────
+//  replaceTeacherInCourse
+// ─────────────────────────────────────────────────────────────────────────
+string TeacherServiceImpl::replaceTeacherInCourse(const string& courseId, const string& oldTeacherId, const string& newTeacherId) {
+    if (oldTeacherId == newTeacherId) {
+        return "Old and new teacher IDs must be different.";
+    }
+
+    Course* course = courseRepository.findCourseById(courseId);
+    if (!course) {
+        return "Course not found.";
+    }
+
+    Teacher* oldTeacher = teacherRepository.findTeacherById(oldTeacherId);
+    if (!oldTeacher) {
+        return "Old teacher not found.";
+    }
+
+    Teacher* newTeacher = teacherRepository.findTeacherById(newTeacherId);
+    if (!newTeacher) {
+        return "New teacher not found.";
+    }
+
+    if (!oldTeacher->isCourseAssigned(courseId)) {
+        return "Old teacher is not assigned to this course.";
+    }
+
+    const vector<string>& courseTeacherIds = course->getTeacherIds();
+    bool oldInCourse = false;
+    for (int i = 0; i < (int)courseTeacherIds.size(); i++) {
+        if (courseTeacherIds[i] == oldTeacherId) {
+            oldInCourse = true;
+            break;
+        }
+    }
+    if (!oldInCourse) {
+        return "Old teacher is not registered for this course.";
+    }
+
+    if (newTeacher->isCourseAssigned(courseId)) {
+        return "New teacher is already assigned to this course.";
+    }
+
+    if (getStageFromGrade(newTeacher->getGrade()) != getStageFromGrade(course->getGrade())) {
+        return "New teacher is in a different school stage than the course.";
+    }
+
+    if (newTeacher->getSpecialization() != course->getSpecialization()) {
+        return "Course specialization does not match the new teacher's specialization.";
+    }
+
+    int currentNewCourses = (int)newTeacher->getAssignedCourses().size();
+
+    if (currentNewCourses + 1 > SchoolConstants::MAX_COURSES_PER_TEACHER) {
+        return "New teacher cannot be assigned more than " + to_string(SchoolConstants::MAX_COURSES_PER_TEACHER) + " courses.";
+    }
+
+    Stage courseStage = getStageFromGrade(course->getGrade());
+    int maxSeats = getMaxStudentsForStage(courseStage);
+    int enrolled = course->getNumberOfAssignedStudents();
+    int available = maxSeats - enrolled;
+    int requiredSeats = getMinAvailableSeatsForStage(courseStage);
+    if (available < requiredSeats) {
+        return "Course does not have enough available seats (" + to_string(available) + " available, " + to_string(requiredSeats) + " required).";
+    }
+
+    oldTeacher->removeCourse(courseId);
+    course->removeTeacherById(oldTeacherId);
+
+    courseRepository.assignTeacherToCourse(courseId, newTeacherId, newTeacher->getName());
+
+    vector<string> oneCourse;
+    oneCourse.push_back(courseId);
+
+    teacherRepository.assignCoursesToTeacher(newTeacherId, oneCourse);
+
+    return "Teacher successfully replaced in course.";
+}
 
 string TeacherServiceImpl::removeTeacher(const string& id) {
     Teacher* teacher = teacherRepository.findTeacherById(id);
@@ -153,7 +229,6 @@ string TeacherServiceImpl::removeTeacher(const string& id) {
     const vector<string>& assignedCourses = teacher->getAssignedCourses();
     string blockingCourses;
 
-    // Block removal if any course still has students
     for (int i = 0; i < (int)assignedCourses.size(); i++) {
         const string& courseId = assignedCourses[i];
         Course* course = courseRepository.findCourseById(courseId);
@@ -169,7 +244,6 @@ string TeacherServiceImpl::removeTeacher(const string& id) {
         return "Cannot remove teacher. The teacher still has students registered in the following courses:\n" + blockingCourses + "Please reassign or remove those students/courses first.";
     }
 
-    // Clean up relationships from courses (no students enrolled)
     for (int i = 0; i < (int)assignedCourses.size(); i++) {
         const string& courseId = assignedCourses[i];
         Course* course = courseRepository.findCourseById(courseId);
@@ -179,18 +253,17 @@ string TeacherServiceImpl::removeTeacher(const string& id) {
         course->removeTeacherById(teacher->getId());
     }
 
-    // Clear teacher's own assigned courses
     teacher->removeAllCourses();
 
-    // Remove from repository (updates indices)
     return teacherRepository.removeTeacher(id);
 }
+
 
 // ─────────────────────────────────────────────
 //  CourseServiceImpl
 // ─────────────────────────────────────────────
 CourseServiceImpl::CourseServiceImpl(CourseRepository& courseRepo, CourseValidator& validator)
-: courseRepository(courseRepo), courseValidator(validator) {}
+    : courseRepository(courseRepo), courseValidator(validator) {}
 
 Course* CourseServiceImpl::findCourseById(const string& id) {
     return courseRepository.findCourseById(id);
@@ -262,8 +335,10 @@ int StudentServiceImpl::getMaxStudentsForGrade(int grade) const {
 }
 
 string StudentServiceImpl::addStudent(int grade, Student& student) {
+
     if (studentRepository.findStudentByNationalNumber(student.getNationalNumber()))
         return "Student already exists.";
+
 
     string errors;
     if (!studentValidator.validateName(student.getName()))

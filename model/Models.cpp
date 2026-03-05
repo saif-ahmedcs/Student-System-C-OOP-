@@ -89,7 +89,6 @@ void Teacher::addStudentId(int id) {
     studentIds.push_back(id);
 }
 
-// New: remove helpers
 bool Teacher::removeCourse(const std::string& courseId) {
     for (int i = 0; i < (int)assignedCourseIds.size(); i++) {
         if (assignedCourseIds[i] == courseId) {
@@ -178,21 +177,6 @@ bool Course::removeTeacherById(const std::string& teacherId) {
             teacherIds.erase(teacherIds.begin() + i);
             if (i < (int)teacherNames.size()) {
                 teacherNames.erase(teacherNames.begin() + i);
-            }
-            removed = true;
-            i--;
-        }
-    }
-    return removed;
-}
-
-bool Course::removeTeacherByName(const std::string& teacherName) {
-    bool removed = false;
-    for (int i = 0; i < (int)teacherNames.size(); i++) {
-        if (teacherNames[i] == teacherName) {
-            teacherNames.erase(teacherNames.begin() + i);
-            if (i < (int)teacherIds.size()) {
-                teacherIds.erase(teacherIds.begin() + i);
             }
             removed = true;
             i--;

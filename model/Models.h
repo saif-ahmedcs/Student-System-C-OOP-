@@ -94,9 +94,7 @@ public:
     bool assignStudent(const std::string& studentId);
     bool isStudentAssigned(const std::string& studentId) const;
 
-    // New helpers for safe teacher removal
     bool removeTeacherById(const std::string& teacherId);
-    bool removeTeacherByName(const std::string& teacherName);
 
     int getGrade() const;
     int getSubjectHours() const;

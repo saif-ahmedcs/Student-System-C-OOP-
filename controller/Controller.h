@@ -20,8 +20,8 @@ public:
     std::string assignCoursesToTeacher(const std::string& teacherId, const std::vector<std::string>& courseIds);
     void showTeacher(const std::string& id);
     std::string removeTeacher(const std::string& id);
+    std::string replaceTeacherInCourse(const std::string& courseId, const std::string& oldTeacherId, const std::string& newTeacherId);
 };
-
 class CourseController {
 private:
     CourseService&  courseService;

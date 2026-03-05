@@ -19,12 +19,12 @@ namespace SchoolConstants {
     constexpr int MAX_TEACHERS_PER_COURSE = 3;
 
     // ── Teacher hiring policy ─────────────────────────────────────────────
-    constexpr int MIN_TEACHER_AGE      = 23;
-    constexpr int MAX_TEACHER_AGE      = 60;
-    constexpr int MIN_EXPERIENCE_YEARS =  2;
+    constexpr int MIN_TEACHER_AGE = 23;
+    constexpr int MAX_TEACHER_AGE = 60;
+    constexpr int MIN_EXPERIENCE_YEARS = 2;
 
     // ── Student age policy (expected age = grade + BASE ± TOLERANCE) ──────
-    constexpr int STUDENT_AGE_BASE      = 5;
+    constexpr int STUDENT_AGE_BASE = 5;
     constexpr int STUDENT_AGE_TOLERANCE = 1;
 
     // ── Course hours ──────────────────────────────────────────────────────
@@ -40,22 +40,22 @@ namespace SchoolConstants {
     constexpr int MAX_PHONE_LENGTH = 12;
 
     // ── Minimum available student seats required before teacher assignment ─
-    constexpr int MIN_AVAILABLE_SEATS_PRIMARY    = 35;
-    constexpr int MIN_AVAILABLE_SEATS_MIDDLE     = 32;
-    constexpr int MIN_AVAILABLE_SEATS_SECONDARY  = 30;
+    constexpr int MIN_AVAILABLE_SEATS_PRIMARY = 35;
+    constexpr int MIN_AVAILABLE_SEATS_MIDDLE = 32;
+    constexpr int MIN_AVAILABLE_SEATS_SECONDARY = 30;
 
     // ── Grade capacity limits (max entities per grade) ────────────────────
-    constexpr int MAX_TEACHERS_IN_PRIMARY    =  7;
-    constexpr int MAX_TEACHERS_IN_MIDDLE     =  9;
-    constexpr int MAX_TEACHERS_IN_SECONDARY  = 12;
+    constexpr int MAX_TEACHERS_IN_PRIMARY =  7;
+    constexpr int MAX_TEACHERS_IN_MIDDLE =  9;
+    constexpr int MAX_TEACHERS_IN_SECONDARY = 12;
 
-    constexpr int MAX_COURSES_IN_PRIMARY     =  8;
-    constexpr int MAX_COURSES_IN_MIDDLE      = 11;
-    constexpr int MAX_COURSES_IN_SECONDARY   = 13;
+    constexpr int MAX_COURSES_IN_PRIMARY =  8;
+    constexpr int MAX_COURSES_IN_MIDDLE = 11;
+    constexpr int MAX_COURSES_IN_SECONDARY = 13;
 
-    constexpr int MAX_STUDENTS_IN_PRIMARY    = 110;
-    constexpr int MAX_STUDENTS_IN_MIDDLE     = 100;
-    constexpr int MAX_STUDENTS_IN_SECONDARY  =  90;
+    constexpr int MAX_STUDENTS_IN_PRIMARY = 110;
+    constexpr int MAX_STUDENTS_IN_MIDDLE = 100;
+    constexpr int MAX_STUDENTS_IN_SECONDARY = 90;
 
 } // namespace SchoolConstants
 

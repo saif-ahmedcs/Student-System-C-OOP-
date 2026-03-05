@@ -9,8 +9,7 @@ bool TeacherValidator::validateName(const string& name) const {
 }
 
 bool TeacherValidator::validateAge(int age) const {
-    return age >= SchoolConstants::MIN_TEACHER_AGE &&
-           age <= SchoolConstants::MAX_TEACHER_AGE;
+    return age >= SchoolConstants::MIN_TEACHER_AGE && age <= SchoolConstants::MAX_TEACHER_AGE;
 }
 
 bool TeacherValidator::validateExperienceYears(int years) const {
@@ -29,8 +28,7 @@ bool CourseValidator::validateCourseName(const string& name) const {
 }
 
 bool CourseValidator::validateSubjectHours(int hours) const {
-    return hours >= SchoolConstants::MIN_SUBJECT_HOURS &&
-           hours <= SchoolConstants::MAX_SUBJECT_HOURS;
+    return hours >= SchoolConstants::MIN_SUBJECT_HOURS && hours <= SchoolConstants::MAX_SUBJECT_HOURS;
 }
 
 bool CourseValidator::validateGrade(int grade) const {
@@ -46,16 +44,16 @@ bool StudentValidator::validateName(const string& name) const {
 
 bool StudentValidator::validateAge(int age, int grade) const {
     int expectedAge = grade + SchoolConstants::STUDENT_AGE_BASE;
-    int tolerance   = SchoolConstants::STUDENT_AGE_TOLERANCE;
+    int tolerance = SchoolConstants::STUDENT_AGE_TOLERANCE;
     return age >= (expectedAge - tolerance) && age <= (expectedAge + tolerance);
 }
 
 bool StudentValidator::validatePhoneNumber(const string& phone) const {
-    if ((int)phone.length() < SchoolConstants::MIN_PHONE_LENGTH ||
-        (int)phone.length() > SchoolConstants::MAX_PHONE_LENGTH)
+    if ((int)phone.length() < SchoolConstants::MIN_PHONE_LENGTH || (int)phone.length() > SchoolConstants::MAX_PHONE_LENGTH)
         return false;
     for (int i = 0; i < (int)phone.length(); i++)
-        if (!isdigit(phone[i])) return false;
+        if (!isdigit(phone[i]))
+            return false;
     return true;
 }
 

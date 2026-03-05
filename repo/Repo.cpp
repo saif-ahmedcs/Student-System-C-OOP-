@@ -190,7 +190,6 @@ string TeacherRepositoryImpl::removeTeacher(const string& id) {
     int grade = allTeachers[removeIndex].getGrade();
     Stage stage = getStageFromGrade(grade);
 
-    // Update gradeIndex
     std::map<int, std::vector<int>>::iterator git = gradeIndex.find(grade);
 
     if (git != gradeIndex.end()) {
@@ -208,7 +207,6 @@ string TeacherRepositoryImpl::removeTeacher(const string& id) {
         }
     }
 
-    // Update stageIndex
     std::map<Stage, std::vector<int>>::iterator sit = stageIndex.find(stage);
     if (sit != stageIndex.end()) {
         std::vector<int>& indices = sit->second;
@@ -216,16 +214,18 @@ string TeacherRepositoryImpl::removeTeacher(const string& id) {
             if (indices[i] == removeIndex) {
                 indices.erase(indices.begin() + i);
                 i--;
-            } else if (indices[i] > removeIndex) {
+            }
+            else if (indices[i] > removeIndex) {
                 indices[i] = indices[i] - 1;
             }
         }
+
+
         if (indices.empty()) {
             stageIndex.erase(sit);
         }
     }
 
-    // remove teacher
     allTeachers.erase(allTeachers.begin() + removeIndex);
     return "Teacher removed successfully.";
 }
