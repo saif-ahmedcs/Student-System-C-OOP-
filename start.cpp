@@ -52,7 +52,7 @@ int main() {
     CourseServiceImpl  courseServiceImpl(courseRepo, courseValidator);
     CourseService&     courseService = courseServiceImpl;
 
-    TeacherServiceImpl teacherServiceImpl(teacherRepo, courseRepo, teacherValidator);
+    TeacherServiceImpl teacherServiceImpl(teacherRepo, courseRepo, studentRepo, teacherValidator);
     TeacherService&    teacherService = teacherServiceImpl;
 
     StudentServiceImpl studentServiceImpl(studentRepo, courseRepo, studentValidator);

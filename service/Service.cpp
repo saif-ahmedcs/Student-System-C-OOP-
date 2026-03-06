@@ -5,8 +5,8 @@ using namespace std;
 // ─────────────────────────────────────────────
 //  TeacherServiceImpl
 // ─────────────────────────────────────────────
-TeacherServiceImpl::TeacherServiceImpl(TeacherRepository& teacherRepo, CourseRepository& courseRepo, TeacherValidator&  validator)
-    : teacherRepository(teacherRepo), courseRepository(courseRepo), teacherValidator(validator) {}
+TeacherServiceImpl::TeacherServiceImpl(TeacherRepository& teacherRepo, CourseRepository& courseRepo, StudentRepository& studentRepo, TeacherValidator&  validator)
+    : teacherRepository(teacherRepo), courseRepository(courseRepo), studentRepository(studentRepo), teacherValidator(validator) {}
 
 int TeacherServiceImpl::getMinAvailableSeatsForStage(Stage stage) const {
     switch (stage) {
@@ -207,11 +207,9 @@ string TeacherServiceImpl::replaceTeacherInCourse(const string& courseId, const 
         return "Course does not have enough available seats (" + to_string(available) + " available, " + to_string(requiredSeats) + " required).";
     }
 
-    // Remove old teacher first so the course has room (replace keeps total teachers at 3).
     oldTeacher->removeCourse(courseId);
     course->removeTeacherById(oldTeacherId);
 
-    // Use ForReplace so we do not hit the course teacher limit (we just freed one slot).
     string assignResult = courseRepository.assignTeacherToCourseForReplace(courseId, newTeacherId, newTeacher->getName());
     if (assignResult.find("Error:") != string::npos)
         return assignResult;
@@ -220,6 +218,16 @@ string TeacherServiceImpl::replaceTeacherInCourse(const string& courseId, const 
     oneCourse.push_back(courseId);
 
     teacherRepository.assignCoursesToTeacher(newTeacherId, oneCourse);
+
+    const vector<string>& enrolledStudentIds = course->getAssignedStudents();
+
+    for (int i = 0; i < (int)enrolledStudentIds.size(); i++) {
+
+        Student* student = studentRepository.findStudentById(enrolledStudentIds[i]);
+        if (student) {
+            student->updateTeacherForCourse(courseId, newTeacher->getName());
+        }
+    }
 
     return "Teacher successfully replaced in course.";
 }

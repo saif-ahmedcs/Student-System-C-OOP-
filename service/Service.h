@@ -35,10 +35,11 @@ class TeacherServiceImpl : public TeacherService {
 private:
     TeacherRepository& teacherRepository;
     CourseRepository& courseRepository;
+    StudentRepository& studentRepository;
     TeacherValidator& teacherValidator;
 
 public:
-    TeacherServiceImpl(TeacherRepository& teacherRepo, CourseRepository&  courseRepo, TeacherValidator&  validator);
+    TeacherServiceImpl(TeacherRepository& teacherRepo, CourseRepository&  courseRepo, StudentRepository& studentRepo, TeacherValidator&  validator);
 
     Teacher* findTeacherByNationalNumber(const std::string& nationalNumber) override;
     Teacher* findTeacherById(const std::string& id) override;

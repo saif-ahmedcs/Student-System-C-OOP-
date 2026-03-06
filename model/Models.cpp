@@ -243,6 +243,16 @@ bool Student::isCourseAssigned(const std::string& courseId) const {
     return false;
 }
 
+bool Student::updateTeacherForCourse(const std::string& courseId, const std::string& newTeacherName) {
+    for (int i = 0; i < (int)assignedCourses.size(); i++) {
+        if (assignedCourses[i].courseId == courseId) {
+            assignedCourses[i].teacherName = newTeacherName;
+            return true;
+        }
+    }
+    return false;
+}
+
 int Student::getGrade() const {
     return grade;
 }

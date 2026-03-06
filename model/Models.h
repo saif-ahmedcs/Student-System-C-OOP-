@@ -128,6 +128,7 @@ public:
 
     bool assignCourse(const std::string& courseId, const std::string& teacherName);
     bool isCourseAssigned(const std::string& courseId) const;
+    bool updateTeacherForCourse(const std::string& courseId, const std::string& newTeacherName);
 
     int getGrade() const;
     double getGpa() const;

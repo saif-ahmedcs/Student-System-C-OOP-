@@ -57,7 +57,6 @@ public:
     virtual std::string addCourse(int grade, Course& course) = 0;
     virtual std::string editCourse(const std::string& id, const Course& newData) = 0;
     virtual std::string assignTeacherToCourse(const std::string& courseId, const std::string& teacherId, const std::string& teacherName) = 0;
-    /** Used only by replaceTeacherInCourse: assign teacher without enforcing course teacher limit (caller must remove old teacher first). */
     virtual std::string assignTeacherToCourseForReplace(const std::string& courseId, const std::string& teacherId, const std::string& teacherName) = 0;
     virtual std::string assignStudentToCourse(const std::string& studentId, const std::string& courseId) = 0;
     virtual ~CourseRepository() = default;
