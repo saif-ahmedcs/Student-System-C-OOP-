@@ -43,8 +43,10 @@ bool StudentValidator::validateName(const string& name) const {
 }
 
 bool StudentValidator::validateAge(int age, int grade) const {
+
     int expectedAge = grade + SchoolConstants::STUDENT_AGE_BASE;
     int tolerance = SchoolConstants::STUDENT_AGE_TOLERANCE;
+
     return age >= (expectedAge - tolerance) && age <= (expectedAge + tolerance);
 }
 

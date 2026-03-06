@@ -301,6 +301,15 @@ string CourseRepositoryImpl::assignTeacherToCourse(const string& courseId, const
     return "Teacher assigned to course successfully.";
 }
 
+string CourseRepositoryImpl::assignTeacherToCourseForReplace(const string& courseId, const string& teacherId, const string& teacherName) {
+    Course* course = findCourseById(courseId);
+    if (!course)
+        return "Error: Course " + courseId + " not found.";
+    if (!course->assignTeacher(teacherId, teacherName))
+        return "Error: Teacher already assigned to course " + courseId + ".";
+    return "Teacher assigned to course successfully.";
+}
+
 string CourseRepositoryImpl::assignStudentToCourse(const string& studentId, const string& courseId) {
     Course* course = findCourseById(courseId);
     if (!course)

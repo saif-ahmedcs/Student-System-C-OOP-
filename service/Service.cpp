@@ -207,10 +207,14 @@ string TeacherServiceImpl::replaceTeacherInCourse(const string& courseId, const 
         return "Course does not have enough available seats (" + to_string(available) + " available, " + to_string(requiredSeats) + " required).";
     }
 
+    // Remove old teacher first so the course has room (replace keeps total teachers at 3).
     oldTeacher->removeCourse(courseId);
     course->removeTeacherById(oldTeacherId);
 
-    courseRepository.assignTeacherToCourse(courseId, newTeacherId, newTeacher->getName());
+    // Use ForReplace so we do not hit the course teacher limit (we just freed one slot).
+    string assignResult = courseRepository.assignTeacherToCourseForReplace(courseId, newTeacherId, newTeacher->getName());
+    if (assignResult.find("Error:") != string::npos)
+        return assignResult;
 
     vector<string> oneCourse;
     oneCourse.push_back(courseId);
