@@ -303,3 +303,7 @@ void StudentController::showStudent(const string& id) {
     cout << "Courses still needed: "            << remaining << "\n";
     cout << "-----------------------------------\n";
 }
+
+string StudentController::removeStudent(const string& id) {
+    return studentService.removeStudent(id);
+}

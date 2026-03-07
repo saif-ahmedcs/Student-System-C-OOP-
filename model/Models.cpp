@@ -185,6 +185,16 @@ bool Course::removeTeacherById(const std::string& teacherId) {
     return removed;
 }
 
+bool Course::removeStudentById(const std::string& studentId) {
+    for (int i = 0; i < (int)assignedStudentIds.size(); i++) {
+        if (assignedStudentIds[i] == studentId) {
+            assignedStudentIds.erase(assignedStudentIds.begin() + i);
+            return true;
+        }
+    }
+    return false;
+}
+
 int Course::getGrade() const {
     return grade;
 }

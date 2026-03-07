@@ -127,7 +127,27 @@ int main() {
                 }
                 // ── Remove Student ─────────────────────────────────────
                 else if (studentProcess == 2) {
-                    cout << "Remove Student is not yet supported in this version.\n";
+                    cout << "\nEnter Student ID to remove: ";
+                    string id;
+                    getline(cin, id);
+
+                    Student* s = studentController.findStudentById(id);
+                    if (!s) {
+                        cout << "Student not found.\n";
+                    } else {
+                        cout << "\nYou are about to remove student: " << s->getName() << " (ID: " << s->getId() << ")\n";
+                        cout << "Are you sure? (y/n): ";
+
+                        char confirm;
+                        cin >> confirm;
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                        if (confirm == 'y' || confirm == 'Y') {
+                            cout << studentController.removeStudent(id) << "\n";
+                        } else {
+                            cout << "Operation cancelled.\n";
+                        }
+                    }
                 }
                 // ── Edit Student ───────────────────────────────────────
                 else if (studentProcess == 3) {

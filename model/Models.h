@@ -95,6 +95,7 @@ public:
     bool isStudentAssigned(const std::string& studentId) const;
 
     bool removeTeacherById(const std::string& teacherId);
+    bool removeStudentById(const std::string& studentId);
 
     int getGrade() const;
     int getSubjectHours() const;

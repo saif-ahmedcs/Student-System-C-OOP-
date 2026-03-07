@@ -480,3 +480,17 @@ string StudentServiceImpl::assignCoursesToStudent(const string& studentId, const
 
     return result;
 }
+
+string StudentServiceImpl::removeStudent(const string& id) {
+    Student* student = studentRepository.findStudentById(id);
+    if (!student)
+        return "Student not found.";
+
+    const vector<StudentCourse>& courses = student->getAssignedCourses();
+
+    for (int i = 0; i < (int)courses.size(); i++) {
+        courseRepository.removeStudentFromCourse(id, courses[i].courseId);
+    }
+
+    return studentRepository.removeStudent(id);
+}

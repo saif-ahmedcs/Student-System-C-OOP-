@@ -52,6 +52,7 @@ public:
     std::string editStudent(const std::string& id, const Student& newData);
     std::string assignCoursesToStudent(const std::string& studentId, const std::vector<std::string>& courseIds, const std::vector<std::string>& teacherNames);
     void showStudent(const std::string& id);
+    std::string removeStudent(const std::string& id);
 };
 
 #endif

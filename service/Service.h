@@ -93,6 +93,7 @@ public:
     virtual std::string addStudent(int grade, Student& student) = 0;
     virtual std::string editStudent(const std::string& id, const Student& newData) = 0;
     virtual std::string assignCoursesToStudent(const std::string& studentId, const std::vector<std::string>& courseIds, const std::vector<std::string>& teacherNames) = 0;
+    virtual std::string removeStudent(const std::string& id) = 0;
     virtual ~StudentService() = default;
 };
 
@@ -111,6 +112,7 @@ public:
     std::string addStudent(int grade, Student& student) override;
     std::string editStudent(const std::string& id, const Student& newData) override;
     std::string assignCoursesToStudent(const std::string& studentId, const std::vector<std::string>& courseIds, const std::vector<std::string>& teacherNames) override;
+    std::string removeStudent(const std::string& id) override;
 };
 
 #endif

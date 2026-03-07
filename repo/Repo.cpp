@@ -320,6 +320,16 @@ string CourseRepositoryImpl::assignStudentToCourse(const string& studentId, cons
     return "Student assigned to course successfully.";
 }
 
+string CourseRepositoryImpl::removeStudentFromCourse(const string& studentId, const string& courseId) {
+    Course* course = findCourseById(courseId);
+    if (!course)
+        return "Error: Course " + courseId + " not found.";
+
+    course->removeStudentById(studentId);
+
+    return "Student removed from course successfully.";
+}
+
 // ─────────────────────────────────────────────
 //  StudentRepositoryImpl
 // ─────────────────────────────────────────────
@@ -396,4 +406,64 @@ string StudentRepositoryImpl::assignCoursesToStudent(const string& studentId, co
         student->assignCourse(courseIds[i], teacherNames[i]);
 
     return "Courses assigned to student successfully.";
+}
+
+string StudentRepositoryImpl::removeStudent(const string& id) {
+
+    int removeIndex = -1;
+
+    for (int i = 0; i < (int)allStudents.size(); i++) {
+        if (allStudents[i].getId() == id) {
+            removeIndex = i;
+            break;
+        }
+    }
+    if (removeIndex == -1)
+        return "Student not found.";
+
+    int grade = allStudents[removeIndex].getGrade();
+    Stage stage = getStageFromGrade(grade);
+
+    std::map<int, std::vector<int>>::iterator git = gradeIndex.find(grade);
+
+    if (git != gradeIndex.end()) {
+        std::vector<int>& indices = git->second;
+
+        for (int i = 0; i < (int)indices.size(); i++) {
+            if (indices[i] == removeIndex) {
+                indices.erase(indices.begin() + i);
+                i--;
+            }
+            else if (indices[i] > removeIndex) {
+                indices[i] = indices[i] - 1;
+            }
+        }
+
+
+        if (indices.empty())
+            gradeIndex.erase(git);
+    }
+
+    std::map<Stage, std::vector<int>>::iterator sit = stageIndex.find(stage);
+
+    if (sit != stageIndex.end()) {
+        std::vector<int>& indices = sit->second;
+
+        for (int i = 0; i < (int)indices.size(); i++) {
+            if (indices[i] == removeIndex) {
+                indices.erase(indices.begin() + i);
+                i--;
+            }
+            else if (indices[i] > removeIndex) {
+                indices[i] = indices[i] - 1;
+            }
+        }
+
+        if (indices.empty())
+            stageIndex.erase(sit);
+    }
+
+    allStudents.erase(allStudents.begin() + removeIndex);
+
+    return "Student removed successfully.";
 }
