@@ -92,6 +92,10 @@ string CourseController::editCourse(const string& id, const Course& newData) {
     return courseService.editCourse(id, newData);
 }
 
+string CourseController::removeCourse(const string& id) {
+    return courseService.removeCourse(id);
+}
+
 void CourseController::showCourse(const string& id) {
     Course* c = courseService.findCourseById(id);
     if (!c) {

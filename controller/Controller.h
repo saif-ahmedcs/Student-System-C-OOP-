@@ -34,6 +34,7 @@ public:
     int getMaxCoursesForGrade(int grade) const;
     std::string addCourse(int grade, Course& course);
     std::string editCourse(const std::string& id, const Course& newData);
+    std::string removeCourse(const std::string& id);
     void showCourse(const std::string& id);
     void showCourseStudents(const std::string& courseId);
     void showCourseStudentsByTeacher(const std::string& courseId);

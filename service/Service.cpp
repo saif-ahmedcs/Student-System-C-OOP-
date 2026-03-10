@@ -274,8 +274,8 @@ string TeacherServiceImpl::removeTeacher(const string& id) {
 // ─────────────────────────────────────────────
 //  CourseServiceImpl
 // ─────────────────────────────────────────────
-CourseServiceImpl::CourseServiceImpl(CourseRepository& courseRepo, CourseValidator& validator)
-    : courseRepository(courseRepo), courseValidator(validator) {}
+CourseServiceImpl::CourseServiceImpl(CourseRepository& courseRepo, TeacherRepository& teacherRepo, CourseValidator& validator)
+    : courseRepository(courseRepo), teacherRepository(teacherRepo), courseValidator(validator) {}
 
 Course* CourseServiceImpl::findCourseById(const string& id) {
     return courseRepository.findCourseById(id);
@@ -326,6 +326,26 @@ string CourseServiceImpl::editCourse(const string& id, const Course& newData) {
         return "Course cannot be updated:\n" + errors;
 
     return courseRepository.editCourse(id, newData);
+}
+
+string CourseServiceImpl::removeCourse(const string& id) {
+    Course* course = courseRepository.findCourseById(id);
+    if (!course)
+        return "Course not found.";
+
+    if (course->getNumberOfAssignedStudents() > 0){
+        return "Cannot remove course. There are students enrolled in it.";
+    }
+
+    const vector<string>& teacherIds = course->getTeacherIds();
+
+    for (int i = 0; i < (int)teacherIds.size(); i++) {
+        Teacher* teacher = teacherRepository.findTeacherById(teacherIds[i]);
+        if (teacher)
+            teacher->removeCourse(id);
+    }
+
+    return courseRepository.removeCourse(id);
 }
 
 // ─────────────────────────────────────────────

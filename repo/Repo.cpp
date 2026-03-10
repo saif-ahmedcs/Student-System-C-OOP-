@@ -330,6 +330,54 @@ string CourseRepositoryImpl::removeStudentFromCourse(const string& studentId, co
     return "Student removed from course successfully.";
 }
 
+string CourseRepositoryImpl::removeCourse(const string& id) {
+    int removeIndex = -1;
+    for (int i = 0; i < (int)allCourses.size(); i++) {
+        if (allCourses[i].getId() == id) {
+            removeIndex = i;
+            break;
+        }
+    }
+    if (removeIndex == -1)
+        return "Course not found.";
+
+    int grade = allCourses[removeIndex].getGrade();
+    Stage stage = getStageFromGrade(grade);
+
+    std::map<int, std::vector<int>>::iterator git = gradeIndex.find(grade);
+    if (git != gradeIndex.end()) {
+        std::vector<int>& indices = git->second;
+        for (int i = 0; i < (int)indices.size(); i++) {
+            if (indices[i] == removeIndex) {
+                indices.erase(indices.begin() + i);
+                i--;
+            } else if (indices[i] > removeIndex) {
+                indices[i] = indices[i] - 1;
+            }
+        }
+        if (indices.empty())
+            gradeIndex.erase(git);
+    }
+
+    std::map<Stage, std::vector<int>>::iterator sit = stageIndex.find(stage);
+    if (sit != stageIndex.end()) {
+        std::vector<int>& indices = sit->second;
+        for (int i = 0; i < (int)indices.size(); i++) {
+            if (indices[i] == removeIndex) {
+                indices.erase(indices.begin() + i);
+                i--;
+            } else if (indices[i] > removeIndex) {
+                indices[i] = indices[i] - 1;
+            }
+        }
+        if (indices.empty())
+            stageIndex.erase(sit);
+    }
+
+    allCourses.erase(allCourses.begin() + removeIndex);
+    return "Course removed successfully.";
+}
+
 // ─────────────────────────────────────────────
 //  StudentRepositoryImpl
 // ─────────────────────────────────────────────

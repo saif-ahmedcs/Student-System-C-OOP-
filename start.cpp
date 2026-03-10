@@ -34,7 +34,7 @@ void showProcesses(const string& s) {
 
 int main() {
 
-    // ── Infrastructure (repositories) ────────────────────────────────────
+    // ──- repositories ────────────────────────────────────
     StudentRepositoryImpl studentRepoImpl;
     CourseRepositoryImpl  courseRepoImpl;
     TeacherRepositoryImpl teacherRepoImpl;
@@ -49,7 +49,7 @@ int main() {
     StudentValidator studentValidator;
 
     // ── Services ─────────────────────────────────────────────────────────
-    CourseServiceImpl  courseServiceImpl(courseRepo, courseValidator);
+    CourseServiceImpl  courseServiceImpl(courseRepo, teacherRepo, courseValidator);
     CourseService&     courseService = courseServiceImpl;
 
     TeacherServiceImpl teacherServiceImpl(teacherRepo, courseRepo, studentRepo, teacherValidator);
@@ -301,7 +301,29 @@ int main() {
                 }
                 // ── Remove Course ──────────────────────────────────────
                 else if (courseProcess == 2) {
-                    cout << "Remove Course is not yet supported in this version.\n";
+                    cout << "\nEnter Course ID to remove: ";
+                    string id;
+                    getline(cin, id);
+
+                    Course* c = courseController.findCourseById(id);
+                    if (!c) {
+                        cout << "Course not found.\n";
+                    }
+                    else {
+                        cout << "\nYou are about to remove course: " << c->getName() << " (ID: " << c->getId() << ")\n";
+                        cout << "Are you sure? (y/n): ";
+
+                        char confirm;
+                        cin >> confirm;
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                        if (confirm == 'y' || confirm == 'Y') {
+                            cout << courseController.removeCourse(id) << "\n";
+                        }
+                        else {
+                            cout << "Operation cancelled.\n";
+                        }
+                    }
                 }
                 // ── Edit Course ────────────────────────────────────────
                 else if (courseProcess == 3) {
