@@ -1,7 +1,58 @@
 #include <iostream>
 #include <limits>
 #include "controller/Controller.h"
+#include "SchoolConstants.h"
 using namespace std;
+
+
+static int readInt(const string& prompt) {
+    while (true) {
+        if (!prompt.empty()) cout << prompt;
+        string line;
+        getline(cin, line);
+        bool valid = !line.empty();
+        for (int i = 0; i < (int)line.size() && valid; i++)
+            if (!isdigit(line[i])) valid = false;
+        if (valid) return stoi(line);
+        cout << "Invalid input! Please enter a whole number: ";
+    }
+}
+
+static double readDouble(const string& prompt) {
+    while (true) {
+        if (!prompt.empty()) cout << prompt;
+        string line;
+        getline(cin, line);
+        bool valid = !line.empty();
+        bool hasDot = false;
+        for (int i = 0; i < (int)line.size() && valid; i++) {
+            if (line[i] == '.' && !hasDot) { hasDot = true; continue; }
+            if (!isdigit(line[i])) valid = false;
+        }
+        if (valid)
+          return stod(line);
+        cout << "Invalid input! Please enter a number: ";
+    }
+}
+
+static void saveAll(StudentRepositoryImpl& sRepo, CourseRepositoryImpl& cRepo, TeacherRepositoryImpl& tRepo) {
+
+    bool ok = true;
+    if (!sRepo.saveToFile(SchoolConstants::FILE_STUDENTS)) {
+        cout << "[ERROR] Failed to save student to \"" << SchoolConstants::FILE_STUDENTS << "\".\n";
+        ok = false;
+    }
+    if (!cRepo.saveToFile(SchoolConstants::FILE_COURSES)) {
+        cout << "[ERROR] Failed to save course to \"" << SchoolConstants::FILE_COURSES << "\".\n";
+        ok = false;
+    }
+    if (!tRepo.saveToFile(SchoolConstants::FILE_TEACHERS)) {
+        cout << "[ERROR] Failed to save teacher to \"" << SchoolConstants::FILE_TEACHERS << "\".\n";
+        ok = false;
+    }
+    if (ok)
+        cout << "[Saved]\n";
+}
 
 void displaySystem() {
     cout << "\033[41m\033[37m\t\t********************* Welcome To The School System *********************\n\n\033[0m";
@@ -26,21 +77,24 @@ void showProcesses(const string& s) {
        cout << "1- Add " << s << "\t\t2- Remove " << s << "\n";
        cout << "3- Edit " << s << "\t\t4- Show ALL Assigned Students\n";
        cout << "5- Show " << s << " Info\t6- Show Course students (By Teacher)\n";
-       cout << "7- Replace Teacher in Course\n";  // NEW
+       cout << "7- Replace Teacher in Course\n";
     }
-
     cout << "\n";
 }
 
 int main() {
 
-    // ──- repositories ────────────────────────────────────
+    // ── Repositories ─────────────────────────────────────────────────────
     StudentRepositoryImpl studentRepoImpl;
-    CourseRepositoryImpl  courseRepoImpl;
+    CourseRepositoryImpl courseRepoImpl;
     TeacherRepositoryImpl teacherRepoImpl;
 
+    studentRepoImpl.loadFromFile(SchoolConstants::FILE_STUDENTS);
+    courseRepoImpl.loadFromFile(SchoolConstants::FILE_COURSES);
+    teacherRepoImpl.loadFromFile(SchoolConstants::FILE_TEACHERS);
+
     StudentRepository& studentRepo = studentRepoImpl;
-    CourseRepository&  courseRepo  = courseRepoImpl;
+    CourseRepository& courseRepo = courseRepoImpl;
     TeacherRepository& teacherRepo = teacherRepoImpl;
 
     // ── Validators ───────────────────────────────────────────────────────
@@ -49,17 +103,17 @@ int main() {
     StudentValidator studentValidator;
 
     // ── Services ─────────────────────────────────────────────────────────
-    CourseServiceImpl  courseServiceImpl(courseRepo, teacherRepo, courseValidator);
-    CourseService&     courseService = courseServiceImpl;
+    CourseServiceImpl courseServiceImpl(courseRepo, teacherRepo, courseValidator);
+    CourseService& courseService = courseServiceImpl;
 
     TeacherServiceImpl teacherServiceImpl(teacherRepo, courseRepo, studentRepo, teacherValidator);
-    TeacherService&    teacherService = teacherServiceImpl;
+    TeacherService& teacherService = teacherServiceImpl;
 
     StudentServiceImpl studentServiceImpl(studentRepo, courseRepo, studentValidator);
-    StudentService&    studentService = studentServiceImpl;
+    StudentService& studentService = studentServiceImpl;
 
     // ── Controllers ──────────────────────────────────────────────────────
-    CourseController  courseController(courseService, studentService);
+    CourseController courseController(courseService, studentService);
     TeacherController teacherController(teacherService);
     StudentController studentController(studentService, courseService);
 
@@ -70,8 +124,7 @@ int main() {
 
     while (flag) {
         cout << "\nEnter your choice (1-4): ";
-        cin >> process;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        process = readInt("");
 
         switch (process) {
 
@@ -81,8 +134,7 @@ int main() {
                 showProcesses("Student");
 
                 int studentProcess;
-                cin >> studentProcess;
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                studentProcess = readInt("");
                 cout << "\n";
 
                 if (studentProcess < 1 || studentProcess > 5) {
@@ -107,15 +159,13 @@ int main() {
 
                     cout << "Student School Grade (1-12): ";
                     int grade;
-                    cin >> grade;
+                    grade = readInt("");
                     student.setGrade(grade);
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Student Age: ";
                     int age;
-                    cin >> age;
+                    age = readInt("");
                     student.setAge(age);
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Student Phone Number (10-12 digits): ";
                     string phone;
@@ -123,7 +173,10 @@ int main() {
                     student.setPhoneNumber(phone);
                     cout << "\n";
 
-                    cout << studentController.addStudent(grade, student) << "\n";
+                    string result = studentController.addStudent(grade, student);
+                    cout << result << "\n";
+                    if (result.find("failed") == string::npos && result.find("exists") == string::npos && result.find("Invalid") == string::npos && result.find("Maximum") == string::npos)
+                        saveAll(studentRepoImpl, courseRepoImpl, teacherRepoImpl);
                 }
                 // ── Remove Student ─────────────────────────────────────
                 else if (studentProcess == 2) {
@@ -143,7 +196,10 @@ int main() {
                         cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                         if (confirm == 'y' || confirm == 'Y') {
-                            cout << studentController.removeStudent(id) << "\n";
+                            string result = studentController.removeStudent(id);
+                            cout << result << "\n";
+                            if (result.find("not found") == string::npos)
+                                saveAll(studentRepoImpl, courseRepoImpl, teacherRepoImpl);
                         } else {
                             cout << "Operation cancelled.\n";
                         }
@@ -169,15 +225,13 @@ int main() {
 
                     cout << "Grade (1-12): ";
                     int grade;
-                    cin >> grade;
+                    grade = readInt("");
                     newData.setGrade(grade);
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Age: ";
                     int age;
-                    cin >> age;
+                    age = readInt("");
                     newData.setAge(age);
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Phone Number: ";
                     string phone;
@@ -186,12 +240,14 @@ int main() {
 
                     cout << "GPA: ";
                     double gpa;
-                    cin >> gpa;
+                    gpa = readDouble("");
                     newData.setGpa(gpa);
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "\n";
-                    cout << studentController.editStudent(id, newData) << "\n";
+                    string result = studentController.editStudent(id, newData);
+                    cout << result << "\n";
+                    if (result.find("not found") == string::npos && result.find("cannot") == string::npos)
+                        saveAll(studentRepoImpl, courseRepoImpl, teacherRepoImpl);
                 }
                 // ── Assign Courses to Student ──────────────────────────
                 else if (studentProcess == 4) {
@@ -199,10 +255,21 @@ int main() {
                     string studentId;
                     getline(cin, studentId);
 
-                    cout << "How many courses to assign? ";
+                    Student* stu = studentController.findStudentById(studentId);
+                    if (!stu) {
+                        cout << "Student not found.\n";
+                        break;
+                    }
+                    int maxCourses = courseController.getMaxCoursesForGrade(stu->getGrade());
+
+                    cout << "How many courses to assign (1-" << maxCourses << ")? ";
                     int numCourses;
-                    cin >> numCourses;
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    numCourses = readInt("");
+
+                    if (numCourses < 1 || numCourses > maxCourses) {
+                        cout << "Invalid number. Must be between 1 and " << maxCourses << ".\n";
+                        break;
+                    }
 
                     vector<string> courseIds, teacherNames;
 
@@ -226,8 +293,7 @@ int main() {
                             } else {
                                 cout << "Select teacher number: ";
                                 int choice;
-                                cin >> choice;
-                                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                                choice = readInt("");
                                 if (choice >= 1 && choice <= (int)av.size())
                                     sel = av[choice - 1];
                             }
@@ -239,7 +305,11 @@ int main() {
                         }
                     }
 
-                    cout << "\n" << studentController.assignCoursesToStudent(studentId, courseIds, teacherNames) << "\n";
+                    string result = studentController.assignCoursesToStudent(studentId, courseIds, teacherNames);
+                    cout << "\n" << result << "\n";
+                    if (result.find("not found") == string::npos && result.find("failed") == string::npos &&
+                        result.find("No courses") == string::npos)
+                        saveAll(studentRepoImpl, courseRepoImpl, teacherRepoImpl);
                 }
                 // ── Show Student ───────────────────────────────────────
                 else if (studentProcess == 5) {
@@ -260,8 +330,7 @@ int main() {
                 showProcesses("Course");
 
                 int courseProcess;
-                cin >> courseProcess;
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                courseProcess = readInt("");
                 cout << "\n";
 
                 if (courseProcess < 1 || courseProcess > 7) {
@@ -281,15 +350,13 @@ int main() {
 
                     cout << "Grade (1-12): ";
                     int grade;
-                    cin >> grade;
+                    grade = readInt("");
                     course.setGrade(grade);
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Subject Hours (2-6): ";
                     int hours;
-                    cin >> hours;
+                    hours = readInt("");
                     course.setSubjectHours(hours);
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Specialization: ";
                     string spec;
@@ -297,7 +364,11 @@ int main() {
                     course.setSpecialization(spec);
                     cout << "\n";
 
-                    cout << courseController.addCourse(grade, course) << "\n";
+                    string result = courseController.addCourse(grade, course);
+                    cout << result << "\n";
+                    if (result.find("cannot") == string::npos && result.find("exists") == string::npos &&
+                        result.find("Invalid") == string::npos && result.find("Maximum") == string::npos)
+                        saveAll(studentRepoImpl, courseRepoImpl, teacherRepoImpl);
                 }
                 // ── Remove Course ──────────────────────────────────────
                 else if (courseProcess == 2) {
@@ -318,7 +389,10 @@ int main() {
                         cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                         if (confirm == 'y' || confirm == 'Y') {
-                            cout << courseController.removeCourse(id) << "\n";
+                            string result = courseController.removeCourse(id);
+                            cout << result << "\n";
+                            if (result.find("not found") == string::npos && result.find("Cannot") == string::npos)
+                                saveAll(studentRepoImpl, courseRepoImpl, teacherRepoImpl);
                         }
                         else {
                             cout << "Operation cancelled.\n";
@@ -345,18 +419,19 @@ int main() {
 
                     cout << "Grade (1-12): ";
                     int grade;
-                    cin >> grade;
+                    grade = readInt("");
                     newData.setGrade(grade);
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Subject Hours (2-6): ";
                     int hours;
-                    cin >> hours;
+                    hours = readInt("");
                     newData.setSubjectHours(hours);
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "\n";
-                    cout << courseController.editCourse(id, newData) << "\n";
+                    string result = courseController.editCourse(id, newData);
+                    cout << result << "\n";
+                    if (result.find("not found") == string::npos && result.find("cannot") == string::npos)
+                        saveAll(studentRepoImpl, courseRepoImpl, teacherRepoImpl);
                 }
                 // ── Show All Assigned Students ─────────────────────────
                 else if (courseProcess == 4) {
@@ -405,8 +480,11 @@ int main() {
                     string newTeacherId;
                     getline(cin, newTeacherId);
 
-                    cout << "\n" << teacherController.replaceTeacherInCourse(courseId, oldTeacherId, newTeacherId) << "\n";
-            }
+                    string result = teacherController.replaceTeacherInCourse(courseId, oldTeacherId, newTeacherId);
+                    cout << "\n" << result << "\n";
+                    if (result.find("successfully") != string::npos)
+                        saveAll(studentRepoImpl, courseRepoImpl, teacherRepoImpl);
+                }
                 break;
             }
 
@@ -416,8 +494,7 @@ int main() {
                 showProcesses("Teacher");
 
                 int teacherProcess;
-                cin >> teacherProcess;
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                teacherProcess = readInt("");
                 cout << "\n";
 
                 if (teacherProcess < 1 || teacherProcess > 5) {
@@ -442,15 +519,13 @@ int main() {
 
                     cout << "Teacher Age: ";
                     int age;
-                    cin >> age;
+                    age = readInt("");
                     teacher.setAge(age);
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Teacher experience years: ";
                     int ey;
-                    cin >> ey;
+                    ey = readInt("");
                     teacher.setExperienceYears(ey);
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Teacher Specialization: ";
                     string spec;
@@ -464,18 +539,20 @@ int main() {
 
                     cout << "Grade (1-12): ";
                     int grade;
-                    cin >> grade;
+                    grade = readInt("");
                     teacher.setGrade(grade);
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Monthly Salary: ";
                     double sal;
-                    cin >> sal;
+                    sal = readDouble("");
                     teacher.setMonthlySalary(sal);
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "\n";
-                    cout << teacherController.addTeacher(grade, teacher) << "\n";
+                    string result = teacherController.addTeacher(grade, teacher);
+                    cout << result << "\n";
+                    if (result.find("cannot") == string::npos && result.find("exists") == string::npos &&
+                        result.find("Invalid") == string::npos && result.find("Maximum") == string::npos)
+                        saveAll(studentRepoImpl, courseRepoImpl, teacherRepoImpl);
                 }
                 // ── Remove Teacher ─────────────────────────────────────
                 else if (teacherProcess == 2) {
@@ -496,7 +573,10 @@ int main() {
                         cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                         if (confirm == 'y' || confirm == 'Y') {
-                            cout << teacherController.removeTeacher(id) << "\n";
+                            string result = teacherController.removeTeacher(id);
+                            cout << result << "\n";
+                            if (result.find("not found") == string::npos && result.find("Cannot") == string::npos)
+                                saveAll(studentRepoImpl, courseRepoImpl, teacherRepoImpl);
                         } else {
                             cout << "Operation cancelled.\n";
                         }
@@ -522,27 +602,23 @@ int main() {
 
                     cout << "Teacher Age: ";
                     int age;
-                    cin >> age;
+                    age = readInt("");
                     newData.setAge(age);
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Teacher experience years: ";
                     int ey;
-                    cin >> ey;
+                    ey = readInt("");
                     newData.setExperienceYears(ey);
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Teacher Grade (1-12): ";
                     int grade;
-                    cin >> grade;
+                    grade = readInt("");
                     newData.setGrade(grade);
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Teacher monthly salary: ";
                     double sal;
-                    cin >> sal;
+                    sal = readDouble("");
                     newData.setMonthlySalary(sal);
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     cout << "Teacher Specialization: ";
                     string spec;
@@ -555,7 +631,10 @@ int main() {
                     newData.setSubject(sub);
 
                     cout << "\n";
-                    cout << teacherController.editTeacher(id, newData) << "\n";
+                    string result = teacherController.editTeacher(id, newData);
+                    cout << result << "\n";
+                    if (result.find("not found") == string::npos && result.find("cannot") == string::npos)
+                        saveAll(studentRepoImpl, courseRepoImpl, teacherRepoImpl);
                 }
                 // ── Assign Courses to Teacher ──────────────────────────
                 else if (teacherProcess == 4) {
@@ -563,13 +642,13 @@ int main() {
                     string teacherId;
                     getline(cin, teacherId);
 
-                    cout << "How many courses to assign (1-3)? ";
+                    cout << "How many courses to assign (1-" << SchoolConstants::MAX_COURSES_PER_TEACHER << ")? ";
                     int numCourses;
-                    cin >> numCourses;
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    numCourses = readInt("");
 
-                    if (numCourses < 1 || numCourses > 3) {
-                        cout << "Invalid number.\n";
+                    if (numCourses < 1 || numCourses > SchoolConstants::MAX_COURSES_PER_TEACHER) {
+                        cout << "Invalid number. Must be between 1 and "
+                             << SchoolConstants::MAX_COURSES_PER_TEACHER << ".\n";
                         break;
                     }
 
@@ -580,7 +659,11 @@ int main() {
                         courseIds.push_back(cid);
                     }
 
-                    cout << teacherController.assignCoursesToTeacher(teacherId, courseIds) << "\n";
+                    string result = teacherController.assignCoursesToTeacher(teacherId, courseIds);
+                    cout << result << "\n";
+                    if (result.find("failed") == string::npos && result.find("not found") == string::npos &&
+                        result.find("cannot") == string::npos)
+                        saveAll(studentRepoImpl, courseRepoImpl, teacherRepoImpl);
                 }
                 // ── Show Teacher Info ──────────────────────────────────
                 else if (teacherProcess == 5) {
@@ -597,7 +680,9 @@ int main() {
             }
 
             case 4:
-                cout << "\nExiting program...\n";
+                cout << "\nSaving data...\n";
+                saveAll(studentRepoImpl, courseRepoImpl, teacherRepoImpl);
+                cout << "Exiting program...\n";
                 flag = false;
                 break;
 

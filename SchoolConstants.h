@@ -57,6 +57,12 @@ namespace SchoolConstants {
     constexpr int MAX_STUDENTS_IN_MIDDLE = 100;
     constexpr int MAX_STUDENTS_IN_SECONDARY = 90;
 
+
+    // ── Data file paths ───────────────────────────────────────────────────
+    constexpr const char* FILE_STUDENTS = "students.txt";
+    constexpr const char* FILE_COURSES  = "courses.txt";
+    constexpr const char* FILE_TEACHERS = "teachers.txt";
+
 } // namespace SchoolConstants
 
 #endif

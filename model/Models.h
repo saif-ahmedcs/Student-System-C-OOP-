@@ -48,7 +48,6 @@ private:
     int experienceYears;
     std::string specialization;
     std::vector<std::string> assignedCourseIds;
-    std::vector<int> studentIds;
 public:
     void setGrade(int grade);
     void setMonthlySalary(double salary);
@@ -58,8 +57,6 @@ public:
 
     bool assignCourse(const std::string& courseId);
     bool isCourseAssigned(const std::string& courseId) const;
-    void clearAssignedCourses();
-    void addStudentId(int id);
 
     bool removeCourse(const std::string& courseId);
     void removeAllCourses();
@@ -70,8 +67,6 @@ public:
     int getExperienceYears() const;
     std::string getSpecialization() const;
     const std::vector<std::string>&  getAssignedCourses() const;
-    const std::vector<int>& getStudentIds() const;
-    int getNumberOfStudentsInCourse() const;
 };
 
 // ─────────────────────────────────────────────────────────────────────────

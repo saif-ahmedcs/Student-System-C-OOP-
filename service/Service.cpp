@@ -440,7 +440,8 @@ string StudentServiceImpl::assignCoursesToStudent(const string& studentId, const
                ". Only " + to_string(remaining) + " more needed.";
     }
 
-    int maxStudentsPerCourse = studentRepository.getMaxStudentsForGrade(studentGrade) - 1;
+    // Fix: max students per course is the stage capacity, not grade capacity minus 1
+    int maxStudentsPerCourse = studentRepository.getMaxStudentsForGrade(studentGrade);
     string errors;
     vector<string> validatedIds;
     vector<string> validatedTeachers;

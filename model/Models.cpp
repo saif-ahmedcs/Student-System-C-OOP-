@@ -81,14 +81,6 @@ bool Teacher::isCourseAssigned(const std::string& courseId) const {
     return false;
 }
 
-void Teacher::clearAssignedCourses() {
-    assignedCourseIds.clear();
-}
-
-void Teacher::addStudentId(int id) {
-    studentIds.push_back(id);
-}
-
 bool Teacher::removeCourse(const std::string& courseId) {
     for (int i = 0; i < (int)assignedCourseIds.size(); i++) {
         if (assignedCourseIds[i] == courseId) {
@@ -125,14 +117,6 @@ std::string Teacher::getSpecialization() const {
 
 const std::vector<std::string>& Teacher::getAssignedCourses() const {
     return assignedCourseIds;
-}
-
-const std::vector<int>& Teacher::getStudentIds() const {
-    return studentIds;
-}
-
-int Teacher::getNumberOfStudentsInCourse() const {
-    return (int)studentIds.size();
 }
 
 // ─────────────────────────────────────────────
