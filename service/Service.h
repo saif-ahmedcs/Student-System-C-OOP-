@@ -24,8 +24,8 @@ public:
     virtual std::string addTeacher(int grade, Teacher& teacher) = 0;
     virtual std::string editTeacher(const std::string& id, const Teacher& newData) = 0;
     virtual std::string assignCoursesToTeacher(const std::string& teacherId, const std::vector<std::string>& courseIds) = 0;
-
     virtual std::string replaceTeacherInCourse(const std::string& courseId, const std::string& oldTeacherId, const std::string& newTeacherId) = 0;
+    virtual std::string unassignCourseFromTeacher(const std::string& teacherId, const std::string& courseId) = 0;
     virtual std::string removeTeacher(const std::string& id) = 0;
 
     virtual ~TeacherService() = default;
@@ -48,6 +48,7 @@ public:
     std::string editTeacher(const std::string& id, const Teacher& newData) override;
     std::string assignCoursesToTeacher(const std::string& teacherId, const std::vector<std::string>& courseIds) override;
     std::string replaceTeacherInCourse(const std::string& courseId, const std::string& oldTeacherId, const std::string& newTeacherId) override;
+    std::string unassignCourseFromTeacher(const std::string& teacherId, const std::string& courseId) override;
     std::string removeTeacher(const std::string& id) override;
 
 

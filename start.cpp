@@ -66,7 +66,7 @@ void showProcesses(const string& s) {
     if (s == "Teacher") {
         cout << "1- Add " << s << "\t\t\t2- Remove " << s << "\n";
         cout << "3- Edit " << s << "\t\t\t4- Assign Courses to " << s << "\n";
-        cout << "5- Show " << s << " Info\n";
+        cout << "5- Show " << s << " Info\t\t6- Unassign Course from " << s << "\n";
     }
     else if (s == "Student") {
         cout << "1- Add " << s << "\t\t\t2- Remove " << s << "\n";
@@ -497,7 +497,7 @@ int main() {
                 teacherProcess = readInt("");
                 cout << "\n";
 
-                if (teacherProcess < 1 || teacherProcess > 5) {
+                if (teacherProcess < 1 || teacherProcess > 6) {
                     cout << "ERROR! INVALID OPTION PLEASE TRY AGAIN\n";
                     break;
                 }
@@ -642,6 +642,11 @@ int main() {
                     string teacherId;
                     getline(cin, teacherId);
 
+                    if (!teacherController.findTeacherById(teacherId)) {
+                        cout << "Teacher not found.\n";
+                        break;
+                    }
+
                     cout << "How many courses to assign (1-" << SchoolConstants::MAX_COURSES_PER_TEACHER << ")? ";
                     int numCourses;
                     numCourses = readInt("");
@@ -675,6 +680,21 @@ int main() {
                         break;
                     }
                     teacherController.showTeacher(id);
+                }
+                // ── Unassign Course from Teacher ───────────────────────
+                else if (teacherProcess == 6) {
+                    cout << "\nEnter Teacher ID: ";
+                    string teacherId;
+                    getline(cin, teacherId);
+
+                    cout << "Enter Course ID to unassign: ";
+                    string courseId;
+                    getline(cin, courseId);
+
+                    string result = teacherController.unassignCourseFromTeacher(teacherId, courseId);
+                    cout << result << "\n";
+                    if (result.find("successfully") != string::npos)
+                        saveAll(studentRepoImpl, courseRepoImpl, teacherRepoImpl);
                 }
                 break;
             }

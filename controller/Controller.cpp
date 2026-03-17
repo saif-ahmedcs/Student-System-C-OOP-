@@ -64,6 +64,10 @@ string TeacherController::replaceTeacherInCourse(const string& courseId, const s
     return teacherService.replaceTeacherInCourse(courseId, oldTeacherId, newTeacherId);
 }
 
+string TeacherController::unassignCourseFromTeacher(const string& teacherId, const string& courseId) {
+    return teacherService.unassignCourseFromTeacher(teacherId, courseId);
+}
+
 // ─── CourseController ───────────────────────────────────────────────────
 
 CourseController::CourseController(CourseService& cSrv, StudentService& sSrv)

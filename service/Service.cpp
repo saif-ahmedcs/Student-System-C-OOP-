@@ -86,9 +86,6 @@ string TeacherServiceImpl::editTeacher(const string& id, const Teacher& newData)
     return teacherRepository.editTeacher(id, newData);
 }
 
-// ─────────────────────────────────────────────────────────────────────────
-//  assignCoursesToTeacher
-// ─────────────────────────────────────────────────────────────────────────
 string TeacherServiceImpl::assignCoursesToTeacher(const string& teacherId, const vector<string>& courseIds) {
     if (courseIds.empty() || (int)courseIds.size() > SchoolConstants::MAX_COURSES_PER_TEACHER)
         return "Teacher must be assigned between 1 and " + to_string(SchoolConstants::MAX_COURSES_PER_TEACHER) + " courses.";
@@ -141,9 +138,6 @@ string TeacherServiceImpl::assignCoursesToTeacher(const string& teacherId, const
     return teacherRepository.assignCoursesToTeacher(teacherId, courseIds);
 }
 
-// ─────────────────────────────────────────────────────────────────────────
-//  replaceTeacherInCourse
-// ─────────────────────────────────────────────────────────────────────────
 string TeacherServiceImpl::replaceTeacherInCourse(const string& courseId, const string& oldTeacherId, const string& newTeacherId) {
     if (oldTeacherId == newTeacherId) {
         return "Old and new teacher IDs must be different.";
@@ -230,6 +224,27 @@ string TeacherServiceImpl::replaceTeacherInCourse(const string& courseId, const 
     }
 
     return "Teacher successfully replaced in course.";
+}
+
+string TeacherServiceImpl::unassignCourseFromTeacher(const string& teacherId, const string& courseId) {
+    Teacher* teacher = teacherRepository.findTeacherById(teacherId);
+    if (!teacher)
+        return "Teacher not found.";
+
+    Course* course = courseRepository.findCourseById(courseId);
+    if (!course)
+        return "Course not found.";
+
+    if (!teacher->isCourseAssigned(courseId))
+        return "This course is not assigned to the teacher.";
+
+    if (course->getNumberOfAssignedStudents() > 0)
+        return "Cannot unassign course with enrolled students. Use replace option instead.";
+
+    teacher->removeCourse(courseId);
+    course->removeTeacherById(teacherId);
+
+    return "Course unassigned from teacher successfully.";
 }
 
 string TeacherServiceImpl::removeTeacher(const string& id) {
@@ -411,9 +426,6 @@ string StudentServiceImpl::editStudent(const string& id, const Student& newData)
     return studentRepository.editStudent(id, newData);
 }
 
-// ─────────────────────────────────────────────────────────────────────────
-//  assignCoursesToStudent
-// ─────────────────────────────────────────────────────────────────────────
 string StudentServiceImpl::assignCoursesToStudent(const string& studentId, const vector<string>& courseIds, const vector<string>& teacherNames) {
     if (courseIds.empty())
         return "No courses provided.";
@@ -440,7 +452,6 @@ string StudentServiceImpl::assignCoursesToStudent(const string& studentId, const
                ". Only " + to_string(remaining) + " more needed.";
     }
 
-    // Fix: max students per course is the stage capacity, not grade capacity minus 1
     int maxStudentsPerCourse = studentRepository.getMaxStudentsForGrade(studentGrade);
     string errors;
     vector<string> validatedIds;
