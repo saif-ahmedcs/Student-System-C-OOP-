@@ -4,35 +4,29 @@
 #include "SchoolConstants.h"
 using namespace std;
 
-
 static int readInt(const string& prompt) {
-    while (true) {
-        if (!prompt.empty()) cout << prompt;
-        string line;
-        getline(cin, line);
-        bool valid = !line.empty();
-        for (int i = 0; i < (int)line.size() && valid; i++)
-            if (!isdigit(line[i])) valid = false;
-        if (valid) return stoi(line);
-        cout << "Invalid input! Please enter a whole number: ";
-    }
+    if (!prompt.empty()) cout << prompt;
+    string line;
+    getline(cin, line);
+    bool valid = !line.empty();
+    for (int i = 0; i < (int)line.size() && valid; i++)
+        if (!isdigit(line[i])) valid = false;
+    if (valid) return stoi(line);
+    return -1;
 }
 
 static double readDouble(const string& prompt) {
-    while (true) {
-        if (!prompt.empty()) cout << prompt;
-        string line;
-        getline(cin, line);
-        bool valid = !line.empty();
-        bool hasDot = false;
-        for (int i = 0; i < (int)line.size() && valid; i++) {
-            if (line[i] == '.' && !hasDot) { hasDot = true; continue; }
-            if (!isdigit(line[i])) valid = false;
-        }
-        if (valid)
-          return stod(line);
-        cout << "Invalid input! Please enter a number: ";
+    if (!prompt.empty()) cout << prompt;
+    string line;
+    getline(cin, line);
+    bool valid = !line.empty();
+    bool hasDot = false;
+    for (int i = 0; i < (int)line.size() && valid; i++) {
+        if (line[i] == '.' && !hasDot) { hasDot = true; continue; }
+        if (!isdigit(line[i])) valid = false;
     }
+    if (valid) return stod(line);
+    return -1.0;
 }
 
 static void saveAll(StudentRepositoryImpl& sRepo, CourseRepositoryImpl& cRepo, TeacherRepositoryImpl& tRepo) {
@@ -175,7 +169,7 @@ int main() {
 
                     string result = studentController.addStudent(grade, student);
                     cout << result << "\n";
-                    if (result.find("failed") == string::npos && result.find("exists") == string::npos && result.find("Invalid") == string::npos && result.find("Maximum") == string::npos)
+                    if (result.find("failed") == string::npos && result.find("exists") == string::npos && result.find("Invalid") == string::npos && result.find("Maximum") == string::npos && result.find("maximum") == string::npos)
                         saveAll(studentRepoImpl, courseRepoImpl, teacherRepoImpl);
                 }
                 // ── Remove Student ─────────────────────────────────────
@@ -427,6 +421,11 @@ int main() {
                     hours = readInt("");
                     newData.setSubjectHours(hours);
 
+                    cout << "Specialization: ";
+                    string spec;
+                    getline(cin, spec);
+                    newData.setSpecialization(spec);
+
                     cout << "\n";
                     string result = courseController.editCourse(id, newData);
                     cout << result << "\n";
@@ -532,11 +531,6 @@ int main() {
                     getline(cin, spec);
                     teacher.setSpecialization(spec);
 
-                    cout << "Teacher Subject: ";
-                    string sub;
-                    getline(cin, sub);
-                    teacher.setSubject(sub);
-
                     cout << "Grade (1-12): ";
                     int grade;
                     grade = readInt("");
@@ -625,11 +619,6 @@ int main() {
                     getline(cin, spec);
                     newData.setSpecialization(spec);
 
-                    cout << "Teacher subject: ";
-                    string sub;
-                    getline(cin, sub);
-                    newData.setSubject(sub);
-
                     cout << "\n";
                     string result = teacherController.editTeacher(id, newData);
                     cout << result << "\n";
@@ -641,11 +630,6 @@ int main() {
                     cout << "\nEnter Teacher ID to assign courses: ";
                     string teacherId;
                     getline(cin, teacherId);
-
-                    if (!teacherController.findTeacherById(teacherId)) {
-                        cout << "Teacher not found.\n";
-                        break;
-                    }
 
                     cout << "How many courses to assign (1-" << SchoolConstants::MAX_COURSES_PER_TEACHER << ")? ";
                     int numCourses;

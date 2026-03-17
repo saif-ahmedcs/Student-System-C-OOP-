@@ -52,12 +52,18 @@ string TeacherServiceImpl::addTeacher(int grade, Teacher& teacher) {
     string errors;
     if (!teacherValidator.validateName(teacher.getName()))
         errors += "- Teacher name cannot be empty.\n";
+    if (!teacherValidator.validateNationalNumber(teacher.getNationalNumber()))
+        errors += "- National number must be 14 characters (make sure your input is DIGITS ONLY).\n";
     if (!teacherValidator.validateAge(teacher.getAge()))
-        errors += "- Teacher age does not comply with school policy.\n";
+        errors += "- Teacher age does not comply with school policy (make sure your input is DIGITS ONLY)\n";
     if (!teacherValidator.validateExperienceYears(teacher.getExperienceYears()))
-        errors += "- Years of experience do not meet school requirements.\n";
+        errors += "- Years of experience do not meet school requirements (make sure your input is DIGITS ONLY)\n";
+    if (!teacherValidator.validateSpecialization(teacher.getSpecialization()))
+        errors += "- Specialization cannot be empty.\n";
+    if (!teacherValidator.validateMonthlySalary(teacher.getMonthlySalary()))
+        errors += "- Monthly salary must be at least 7000 (make sure your input is DIGITS ONLY).\n";
     if (!teacherValidator.validateGrade(grade))
-        errors += "- Grade must be between 1 and 12.\n";
+        errors += "- Grade must be between 1 and 12 (make sure your input is DIGITS ONLY)\n";
     if (!errors.empty())
         return "Teacher cannot be added:\n" + errors;
 
@@ -75,11 +81,15 @@ string TeacherServiceImpl::editTeacher(const string& id, const Teacher& newData)
     if (!teacherValidator.validateName(newData.getName()))
         errors += "- Teacher name cannot be empty.\n";
     if (!teacherValidator.validateAge(newData.getAge()))
-        errors += "- Teacher age does not comply with school policy.\n";
+        errors += "- Teacher age does not comply with school policy (make sure your input is DIGITS ONLY).\n";
     if (!teacherValidator.validateExperienceYears(newData.getExperienceYears()))
-        errors += "- Years of experience do not meet school requirements.\n";
+        errors += "- Years of experience do not meet school requirements (make sure your input is DIGITS ONLY).\n";
+    if (!teacherValidator.validateSpecialization(newData.getSpecialization()))
+        errors += "- Specialization cannot be empty.\n";
+    if (!teacherValidator.validateMonthlySalary(newData.getMonthlySalary()))
+        errors += "- Monthly salary must be at least 7000 (make sure your input is DIGITS ONLY).\n";
     if (!teacherValidator.validateGrade(newData.getGrade()))
-        errors += "- Grade must be between 1 and 12.\n";
+        errors += "- Grade must be between 1 and 12 (make sure your input is DIGITS ONLY).\n";
     if (!errors.empty())
         return "Teacher cannot be updated:\n" + errors;
 
@@ -239,7 +249,7 @@ string TeacherServiceImpl::unassignCourseFromTeacher(const string& teacherId, co
         return "This course is not assigned to the teacher.";
 
     if (course->getNumberOfAssignedStudents() > 0)
-        return "Cannot unassign course with enrolled students. Use replace option instead.";
+        return "Cannot reassign course with enrolled students. Use replace option instead.";
 
     teacher->removeCourse(courseId);
     course->removeTeacherById(teacherId);
@@ -314,9 +324,11 @@ string CourseServiceImpl::addCourse(int grade, Course& course) {
     if (!courseValidator.validateCourseName(course.getName()))
         errors += "- Invalid course name.\n";
     if (!courseValidator.validateGrade(course.getGrade()))
-        errors += "- Invalid grade. Must be between 1 and 12.\n";
+        errors += "- Invalid grade. Must be between 1 and 12 (make sure your input is DIGITS ONLY).\n";
     if (!courseValidator.validateSubjectHours(course.getSubjectHours()))
-        errors += "- Subject hours must be between 2 and 6.\n";
+        errors += "- Subject hours must be between 2 and 6 (make sure your input is DIGITS ONLY).\n";
+    if (!courseValidator.validateSpecialization(course.getSpecialization()))
+        errors += "- Specialization cannot be empty.\n";
     if (!errors.empty())
         return "Course cannot be added:\n" + errors;
 
@@ -334,9 +346,11 @@ string CourseServiceImpl::editCourse(const string& id, const Course& newData) {
     if (!courseValidator.validateCourseName(newData.getName()))
         errors += "- Invalid course name.\n";
     if (!courseValidator.validateGrade(newData.getGrade()))
-        errors += "- Invalid grade. Must be between 1 and 12.\n";
+        errors += "- Invalid grade. Must be between 1 and 12 (make sure your input is DIGITS ONLY).\n";
     if (!courseValidator.validateSubjectHours(newData.getSubjectHours()))
-        errors += "- Subject hours must be between 2 and 6.\n";
+        errors += "- Subject hours must be between 2 and 6 (make sure your input is DIGITS ONLY).\n";
+    if (!courseValidator.validateSpecialization(newData.getSpecialization()))
+        errors += "- Specialization cannot be empty.\n";
     if (!errors.empty())
         return "Course cannot be updated:\n" + errors;
 
@@ -390,12 +404,14 @@ string StudentServiceImpl::addStudent(int grade, Student& student) {
     string errors;
     if (!studentValidator.validateName(student.getName()))
         errors += "- Name cannot be empty.\n";
+    if (!studentValidator.validateNationalNumber(student.getNationalNumber()))
+        errors += "- National number must be 14 characters (make sure your input is DIGITS ONLY).\n";
     if (!studentValidator.validateGrade(grade))
-        errors += "- Grade must be between 1 and 12.\n";
+        errors += "- Grade must be between 1 and 12 (make sure your input is DIGITS ONLY).\n";
     if (!studentValidator.validateAge(student.getAge(), grade))
-        errors += "- Student age does not match the expected range for this grade.\n";
+        errors += "- Student age does not match the expected range for this grade (make sure your input is DIGITS ONLY).\n";
     if (!studentValidator.validatePhoneNumber(student.getPhoneNumber()))
-        errors += "- Phone number must be 10-12 digits.\n";
+        errors += "- Phone number must be 10-12 characters (make sure your input is DIGITS ONLY)\n";
     if (!errors.empty())
         return "Student registration failed:\n" + errors;
 
@@ -413,13 +429,13 @@ string StudentServiceImpl::editStudent(const string& id, const Student& newData)
     if (!studentValidator.validateName(newData.getName()))
         errors += "- Name cannot be empty.\n";
     if (!studentValidator.validateAge(newData.getAge(), newData.getGrade()))
-        errors += "- Age does not match the expected range for this grade.\n";
+        errors += "- Age does not match the expected range for this grade (make sure your input is DIGITS ONLY).\n";
     if (!studentValidator.validatePhoneNumber(newData.getPhoneNumber()))
-        errors += "- Phone number must be 10-12 digits.\n";
+        errors += "- Phone number must be 10-12 characters (make sure your input is DIGITS ONLY)\n";
     if (!studentValidator.validateGpa((float)newData.getGpa()))
-        errors += "- GPA must be between 0.0 and 4.0.\n";
+        errors += "- GPA must be between 0.0 and 4.0 (make sure your input is DIGITS ONLY)\n";
     if (!studentValidator.validateGrade(newData.getGrade()))
-        errors += "- Grade must be between 1 and 12.\n";
+        errors += "- Grade must be between 1 and 12 characters (make sure your input is DIGITS ONLY)\n";
     if (!errors.empty())
         return "Student cannot be updated:\n" + errors;
 

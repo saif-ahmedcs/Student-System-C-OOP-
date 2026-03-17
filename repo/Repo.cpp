@@ -227,16 +227,59 @@ string TeacherRepositoryImpl::addTeacher(int grade, Teacher& teacher) {
 }
 
 string TeacherRepositoryImpl::editTeacher(const string& id, const Teacher& newData) {
-    Teacher* t = findTeacherById(id);
-    if (!t) return "Teacher not found.";
+    int idx = -1;
+    for (int i = 0; i < (int)allTeachers.size(); i++) {
+        if (allTeachers[i].getId() == id) {
+            idx = i;
+            break;
+        }
+    }
+    if (idx == -1)
+        return "Teacher not found.";
 
-    t->setName(newData.getName());
-    t->setAge(newData.getAge());
-    t->setGrade(newData.getGrade());
-    t->setSubject(newData.getSubject());
-    t->setExperienceYears(newData.getExperienceYears());
-    t->setMonthlySalary(newData.getMonthlySalary());
-    t->setSpecialization(newData.getSpecialization());
+    int oldGrade = allTeachers[idx].getGrade();
+    int newGrade = newData.getGrade();
+
+    allTeachers[idx].setName(newData.getName());
+    allTeachers[idx].setAge(newData.getAge());
+    allTeachers[idx].setGrade(newGrade);
+    allTeachers[idx].setSubject(newData.getSubject());
+    allTeachers[idx].setExperienceYears(newData.getExperienceYears());
+    allTeachers[idx].setMonthlySalary(newData.getMonthlySalary());
+    allTeachers[idx].setSpecialization(newData.getSpecialization());
+
+    if (oldGrade != newGrade) {
+        std::map<int, std::vector<int>>::iterator git = gradeIndex.find(oldGrade);
+        if (git != gradeIndex.end()) {
+            std::vector<int>& indices = git->second;
+            for (int i = 0; i < (int)indices.size(); i++) {
+                if (indices[i] == idx) {
+                    indices.erase(indices.begin() + i);
+                    break;
+                }
+            }
+            if (indices.empty())
+                gradeIndex.erase(git);
+        }
+
+        Stage oldStage = getStageFromGrade(oldGrade);
+
+        std::map<Stage, std::vector<int>>::iterator sit = stageIndex.find(oldStage);
+        if (sit != stageIndex.end()) {
+            std::vector<int>& indices = sit->second;
+            for (int i = 0; i < (int)indices.size(); i++) {
+                if (indices[i] == idx) {
+                    indices.erase(indices.begin() + i);
+                    break;
+                }
+            }
+            if (indices.empty())
+                stageIndex.erase(sit);
+        }
+
+        gradeIndex[newGrade].push_back(idx);
+        stageIndex[getStageFromGrade(newGrade)].push_back(idx);
+    }
 
     return "Teacher data updated successfully.";
 }
@@ -367,6 +410,7 @@ string CourseRepositoryImpl::editCourse(const string& id, const Course& newData)
     c->setName(newData.getName());
     c->setGrade(newData.getGrade());
     c->setSubjectHours(newData.getSubjectHours());
+    c->setSpecialization(newData.getSpecialization());
 
     return "Course data updated successfully.";
 }
@@ -512,15 +556,56 @@ string StudentRepositoryImpl::addStudent(int grade, Student& student) {
 }
 
 string StudentRepositoryImpl::editStudent(const string& id, const Student& newData) {
-    Student* s = findStudentById(id);
-    if (!s)
+    int idx = -1;
+    for (int i = 0; i < (int)allStudents.size(); i++) {
+        if (allStudents[i].getId() == id) {
+            idx = i;
+            break;
+        }
+    }
+    if (idx == -1)
         return "Student not found.";
 
-    s->setName(newData.getName());
-    s->setPhoneNumber(newData.getPhoneNumber());
-    s->setGpa(newData.getGpa());
-    s->setAge(newData.getAge());
-    s->setGrade(newData.getGrade());
+    int oldGrade = allStudents[idx].getGrade();
+    int newGrade = newData.getGrade();
+
+    allStudents[idx].setName(newData.getName());
+    allStudents[idx].setPhoneNumber(newData.getPhoneNumber());
+    allStudents[idx].setGpa(newData.getGpa());
+    allStudents[idx].setAge(newData.getAge());
+    allStudents[idx].setGrade(newGrade);
+
+    if (oldGrade != newGrade) {
+        std::map<int, std::vector<int>>::iterator git = gradeIndex.find(oldGrade);
+        if (git != gradeIndex.end()) {
+            std::vector<int>& indices = git->second;
+            for (int i = 0; i < (int)indices.size(); i++) {
+                if (indices[i] == idx) {
+                    indices.erase(indices.begin() + i);
+                    break;
+                }
+            }
+            if (indices.empty())
+                gradeIndex.erase(git);
+        }
+
+        Stage oldStage = getStageFromGrade(oldGrade);
+        std::map<Stage, std::vector<int>>::iterator sit = stageIndex.find(oldStage);
+        if (sit != stageIndex.end()) {
+            std::vector<int>& indices = sit->second;
+            for (int i = 0; i < (int)indices.size(); i++) {
+                if (indices[i] == idx) {
+                    indices.erase(indices.begin() + i);
+                    break;
+                }
+            }
+            if (indices.empty())
+                stageIndex.erase(sit);
+        }
+
+        gradeIndex[newGrade].push_back(idx);
+        stageIndex[getStageFromGrade(newGrade)].push_back(idx);
+    }
 
     return "Student data updated successfully.";
 }

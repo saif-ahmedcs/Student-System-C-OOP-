@@ -39,6 +39,12 @@ namespace SchoolConstants {
     constexpr int MIN_PHONE_LENGTH = 10;
     constexpr int MAX_PHONE_LENGTH = 12;
 
+    // ── National number length ────────────────────────────────────────────
+    constexpr int NATIONAL_NUMBER_LENGTH = 14;
+
+    // ── Teacher salary ────────────────────────────────────────────────────
+    constexpr double MIN_MONTHLY_SALARY = 7000.0;
+
     // ── Minimum available student seats required before teacher assignment ─
     constexpr int MIN_AVAILABLE_SEATS_PRIMARY = 35;
     constexpr int MIN_AVAILABLE_SEATS_MIDDLE = 32;
