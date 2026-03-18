@@ -1,9 +1,6 @@
-#include "Validator.h"
+#include "Validators.h"
 using namespace std;
 
-// ─────────────────────────────────────────────
-//  TeacherValidator
-// ─────────────────────────────────────────────
 bool TeacherValidator::validateName(const string& name) const {
     return !name.empty();
 }
@@ -37,9 +34,6 @@ bool TeacherValidator::validateGrade(int grade) const {
     return isValidGrade(grade);
 }
 
-// ─────────────────────────────────────────────
-//  CourseValidator
-// ─────────────────────────────────────────────
 bool CourseValidator::validateCourseName(const string& name) const {
     return !name.empty();
 }
@@ -56,9 +50,6 @@ bool CourseValidator::validateGrade(int grade) const {
     return isValidGrade(grade);
 }
 
-// ─────────────────────────────────────────────
-//  StudentValidator
-// ─────────────────────────────────────────────
 bool StudentValidator::validateName(const string& name) const {
     return !name.empty();
 }
@@ -73,10 +64,8 @@ bool StudentValidator::validateNationalNumber(const string& nationalNumber) cons
 }
 
 bool StudentValidator::validateAge(int age, int grade) const {
-
     int expectedAge = grade + SchoolConstants::STUDENT_AGE_BASE;
     int tolerance = SchoolConstants::STUDENT_AGE_TOLERANCE;
-
     return age >= (expectedAge - tolerance) && age <= (expectedAge + tolerance);
 }
 

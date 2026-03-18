@@ -1,32 +1,29 @@
-#include "Models.h"
+#include "Student.h"
+#include "Teacher.h"
+#include "Course.h"
 
-// ─────────────────────────────────────────────
-//  ShareData
-// ─────────────────────────────────────────────
 void ShareData::setName(const std::string& n) {
-     name = n;
+    name = n;
 }
 
-void ShareData::setId(const std::string& i)   {
-     id = i;
+void ShareData::setId(const std::string& i) {
+    id = i;
 }
+
 std::string ShareData::getName() const {
     return name;
 }
 
-std::string ShareData::getId()   const {
+std::string ShareData::getId() const {
     return id;
 }
 
-// ─────────────────────────────────────────────
-//  BaseEntity
-// ─────────────────────────────────────────────
 void BaseEntity::setAge(int a) {
     age = a;
 }
 
 void BaseEntity::setPhoneNumber(const std::string& p) {
-     phoneNumber = p;
+    phoneNumber = p;
 }
 
 void BaseEntity::setNationalNumber(const std::string& n) {
@@ -38,23 +35,21 @@ int BaseEntity::getAge() const {
 }
 
 std::string BaseEntity::getPhoneNumber() const {
-     return phoneNumber;
+    return phoneNumber;
 }
 
 std::string BaseEntity::getNationalNumber() const {
     return nationalNumber;
 }
 
-
-// ─────────────────────────────────────────────
-//  Teacher
-// ─────────────────────────────────────────────
 void Teacher::setGrade(int g) {
-     grade = g;
+    grade = g;
 }
+
 void Teacher::setMonthlySalary(double s) {
-    monthlySalary   = s;
+    monthlySalary = s;
 }
+
 void Teacher::setSubject(const std::string& sub) {
     subject = sub;
 }
@@ -64,20 +59,23 @@ void Teacher::setExperienceYears(int y) {
 }
 
 void Teacher::setSpecialization(const std::string& spec) {
-    specialization  = spec;
+    specialization = spec;
 }
 
 bool Teacher::assignCourse(const std::string& courseId) {
-    if (isCourseAssigned(courseId))
+    if (isCourseAssigned(courseId)) {
         return false;
+    }
     assignedCourseIds.push_back(courseId);
     return true;
 }
 
 bool Teacher::isCourseAssigned(const std::string& courseId) const {
-    for (int i = 0; i < (int)assignedCourseIds.size(); i++)
-        if (assignedCourseIds[i] == courseId)
+    for (int i = 0; i < (int)assignedCourseIds.size(); i++) {
+        if (assignedCourseIds[i] == courseId) {
             return true;
+        }
+    }
     return false;
 }
 
@@ -119,38 +117,43 @@ const std::vector<std::string>& Teacher::getAssignedCourses() const {
     return assignedCourseIds;
 }
 
-// ─────────────────────────────────────────────
-//  Course
-// ─────────────────────────────────────────────
 void Course::setGrade(int g) {
     grade = g;
 }
+
 void Course::setSubjectHours(int h) {
     subjectHours = h;
 }
+
 void Course::setSpecialization(const std::string& spec) {
     specialization = spec;
 }
 
 bool Course::assignTeacher(const std::string& tid, const std::string& tname) {
-    for (int i = 0; i < (int)teacherIds.size(); i++)
-        if (teacherIds[i] == tid)
+    for (int i = 0; i < (int)teacherIds.size(); i++) {
+        if (teacherIds[i] == tid) {
             return false;
+        }
+    }
     teacherIds.push_back(tid);
     teacherNames.push_back(tname);
     return true;
 }
 
 bool Course::assignStudent(const std::string& studentId) {
-    if (isStudentAssigned(studentId))
+    if (isStudentAssigned(studentId)) {
         return false;
+    }
     assignedStudentIds.push_back(studentId);
     return true;
 }
 
 bool Course::isStudentAssigned(const std::string& studentId) const {
-    for (int i = 0; i < (int)assignedStudentIds.size(); i++)
-        if (assignedStudentIds[i] == studentId) return true;
+    for (int i = 0; i < (int)assignedStudentIds.size(); i++) {
+        if (assignedStudentIds[i] == studentId) {
+            return true;
+        }
+    }
     return false;
 }
 
@@ -182,9 +185,11 @@ bool Course::removeStudentById(const std::string& studentId) {
 int Course::getGrade() const {
     return grade;
 }
+
 int Course::getSubjectHours() const {
     return subjectHours;
 }
+
 std::string Course::getSpecialization() const {
     return specialization;
 }
@@ -209,20 +214,18 @@ int Course::getNumberOfAssignedStudents() const {
     return (int)assignedStudentIds.size();
 }
 
-// ─────────────────────────────────────────────
-//  Student
-// ─────────────────────────────────────────────
 void Student::setGrade(int g) {
     grade = g;
 }
 
 void Student::setGpa(double g) {
-    gpa   = g;
+    gpa = g;
 }
 
 bool Student::assignCourse(const std::string& courseId, const std::string& teacherName) {
-    if (isCourseAssigned(courseId))
+    if (isCourseAssigned(courseId)) {
         return false;
+    }
     StudentCourse sc;
     sc.courseId = courseId;
     sc.teacherName = teacherName;
@@ -231,9 +234,11 @@ bool Student::assignCourse(const std::string& courseId, const std::string& teach
 }
 
 bool Student::isCourseAssigned(const std::string& courseId) const {
-    for (int i = 0; i < (int)assignedCourses.size(); i++)
-        if (assignedCourses[i].courseId == courseId)
+    for (int i = 0; i < (int)assignedCourses.size(); i++) {
+        if (assignedCourses[i].courseId == courseId) {
             return true;
+        }
+    }
     return false;
 }
 

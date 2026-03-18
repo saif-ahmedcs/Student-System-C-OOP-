@@ -1,19 +1,9 @@
-#ifndef VALIDATOR_H
-#define VALIDATOR_H
+#ifndef VALIDATORS_H
+#define VALIDATORS_H
 
-#include "../utils/SchoolUtils.h"
-#include "../SchoolConstants.h"
+#include "SchoolUtils.h"
+#include "SchoolConstants.h"
 #include <string>
-
-// ─────────────────────────────────────────────────────────────────────────
-//  Validator classes — input validation ONLY
-//
-//  Each validator answers one question: "is this input value acceptable?"
-//  Validators do NOT:
-//    - query repositories
-//    - enforce business limits (max courses, capacities)
-//    - check for duplicates
-// ─────────────────────────────────────────────────────────────────────────
 
 class TeacherValidator {
 public:
