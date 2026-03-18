@@ -20,6 +20,7 @@ public:
     virtual std::string assignStudentToCourse(const std::string& studentId, const std::string& courseId) = 0;
     virtual std::string removeStudentFromCourse(const std::string& studentId, const std::string& courseId) = 0;
     virtual std::string removeCourse(const std::string& id) = 0;
+    virtual bool saveToFile(const std::string& filename) = 0;
     virtual ~CourseRepository() = default;
 };
 
@@ -40,7 +41,7 @@ public:
     std::string assignStudentToCourse(const std::string& studentId, const std::string& courseId) override;
     std::string removeStudentFromCourse(const std::string& studentId, const std::string& courseId) override;
     std::string removeCourse(const std::string& id) override;
-    bool saveToFile(const std::string& filename);
+    bool saveToFile(const std::string& filename) override;
     void loadFromFile(const std::string& filename);
 };
 

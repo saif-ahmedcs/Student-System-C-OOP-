@@ -16,11 +16,11 @@ class CourseController {
 private:
     CourseService& courseService;
     StudentService& studentService;
-    StudentRepositoryImpl& studentRepoImpl;
-    CourseRepositoryImpl& courseRepoImpl;
-    TeacherRepositoryImpl& teacherRepoImpl;
+    StudentRepository& studentRepo;
+    CourseRepository& courseRepo;
+    TeacherRepository& teacherRepo;
 public:
-    CourseController(CourseService& cSrv, StudentService& sSrv, StudentRepositoryImpl& sRepo, CourseRepositoryImpl& cRepo, TeacherRepositoryImpl& tRepo);
+    CourseController(CourseService& cSrv, StudentService& sSrv, StudentRepository& sRepo, CourseRepository& cRepo, TeacherRepository& tRepo);
 
     Course* findCourseById(const std::string& id);
     std::vector<std::string> getCourseTeacherNames(const std::string& courseId);

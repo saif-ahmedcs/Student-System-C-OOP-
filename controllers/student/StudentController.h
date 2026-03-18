@@ -15,11 +15,11 @@ class StudentController {
 private:
     StudentService& studentService;
     CourseService& courseService;
-    StudentRepositoryImpl& studentRepoImpl;
-    CourseRepositoryImpl& courseRepoImpl;
-    TeacherRepositoryImpl& teacherRepoImpl;
+    StudentRepository& studentRepo;
+    CourseRepository& courseRepo;
+    TeacherRepository& teacherRepo;
 public:
-    StudentController(StudentService& sSrv, CourseService& cSrv, StudentRepositoryImpl& sRepo, CourseRepositoryImpl& cRepo, TeacherRepositoryImpl& tRepo);
+    StudentController(StudentService& sSrv, CourseService& cSrv, StudentRepository& sRepo, CourseRepository& cRepo, TeacherRepository& tRepo);
 
     Student* findStudentById(const std::string& id);
     int getMaxStudentsForGrade(int grade) const;

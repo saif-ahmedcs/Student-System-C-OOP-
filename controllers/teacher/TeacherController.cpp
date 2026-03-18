@@ -1,21 +1,30 @@
 #include "TeacherController.h"
 using namespace std;
 
-TeacherController::TeacherController(TeacherService& service, StudentRepositoryImpl& sRepo, CourseRepositoryImpl& cRepo, TeacherRepositoryImpl& tRepo)
-    : teacherService(service), studentRepoImpl(sRepo), courseRepoImpl(cRepo), teacherRepoImpl(tRepo) {}
+TeacherController::TeacherController(TeacherService& service, StudentRepository& sRepo, CourseRepository& cRepo, TeacherRepository& tRepo)
+    : teacherService(service), studentRepo(sRepo), courseRepo(cRepo), teacherRepo(tRepo) {}
 
 void TeacherController::save() const {
     bool ok = true;
-    if (!studentRepoImpl.saveToFile(SchoolConstants::FILE_STUDENTS)) {
-        cout << "[ERROR] Failed to save student data.\n"; ok = false;
+    if (!studentRepo.saveToFile(SchoolConstants::FILE_STUDENTS))
+    {
+        cout << "[ERROR] Failed to save student data.\n";
+        ok = false;
     }
-    if (!courseRepoImpl.saveToFile(SchoolConstants::FILE_COURSES)) {
-        cout << "[ERROR] Failed to save course data.\n"; ok = false;
+    if (!courseRepo.saveToFile(SchoolConstants::FILE_COURSES))
+    {
+        cout << "[ERROR] Failed to save course data.\n";
+        ok = false;
     }
-    if (!teacherRepoImpl.saveToFile(SchoolConstants::FILE_TEACHERS)) {
-        cout << "[ERROR] Failed to save teacher data.\n"; ok = false;
+    if (!teacherRepo.saveToFile(SchoolConstants::FILE_TEACHERS))
+    {
+        cout << "[ERROR] Failed to save teacher data.\n";
+        ok = false;
     }
-    if (ok) cout << "[Saved]\n";
+    if (ok)
+    {
+        cout << "[Saved]\n";
+    }
 }
 
 Teacher* TeacherController::findTeacherById(const string& id) {
@@ -40,7 +49,11 @@ string TeacherController::assignCoursesToTeacher(const string& teacherId, const 
 
 void TeacherController::showTeacher(const string& id) {
     Teacher* t = teacherService.findTeacherById(id);
-    if (!t) { cout << "Teacher not found.\n"; return; }
+    if (!t)
+    {
+        cout << "Teacher not found.\n";
+        return;
+    }
 
     cout << "--------------------------\n";
     cout << "Teacher Name: " << t->getName() << "\n";
@@ -52,13 +65,19 @@ void TeacherController::showTeacher(const string& id) {
     cout << "Assigned Courses: ";
 
     const vector<string>& courses = t->getAssignedCourses();
-    if (courses.empty()) {
+    if (courses.empty())
+    {
         cout << "NONE";
     }
-    else {
-        for (int i = 0; i < (int)courses.size(); i++) {
+    else
+    {
+        for (int i = 0; i < (int)courses.size(); i++)
+        {
             cout << courses[i];
-            if (i != (int)courses.size() - 1) cout << ", ";
+            if (i != (int)courses.size() - 1)
+            {
+                cout << ", ";
+            }
         }
     }
     cout << "\n";

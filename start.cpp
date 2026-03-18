@@ -39,9 +39,9 @@ int main() {
     StudentService& studentService = studentServiceImpl;
 
     // ── Controllers ───────────────────────────────────────────────────────────
-    CourseController  courseController(courseService, studentService, studentRepoImpl, courseRepoImpl, teacherRepoImpl);
-    TeacherController teacherController(teacherService, studentRepoImpl, courseRepoImpl, teacherRepoImpl);
-    StudentController studentController(studentService, courseService, studentRepoImpl, courseRepoImpl, teacherRepoImpl);
+    CourseController  courseController(courseService, studentService, studentRepo, courseRepo, teacherRepo);
+    TeacherController teacherController(teacherService, studentRepo, courseRepo, teacherRepo);
+    StudentController studentController(studentService, courseService, studentRepo, courseRepo, teacherRepo);
 
     displayMainMenu();
 

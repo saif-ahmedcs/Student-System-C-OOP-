@@ -13,11 +13,11 @@
 class TeacherController {
 private:
     TeacherService& teacherService;
-    StudentRepositoryImpl& studentRepoImpl;
-    CourseRepositoryImpl& courseRepoImpl;
-    TeacherRepositoryImpl& teacherRepoImpl;
+    StudentRepository& studentRepo;
+    CourseRepository& courseRepo;
+    TeacherRepository& teacherRepo;
 public:
-    TeacherController(TeacherService& service, StudentRepositoryImpl& sRepo, CourseRepositoryImpl& cRepo, TeacherRepositoryImpl& tRepo);
+    TeacherController(TeacherService& service, StudentRepository& sRepo, CourseRepository& cRepo, TeacherRepository& tRepo);
 
     Teacher* findTeacherById(const std::string& id);
     int getMaxTeachersForGrade(int grade) const;
