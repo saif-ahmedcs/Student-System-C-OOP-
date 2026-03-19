@@ -28,6 +28,7 @@ public:
     std::string assignCoursesToStudent(const std::string& studentId, const std::vector<std::string>& courseIds, const std::vector<std::string>& teacherNames);
     void showStudent(const std::string& id);
     std::string removeStudent(const std::string& id);
+    void listStudentsByGrade(int grade);
     void save() const;
 };
 

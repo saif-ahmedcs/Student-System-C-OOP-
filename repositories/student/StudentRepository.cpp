@@ -84,6 +84,19 @@ int StudentRepositoryImpl::getStudentsInGrade(int grade) const {
     return 0;
 }
 
+vector<Student*> StudentRepositoryImpl::getStudentsByGrade(int grade) {
+    vector<Student*> result;
+    map<int, vector<int>>::iterator it = gradeIndex.find(grade);
+    if (it == gradeIndex.end())
+    {
+        return result;
+    }
+    for (int i = 0; i < (int)it->second.size(); i++) {
+        result.push_back(&allStudents[it->second[i]]);
+    }
+    return result;
+}
+
 int StudentRepositoryImpl::getMaxStudentsForGrade(int grade) const {
 
     switch (getStageFromGrade(grade)) {

@@ -45,6 +45,20 @@ int TeacherRepositoryImpl::getTeachersInGrade(int grade) const {
     return 0;
 }
 
+vector<Teacher*> TeacherRepositoryImpl::getTeachersByGrade(int grade) {
+    vector<Teacher*> result;
+    map<int, vector<int>>::iterator it = gradeIndex.find(grade);
+    if (it == gradeIndex.end())
+    {
+        return result;
+    }
+    for (int i = 0; i < (int)it->second.size(); i++)
+    {
+        result.push_back(&allTeachers[it->second[i]]);
+    }
+    return result;
+}
+
 int TeacherRepositoryImpl::getMaxTeachersForGrade(int grade) const {
 
     switch (getStageFromGrade(grade)) {

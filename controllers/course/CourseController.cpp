@@ -225,3 +225,37 @@ void CourseController::showCourseStudentsByTeacher(const string& courseId) {
     }
     cout << "\033[35m--------------------------------------------------\033[0m\n";
 }
+
+void CourseController::listCoursesByGrade(int grade) {
+    vector<Course> all = courseRepo.getCoursesInSchoolVector();
+
+    cout << "Courses in Grade " << grade << "\n";
+    cout << "\033[35m----------------------------------------------------------\033[0m\n";
+    cout << "\033[35m|\033[0m " << left << setw(5)  << "No."
+         << "\033[35m|\033[0m " << left << setw(25) << "Course Name"
+         << "\033[35m|\033[0m " << left << setw(10) << "Students"
+         << "\033[35m|\033[0m " << left << setw(10) << "Teachers"
+         << "\033[35m|\033[0m\n";
+    cout << "\033[35m--------------------------------------------------\033[0m\n";
+
+    int count = 0;
+    for (int i = 0; i < (int)all.size(); i++)
+    {
+        if (all[i].getGrade() != grade)
+        {
+            continue;
+        }
+        count++;
+        cout << "\033[35m|\033[0m " << left << setw(5)  << count
+             << "\033[35m|\033[0m " << left << setw(25) << all[i].getName()
+             << "\033[35m|\033[0m " << left << setw(10) << all[i].getNumberOfAssignedStudents()
+             << "\033[35m|\033[0m " << left << setw(10) << all[i].getNumberOfTeachers()
+             << "\033[35m|\033[0m\n";
+    }
+
+    if (count == 0)
+    {
+        cout << "No courses found in this grade.\n";
+    }
+    cout << "\033[35m--------------------------------------------------\033[0m\n";
+}

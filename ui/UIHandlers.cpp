@@ -66,15 +66,16 @@ void showProcesses(const string& s) {
         cout << "1- Add " << s << "\t\t\t2- Remove " << s << "\n";
         cout << "3- Edit " << s << "\t\t\t4- Assign Courses to " << s << "\n";
         cout << "5- Show " << s << " Info\t\t6- Unassign Course from " << s << "\n";
+        cout << "7- List All Teachers by Grade\n";
     } else if (s == "Student") {
         cout << "1- Add " << s << "\t\t\t2- Remove " << s << "\n";
         cout << "3- Edit " << s << "\t\t\t4- Assign Courses to " << s << "\n";
-        cout << "5- Show " << s << " Info\n";
+        cout << "5- Show " << s << " Info\t\t6- List All Students by Grade\n";
     } else if (s == "Course") {
         cout << "1- Add " << s << "\t\t2- Remove " << s << "\n";
         cout << "3- Edit " << s << "\t\t4- Show ALL Assigned Students\n";
         cout << "5- Show " << s << " Info\t6- Show Course students (By Teacher)\n";
-        cout << "7- Replace Teacher in Course\n";
+        cout << "7- Replace Teacher in Course\t8- List All Courses by Grade\n";
     }
     cout << "\n";
 }
@@ -265,7 +266,7 @@ void handleStudentOperations(StudentController& studentCtrl, CourseController& c
     int op = readInt("");
     cout << "\n";
 
-    if (op < 1 || op > 5) {
+    if (op < 1 || op > 6) {
         cout << "ERROR! INVALID OPTION PLEASE TRY AGAIN\n";
         return;
     }
@@ -293,6 +294,10 @@ void handleStudentOperations(StudentController& studentCtrl, CourseController& c
         }
 
         studentCtrl.showStudent(id);
+    }
+    else if (op == 6) {
+        int grade = readInt("\nEnter Grade (1-12): ");
+        studentCtrl.listStudentsByGrade(grade);
     }
 }
 
@@ -436,7 +441,7 @@ void handleCourseOperations(CourseController& courseCtrl, TeacherController& tea
     int op = readInt("");
     cout << "\n";
 
-    if (op < 1 || op > 7) {
+    if (op < 1 || op > 8) {
         cout << "ERROR! INVALID OPTION PLEASE TRY AGAIN\n";
         return;
     }
@@ -488,6 +493,10 @@ void handleCourseOperations(CourseController& courseCtrl, TeacherController& tea
     }
     else if (op == 7) {
         handleReplaceTeacherInCourse(teacherCtrl, courseCtrl);
+    }
+    else if (op == 8) {
+        int grade = readInt("\nEnter Grade (1-12): ");
+        courseCtrl.listCoursesByGrade(grade);
     }
 }
 
@@ -653,7 +662,7 @@ void handleTeacherOperations(TeacherController& teacherCtrl, CourseController& c
     int op = readInt("");
     cout << "\n";
 
-    if (op < 1 || op > 6) {
+    if (op < 1 || op > 7) {
         cout << "ERROR! INVALID OPTION PLEASE TRY AGAIN\n";
         return;
     }
@@ -697,5 +706,9 @@ void handleTeacherOperations(TeacherController& teacherCtrl, CourseController& c
         if (result.find("successfully") != string::npos) {
             teacherCtrl.save();
         }
+    }
+    else if (op == 7) {
+        int grade = readInt("\nEnter Grade (1-12): ");
+        teacherCtrl.listTeachersByGrade(grade);
     }
 }

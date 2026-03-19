@@ -28,6 +28,7 @@ public:
     std::string removeTeacher(const std::string& id);
     std::string replaceTeacherInCourse(const std::string& courseId, const std::string& oldTeacherId, const std::string& newTeacherId);
     std::string unassignCourseFromTeacher(const std::string& teacherId, const std::string& courseId);
+    void listTeachersByGrade(int grade);
     void save() const;
 };
 

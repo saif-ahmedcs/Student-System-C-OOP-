@@ -31,6 +31,7 @@ public:
     void showCourse(const std::string& id);
     void showCourseStudents(const std::string& courseId);
     void showCourseStudentsByTeacher(const std::string& courseId);
+    void listCoursesByGrade(int grade);
     void save() const;
 };
 

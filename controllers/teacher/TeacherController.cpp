@@ -1,4 +1,5 @@
 #include "TeacherController.h"
+#include <iomanip>
 using namespace std;
 
 TeacherController::TeacherController(TeacherService& service, StudentRepository& sRepo, CourseRepository& cRepo, TeacherRepository& tRepo)
@@ -95,4 +96,48 @@ string TeacherController::replaceTeacherInCourse(const string& courseId, const s
 
 string TeacherController::unassignCourseFromTeacher(const string& teacherId, const string& courseId) {
     return teacherService.unassignCourseFromTeacher(teacherId, courseId);
+}
+
+void TeacherController::listTeachersByGrade(int grade) {
+    vector<Teacher*> teachers = teacherRepo.getTeachersByGrade(grade);
+
+    cout << "Teachers in Grade " << grade << " (" << teachers.size() << ")\n";
+    cout << "\033[33m---------------------------------------------------------------------\033[0m\n";
+    cout << "\033[33m|\033[0m " << left << setw(5)  << "No."
+         << "\033[33m|\033[0m " << left << setw(25) << "Teacher Name"
+         << "\033[33m|\033[0m " << left << setw(13) << "Teacher ID"
+         << "\033[33m|\033[0m " << left << setw(10) << "Students"
+         << "\033[33m|\033[0m\n";
+    cout << "\033[33m---------------------------------------------------------------------\033[0m\n";
+
+    if (teachers.empty())
+    {
+        cout << "No teachers found in this grade.\n";
+        cout << "\033[33m---------------------------------------------------------------------\033[0m\n";
+        return;
+    }
+
+    vector<Student*> gradeStudents = studentRepo.getStudentsByGrade(grade);
+
+    for (int i = 0; i < (int)teachers.size(); i++)
+    {
+        int counter = 0;
+        for (int j = 0; j < (int)gradeStudents.size(); j++)
+        {
+            const vector<StudentCourse>& sc = gradeStudents[j]->getAssignedCourses();
+            for (int k = 0; k < (int)sc.size(); k++)
+            {
+                if (sc[k].teacherName == teachers[i]->getName())
+                {
+                    counter++;
+                    break;
+                }
+            }
+        }
+
+        cout << "\033[33m|\033[0m " << left << setw(5)  << (i + 1) << "\033[33m|\033[0m " << left << setw(25) << teachers[i]->getName()
+             << "\033[33m|\033[0m " << left << setw(13) << teachers[i]->getId()
+             << "\033[33m|\033[0m " << left << setw(10) << counter << "\033[33m|\033[0m\n";
+    }
+    cout << "\033[33m---------------------------------------------------------------------\033[0m\n";
 }

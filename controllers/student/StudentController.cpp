@@ -1,4 +1,5 @@
 #include "StudentController.h"
+#include <iomanip>
 using namespace std;
 
 StudentController::StudentController(StudentService& sSrv, CourseService& cSrv, StudentRepository& sRepo, CourseRepository& cRepo, TeacherRepository& tRepo)
@@ -96,4 +97,34 @@ void StudentController::showStudent(const string& id) {
 
 string StudentController::removeStudent(const string& id) {
     return studentService.removeStudent(id);
+}
+
+void StudentController::listStudentsByGrade(int grade) {
+    vector<Student*> students = studentRepo.getStudentsByGrade(grade);
+
+    cout << "Students in Grade " << grade << " (" << students.size() << ")\n";
+    cout << "\033[36m--------------------------------------------------------\033[0m\n";
+    cout << "\033[36m|\033[0m " << left << setw(5)  << "No."
+         << "\033[36m|\033[0m " << left << setw(25) << "Student Name"
+         << "\033[36m|\033[0m " << left << setw(13) << "Student ID"
+         << "\033[36m|\033[0m " << left << setw(9)  << "Courses"
+         << "\033[36m|\033[0m\n";
+    cout << "\033[36m--------------------------------------------------\033[0m\n";
+
+    if (students.empty())
+    {
+        cout << "No students found in this grade.\n";
+        cout << "\033[36m==================================================\033[0m\n";
+        return;
+    }
+
+    for (int i = 0; i < (int)students.size(); i++)
+    {
+        cout << "\033[36m|\033[0m " << left << setw(5)  << (i + 1)
+             << "\033[36m|\033[0m " << left << setw(25) << students[i]->getName()
+             << "\033[36m|\033[0m " << left << setw(13) << students[i]->getId()
+             << "\033[36m|\033[0m " << left << setw(9)  << students[i]->getNumberOfAssignedCourses()
+             << "\033[36m|\033[0m\n";
+    }
+    cout << "\033[36m--------------------------------------------------\033[0m\n";
 }

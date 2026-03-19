@@ -12,6 +12,7 @@ public:
     virtual Student* findStudentByNationalNumber(const std::string& nationalNumber) = 0;
     virtual Student* findStudentById(const std::string& id) = 0;
     virtual int getStudentsInGrade(int grade) const = 0;
+    virtual std::vector<Student*> getStudentsByGrade(int grade) = 0;
     virtual int getMaxStudentsForGrade(int grade) const = 0;
     virtual std::string addStudent(int grade, Student& student) = 0;
     virtual std::string editStudent(const std::string& id, const Student& newData) = 0;
@@ -30,6 +31,7 @@ public:
     Student* findStudentByNationalNumber(const std::string& nationalNumber) override;
     Student* findStudentById(const std::string& id) override;
     int getStudentsInGrade(int grade) const override;
+    std::vector<Student*> getStudentsByGrade(int grade) override;
     int getMaxStudentsForGrade(int grade) const override;
     std::string addStudent(int grade, Student& student) override;
     std::string editStudent(const std::string& id, const Student& newData) override;

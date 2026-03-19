@@ -12,6 +12,7 @@ public:
     virtual Teacher* findTeacherByNationalNumber(const std::string& nationalNumber) = 0;
     virtual Teacher* findTeacherById(const std::string& id) = 0;
     virtual int getTeachersInGrade(int grade) const = 0;
+    virtual std::vector<Teacher*> getTeachersByGrade(int grade) = 0;
     virtual int getMaxTeachersForGrade(int grade) const = 0;
     virtual std::string addTeacher(int grade, Teacher& teacher) = 0;
     virtual std::string editTeacher(const std::string& id, const Teacher& newData) = 0;
@@ -30,6 +31,7 @@ public:
     Teacher* findTeacherByNationalNumber(const std::string& nationalNumber) override;
     Teacher* findTeacherById(const std::string& id) override;
     int getTeachersInGrade(int grade) const override;
+    std::vector<Teacher*> getTeachersByGrade(int grade) override;
     int getMaxTeachersForGrade(int grade) const override;
     std::string addTeacher(int grade, Teacher& teacher) override;
     std::string editTeacher(const std::string& id, const Teacher& newData) override;
