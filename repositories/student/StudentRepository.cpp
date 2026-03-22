@@ -177,8 +177,34 @@ string StudentRepositoryImpl::editStudent(const string& id, const Student& newDa
                 stageIndex.erase(sit);
             }
         }
-        gradeIndex[newGrade].push_back(idx);
-        stageIndex[getStageFromGrade(newGrade)].push_back(idx);
+        bool gradeAlreadyIndexed = false;
+        map<int, vector<int>>::iterator ngit = gradeIndex.find(newGrade);
+        if (ngit != gradeIndex.end()) {
+            for (int i = 0; i < (int)ngit->second.size(); i++) {
+                if (ngit->second[i] == idx) {
+                    gradeAlreadyIndexed = true;
+                    break;
+                }
+            }
+        }
+        if (!gradeAlreadyIndexed) {
+            gradeIndex[newGrade].push_back(idx);
+        }
+
+        bool stageAlreadyIndexed = false;
+        Stage newStage = getStageFromGrade(newGrade);
+        map<Stage, vector<int>>::iterator nit = stageIndex.find(newStage);
+        if (nit != stageIndex.end()) {
+            for (int i = 0; i < (int)nit->second.size(); i++) {
+                if (nit->second[i] == idx) {
+                    stageAlreadyIndexed = true;
+                    break;
+                }
+            }
+        }
+        if (!stageAlreadyIndexed) {
+            stageIndex[getStageFromGrade(newGrade)].push_back(idx);
+        }
     }
     return "Student data updated successfully.";
 }

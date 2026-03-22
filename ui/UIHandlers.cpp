@@ -71,6 +71,7 @@ void showProcesses(const string& s) {
         cout << "1- Add " << s << "\t\t\t2- Remove " << s << "\n";
         cout << "3- Edit " << s << "\t\t\t4- Assign Courses to " << s << "\n";
         cout << "5- Show " << s << " Info\t\t6- List All Students by Grade\n";
+        cout << "7- List All Students by GPA\n";
     } else if (s == "Course") {
         cout << "1- Add " << s << "\t\t2- Remove " << s << "\n";
         cout << "3- Edit " << s << "\t\t4- Show ALL Assigned Students\n";
@@ -258,6 +259,32 @@ void handleAssignCoursesToStudent(StudentController& studentCtrl, CourseControll
 }
 
 
+void handleShowStudent(StudentController& studentCtrl) {
+    cout << "\nEnter Student ID: ";
+    string id;
+    getline(cin, id);
+
+    if (!studentCtrl.findStudentById(id)) {
+        cout << "Student not found.\n";
+        return;
+    }
+
+    studentCtrl.showStudent(id);
+}
+
+
+void handleListStudentsByGrade(StudentController& studentCtrl) {
+    int grade = readInt("\nEnter Grade (1-12): ");
+    studentCtrl.listStudentsByGrade(grade);
+}
+
+
+void handleListStudentsByGpa(StudentController& studentCtrl) {
+    int grade = readInt("\nEnter Grade (1-12): ");
+    studentCtrl.listStudentsByGpa(grade);
+}
+
+
 void handleStudentOperations(StudentController& studentCtrl, CourseController& courseCtrl) {
     cout << "\n\t************ STUDENT BRANCH ************\n\n";
 
@@ -266,7 +293,7 @@ void handleStudentOperations(StudentController& studentCtrl, CourseController& c
     int op = readInt("");
     cout << "\n";
 
-    if (op < 1 || op > 6) {
+    if (op < 1 || op > 7) {
         cout << "ERROR! INVALID OPTION PLEASE TRY AGAIN\n";
         return;
     }
@@ -284,20 +311,13 @@ void handleStudentOperations(StudentController& studentCtrl, CourseController& c
         handleAssignCoursesToStudent(studentCtrl, courseCtrl);
     }
     else if (op == 5) {
-        cout << "\nEnter Student ID: ";
-        string id;
-        getline(cin, id);
-
-        if (!studentCtrl.findStudentById(id)) {
-            cout << "Student not found.\n";
-            return;
-        }
-
-        studentCtrl.showStudent(id);
+        handleShowStudent(studentCtrl);
     }
     else if (op == 6) {
-        int grade = readInt("\nEnter Grade (1-12): ");
-        studentCtrl.listStudentsByGrade(grade);
+        handleListStudentsByGrade(studentCtrl);
+    }
+    else if (op == 7) {
+        handleListStudentsByGpa(studentCtrl);
     }
 }
 
@@ -433,6 +453,54 @@ void handleReplaceTeacherInCourse(TeacherController& teacherCtrl, CourseControll
 }
 
 
+void handleShowCourseStudents(CourseController& courseCtrl) {
+    cout << "\nEnter Course ID: ";
+    string id;
+    getline(cin, id);
+
+    if (!courseCtrl.findCourseById(id)) {
+        cout << "Course not found.\n";
+        return;
+    }
+
+    courseCtrl.showCourseStudents(id);
+}
+
+
+void handleShowCourse(CourseController& courseCtrl) {
+    cout << "\nEnter Course ID: ";
+    string id;
+    getline(cin, id);
+
+    if (!courseCtrl.findCourseById(id)) {
+        cout << "Course not found.\n";
+        return;
+    }
+
+    courseCtrl.showCourse(id);
+}
+
+
+void handleShowCourseStudentsByTeacher(CourseController& courseCtrl) {
+    cout << "\nEnter Course ID: ";
+    string id;
+    getline(cin, id);
+
+    if (!courseCtrl.findCourseById(id)) {
+        cout << "Course not found.\n";
+        return;
+    }
+
+    courseCtrl.showCourseStudentsByTeacher(id);
+}
+
+
+void handleListCoursesByGrade(CourseController& courseCtrl) {
+    int grade = readInt("\nEnter Grade (1-12): ");
+    courseCtrl.listCoursesByGrade(grade);
+}
+
+
 void handleCourseOperations(CourseController& courseCtrl, TeacherController& teacherCtrl) {
     cout << "\n\t************ COURSE BRANCH ************\n\n";
 
@@ -456,47 +524,19 @@ void handleCourseOperations(CourseController& courseCtrl, TeacherController& tea
         handleEditCourse(courseCtrl);
     }
     else if (op == 4) {
-        cout << "\nEnter Course ID: ";
-        string id;
-        getline(cin, id);
-
-        if (!courseCtrl.findCourseById(id)) {
-            cout << "Course not found.\n";
-            return;
-        }
-
-        courseCtrl.showCourseStudents(id);
+        handleShowCourseStudents(courseCtrl);
     }
     else if (op == 5) {
-        cout << "\nEnter Course ID: ";
-        string id;
-        getline(cin, id);
-
-        if (!courseCtrl.findCourseById(id)) {
-            cout << "Course not found.\n";
-            return;
-        }
-
-        courseCtrl.showCourse(id);
+        handleShowCourse(courseCtrl);
     }
     else if (op == 6) {
-        cout << "\nEnter Course ID: ";
-        string id;
-        getline(cin, id);
-
-        if (!courseCtrl.findCourseById(id)) {
-            cout << "Course not found.\n";
-            return;
-        }
-
-        courseCtrl.showCourseStudentsByTeacher(id);
+        handleShowCourseStudentsByTeacher(courseCtrl);
     }
     else if (op == 7) {
         handleReplaceTeacherInCourse(teacherCtrl, courseCtrl);
     }
     else if (op == 8) {
-        int grade = readInt("\nEnter Grade (1-12): ");
-        courseCtrl.listCoursesByGrade(grade);
+        handleListCoursesByGrade(courseCtrl);
     }
 }
 
@@ -654,6 +694,44 @@ void handleAssignCoursesToTeacher(TeacherController& teacherCtrl) {
 }
 
 
+void handleShowTeacher(TeacherController& teacherCtrl) {
+    cout << "\nEnter Teacher ID: ";
+    string id;
+    getline(cin, id);
+
+    if (!teacherCtrl.findTeacherById(id)) {
+        cout << "Teacher not found.\n";
+        return;
+    }
+
+    teacherCtrl.showTeacher(id);
+}
+
+
+void handleUnassignCourseFromTeacher(TeacherController& teacherCtrl) {
+    cout << "\nEnter Teacher ID: ";
+    string teacherId;
+    getline(cin, teacherId);
+
+    cout << "Enter Course ID to unassign: ";
+    string courseId;
+    getline(cin, courseId);
+
+    string result = teacherCtrl.unassignCourseFromTeacher(teacherId, courseId);
+    cout << result << "\n";
+
+    if (result.find("successfully") != string::npos) {
+        teacherCtrl.save();
+    }
+}
+
+
+void handleListTeachersByGrade(TeacherController& teacherCtrl) {
+    int grade = readInt("\nEnter Grade (1-12): ");
+    teacherCtrl.listTeachersByGrade(grade);
+}
+
+
 void handleTeacherOperations(TeacherController& teacherCtrl, CourseController& courseCtrl) {
     cout << "\n\t************ TEACHER BRANCH ************\n";
 
@@ -680,35 +758,12 @@ void handleTeacherOperations(TeacherController& teacherCtrl, CourseController& c
         handleAssignCoursesToTeacher(teacherCtrl);
     }
     else if (op == 5) {
-        cout << "\nEnter Teacher ID: ";
-        string id;
-        getline(cin, id);
-
-        if (!teacherCtrl.findTeacherById(id)) {
-            cout << "Teacher not found.\n";
-            return;
-        }
-
-        teacherCtrl.showTeacher(id);
+        handleShowTeacher(teacherCtrl);
     }
     else if (op == 6) {
-        cout << "\nEnter Teacher ID: ";
-        string teacherId;
-        getline(cin, teacherId);
-
-        cout << "Enter Course ID to unassign: ";
-        string courseId;
-        getline(cin, courseId);
-
-        string result = teacherCtrl.unassignCourseFromTeacher(teacherId, courseId);
-        cout << result << "\n";
-
-        if (result.find("successfully") != string::npos) {
-            teacherCtrl.save();
-        }
+        handleUnassignCourseFromTeacher(teacherCtrl);
     }
     else if (op == 7) {
-        int grade = readInt("\nEnter Grade (1-12): ");
-        teacherCtrl.listTeachersByGrade(grade);
+        handleListTeachersByGrade(teacherCtrl);
     }
 }

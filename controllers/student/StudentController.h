@@ -29,6 +29,7 @@ public:
     void showStudent(const std::string& id);
     std::string removeStudent(const std::string& id);
     void listStudentsByGrade(int grade);
+    void listStudentsByGpa(int grade);
     void save() const;
 };
 

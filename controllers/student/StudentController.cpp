@@ -128,3 +128,43 @@ void StudentController::listStudentsByGrade(int grade) {
     }
     cout << "\033[36m--------------------------------------------------\033[0m\n";
 }
+
+void StudentController::listStudentsByGpa(int grade) {
+    vector<Student*> students = studentRepo.getStudentsByGrade(grade);
+
+    for (int i = 0; i < (int)students.size() - 1; i++) {
+        for (int j = i + 1; j < (int)students.size(); j++) {
+            if (students[j]->getGpa() > students[i]->getGpa()) {
+                Student* tmp = students[i];
+                students[i] = students[j];
+                students[j] = tmp;
+            }
+        }
+    }
+
+    cout << "Students in Grade " << grade << " Sorted by GPA (" << students.size() << ")\n";
+    cout << "\033[36m--------------------------------------------------------\033[0m\n";
+    cout << "\033[36m|\033[0m " << left << setw(5)  << "No."
+         << "\033[36m|\033[0m " << left << setw(25) << "Student Name"
+         << "\033[36m|\033[0m " << left << setw(13) << "Student ID"
+         << "\033[36m|\033[0m " << left << setw(9)  << "GPA"
+         << "\033[36m|\033[0m\n";
+    cout << "\033[36m--------------------------------------------------\033[0m\n";
+
+    if (students.empty())
+    {
+        cout << "No students found in this grade.\n";
+        cout << "\033[36m==================================================\033[0m\n";
+        return;
+    }
+
+    for (int i = 0; i < (int)students.size(); i++)
+    {
+        cout << "\033[36m|\033[0m " << left << setw(5)  << (i + 1)
+             << "\033[36m|\033[0m " << left << setw(25) << students[i]->getName()
+             << "\033[36m|\033[0m " << left << setw(13) << students[i]->getId()
+             << "\033[36m|\033[0m " << left << setw(9)  << fixed << setprecision(2) << students[i]->getGpa()
+             << "\033[36m|\033[0m\n";
+    }
+    cout << "\033[36m--------------------------------------------------\033[0m\n";
+}

@@ -17,11 +17,18 @@ void handleAddStudent(StudentController& studentCtrl);
 void handleRemoveStudent(StudentController& studentCtrl);
 void handleEditStudent(StudentController& studentCtrl);
 void handleAssignCoursesToStudent(StudentController& studentCtrl, CourseController& courseCtrl);
+void handleShowStudent(StudentController& studentCtrl);
+void handleListStudentsByGrade(StudentController& studentCtrl);
+void handleListStudentsByGpa(StudentController& studentCtrl);
 void handleStudentOperations(StudentController& studentCtrl, CourseController& courseCtrl);
 
 void handleAddCourse(CourseController& courseCtrl);
 void handleRemoveCourse(CourseController& courseCtrl);
 void handleEditCourse(CourseController& courseCtrl);
+void handleShowCourseStudents(CourseController& courseCtrl);
+void handleShowCourse(CourseController& courseCtrl);
+void handleShowCourseStudentsByTeacher(CourseController& courseCtrl);
+void handleListCoursesByGrade(CourseController& courseCtrl);
 void handleReplaceTeacherInCourse(TeacherController& teacherCtrl, CourseController& courseCtrl);
 void handleCourseOperations(CourseController& courseCtrl, TeacherController& teacherCtrl);
 
@@ -29,6 +36,9 @@ void handleAddTeacher(TeacherController& teacherCtrl);
 void handleRemoveTeacher(TeacherController& teacherCtrl);
 void handleEditTeacher(TeacherController& teacherCtrl);
 void handleAssignCoursesToTeacher(TeacherController& teacherCtrl);
+void handleShowTeacher(TeacherController& teacherCtrl);
+void handleUnassignCourseFromTeacher(TeacherController& teacherCtrl);
+void handleListTeachersByGrade(TeacherController& teacherCtrl);
 void handleTeacherOperations(TeacherController& teacherCtrl, CourseController& courseCtrl);
 
 #endif
