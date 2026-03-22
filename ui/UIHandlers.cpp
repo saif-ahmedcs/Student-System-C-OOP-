@@ -73,9 +73,9 @@ void showProcesses(const string& s) {
         cout << "5- Show " << s << " Info\t\t6- List All Students by Grade\n";
         cout << "7- List All Students by GPA\n";
     } else if (s == "Course") {
-        cout << "1- Add " << s << "\t\t2- Remove " << s << "\n";
-        cout << "3- Edit " << s << "\t\t4- Show ALL Assigned Students\n";
-        cout << "5- Show " << s << " Info\t6- Show Course students (By Teacher)\n";
+        cout << "1- Add " << s << "\t\t\t2- Remove " << s << "\n";
+        cout << "3- Edit " << s << "\t\t\t4- Show ALL Assigned Students\n";
+        cout << "5- Show " << s << " Info\t\t6- Show Course students (By Teacher)\n";
         cout << "7- Replace Teacher in Course\t8- List All Courses by Grade\n";
     }
     cout << "\n";
@@ -566,7 +566,7 @@ void handleAddTeacher(TeacherController& teacherCtrl) {
     getline(cin, spec);
     teacher.setSpecialization(spec);
 
-    int grade = readInt("Grade (1-12): ");
+    int grade = readInt("Main Grade (1-12): ");
     teacher.setGrade(grade);
 
     double sal = readDouble("Monthly Salary: ");
@@ -640,7 +640,7 @@ void handleEditTeacher(TeacherController& teacherCtrl) {
     int ey = readInt("Teacher experience years: ");
     newData.setExperienceYears(ey);
 
-    int grade = readInt("Teacher Grade (1-12): ");
+    int grade = readInt("Teacher Main Grade (1-12): ");
     newData.setGrade(grade);
 
     double sal = readDouble("Teacher monthly salary: ");

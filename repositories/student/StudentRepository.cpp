@@ -153,10 +153,9 @@ string StudentRepositoryImpl::editStudent(const string& id, const Student& newDa
             for (int i = 0; i < (int)indices.size(); i++) {
                 if (indices[i] == idx) {
                     indices.erase(indices.begin() + i);
-                break;
-              }
+                    break;
+                }
             }
-
             if (indices.empty()) {
                 gradeIndex.erase(git);
             }
@@ -168,43 +167,20 @@ string StudentRepositoryImpl::editStudent(const string& id, const Student& newDa
             vector<int>& indices = sit->second;
             for (int i = 0; i < (int)indices.size(); i++) {
                 if (indices[i] == idx) {
-                  indices.erase(indices.begin() + i);
-                  break;
+                    indices.erase(indices.begin() + i);
+                    break;
                 }
             }
-
             if (indices.empty()) {
                 stageIndex.erase(sit);
             }
         }
-        bool gradeAlreadyIndexed = false;
-        map<int, vector<int>>::iterator ngit = gradeIndex.find(newGrade);
-        if (ngit != gradeIndex.end()) {
-            for (int i = 0; i < (int)ngit->second.size(); i++) {
-                if (ngit->second[i] == idx) {
-                    gradeAlreadyIndexed = true;
-                    break;
-                }
-            }
-        }
-        if (!gradeAlreadyIndexed) {
-            gradeIndex[newGrade].push_back(idx);
-        }
 
-        bool stageAlreadyIndexed = false;
-        Stage newStage = getStageFromGrade(newGrade);
-        map<Stage, vector<int>>::iterator nit = stageIndex.find(newStage);
-        if (nit != stageIndex.end()) {
-            for (int i = 0; i < (int)nit->second.size(); i++) {
-                if (nit->second[i] == idx) {
-                    stageAlreadyIndexed = true;
-                    break;
-                }
-            }
-        }
-        if (!stageAlreadyIndexed) {
-            stageIndex[getStageFromGrade(newGrade)].push_back(idx);
-        }
+        string newId = generateStudentID(newGrade);
+        allStudents[idx].setId(newId);
+
+        gradeIndex[newGrade].push_back(idx);
+        stageIndex[getStageFromGrade(newGrade)].push_back(idx);
     }
     return "Student data updated successfully.";
 }
