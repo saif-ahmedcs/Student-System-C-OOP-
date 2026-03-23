@@ -117,11 +117,16 @@ int StudentRepositoryImpl::getMaxStudentsForGrade(int grade) const {
 string StudentRepositoryImpl::addStudent(int grade, Student& student) {
     string finalId = generateStudentID(grade);
     student.setId(finalId);
+
+    int studentsInGrade = (int)gradeIndex[grade].size();
+    int classNum = (studentsInGrade % SchoolConstants::CLASSES_PER_GRADE) + 1;
+    student.setClassNumber(classNum);
     allStudents.reserve(allStudents.size() + 1);
     allStudents.push_back(student);
     int idx = (int)allStudents.size() - 1;
     gradeIndex[grade].push_back(idx);
     stageIndex[getStageFromGrade(grade)].push_back(idx);
+
     return "Student added successfully. Assigned ID: " + finalId;
 }
 
@@ -263,6 +268,7 @@ bool StudentRepositoryImpl::saveToFile(const string& filename) {
         f << s.getNationalNumber() << "\n";
         f << s.getAge() << "\n";
         f << s.getGrade() << "\n";
+        f << s.getClassNumber() << "\n";
         f << s.getGpa() << "\n";
         f << s.getPhoneNumber() << "\n";
 
@@ -305,7 +311,7 @@ void StudentRepositoryImpl::loadFromFile(const string& filename) {
     for (int i = 0; i < count; i++) {
         Student s;
         string id, name, nn, phone;
-        int age, grade;
+        int age, grade, classNumber;
         double gpa;
 
         getline(f, id);
@@ -316,6 +322,9 @@ void StudentRepositoryImpl::loadFromFile(const string& filename) {
         f.ignore();
 
         f >> grade;
+        f.ignore();
+
+        f >> classNumber;
         f.ignore();
 
         f >> gpa;
@@ -336,6 +345,7 @@ void StudentRepositoryImpl::loadFromFile(const string& filename) {
         s.setNationalNumber(nn);
         s.setAge(age);
         s.setGrade(grade);
+        s.setClassNumber(classNumber);
         s.setGpa(gpa);
         s.setPhoneNumber(phone);
 

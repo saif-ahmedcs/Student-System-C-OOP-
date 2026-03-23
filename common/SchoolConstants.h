@@ -6,6 +6,8 @@ namespace SchoolConstants {
     constexpr int MIN_GRADE = 1;
     constexpr int MAX_GRADE = 12;
 
+    constexpr int CLASSES_PER_GRADE = 4;
+
     constexpr int MAX_COURSES_PER_TEACHER = 3;
     constexpr int MAX_TEACHERS_PER_COURSE = 3;
 

@@ -60,6 +60,7 @@ void StudentController::showStudent(const string& id) {
     cout << "Student Name: " << s->getName() << "\n";
     cout << "Student ID: " << s->getId() << "\n";
     cout << "School Grade: " << s->getGrade() << "\n";
+    cout << "Class: " << s->getGrade() << "/" << s->getClassNumber() << "\n";
     cout << "Age: " << s->getAge() << "\n";
     cout << "Phone Number: " << s->getPhoneNumber() << "\n";
     cout << "GPA: " << s->getGpa() << "\n";
@@ -103,30 +104,33 @@ void StudentController::listStudentsByGrade(int grade) {
     vector<Student*> students = studentRepo.getStudentsByGrade(grade);
 
     cout << "Students in Grade " << grade << " (" << students.size() << ")\n";
-    cout << "\033[36m--------------------------------------------------------\033[0m\n";
+    cout << "\033[36m-----------------------------------------------------------------\033[0m\n";
     cout << "\033[36m|\033[0m " << left << setw(5)  << "No."
          << "\033[36m|\033[0m " << left << setw(25) << "Student Name"
          << "\033[36m|\033[0m " << left << setw(13) << "Student ID"
+         << "\033[36m|\033[0m " << left << setw(9)  << "Class"
          << "\033[36m|\033[0m " << left << setw(9)  << "Courses"
          << "\033[36m|\033[0m\n";
-    cout << "\033[36m--------------------------------------------------\033[0m\n";
+    cout << "\033[36m-----------------------------------------------------------------\033[0m\n";
 
     if (students.empty())
     {
         cout << "No students found in this grade.\n";
-        cout << "\033[36m==================================================\033[0m\n";
+        cout << "\033[36m=================================================================\033[0m\n";
         return;
     }
 
     for (int i = 0; i < (int)students.size(); i++)
     {
+        string classLabel = to_string(students[i]->getGrade()) + "/" + to_string(students[i]->getClassNumber());
         cout << "\033[36m|\033[0m " << left << setw(5)  << (i + 1)
              << "\033[36m|\033[0m " << left << setw(25) << students[i]->getName()
              << "\033[36m|\033[0m " << left << setw(13) << students[i]->getId()
+             << "\033[36m|\033[0m " << left << setw(9)  << classLabel
              << "\033[36m|\033[0m " << left << setw(9)  << students[i]->getNumberOfAssignedCourses()
              << "\033[36m|\033[0m\n";
     }
-    cout << "\033[36m--------------------------------------------------\033[0m\n";
+    cout << "\033[36m-----------------------------------------------------------------\033[0m\n";
 }
 
 void StudentController::listStudentsByGpa(int grade) {
@@ -143,28 +147,31 @@ void StudentController::listStudentsByGpa(int grade) {
     }
 
     cout << "Students in Grade " << grade << " Sorted by GPA (" << students.size() << ")\n";
-    cout << "\033[36m--------------------------------------------------------\033[0m\n";
+    cout << "\033[36m-----------------------------------------------------------------\033[0m\n";
     cout << "\033[36m|\033[0m " << left << setw(5)  << "No."
          << "\033[36m|\033[0m " << left << setw(25) << "Student Name"
          << "\033[36m|\033[0m " << left << setw(13) << "Student ID"
+         << "\033[36m|\033[0m " << left << setw(9)  << "Class"
          << "\033[36m|\033[0m " << left << setw(9)  << "GPA"
          << "\033[36m|\033[0m\n";
-    cout << "\033[36m--------------------------------------------------\033[0m\n";
+    cout << "\033[36m-----------------------------------------------------------------\033[0m\n";
 
     if (students.empty())
     {
         cout << "No students found in this grade.\n";
-        cout << "\033[36m==================================================\033[0m\n";
+        cout << "\033[36m=================================================================\033[0m\n";
         return;
     }
 
     for (int i = 0; i < (int)students.size(); i++)
     {
+        string classLabel = to_string(students[i]->getGrade()) + "/" + to_string(students[i]->getClassNumber());
         cout << "\033[36m|\033[0m " << left << setw(5)  << (i + 1)
              << "\033[36m|\033[0m " << left << setw(25) << students[i]->getName()
              << "\033[36m|\033[0m " << left << setw(13) << students[i]->getId()
+             << "\033[36m|\033[0m " << left << setw(9)  << classLabel
              << "\033[36m|\033[0m " << left << setw(9)  << fixed << setprecision(2) << students[i]->getGpa()
              << "\033[36m|\033[0m\n";
     }
-    cout << "\033[36m--------------------------------------------------\033[0m\n";
+    cout << "\033[36m-----------------------------------------------------------------\033[0m\n";
 }

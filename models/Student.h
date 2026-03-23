@@ -38,15 +38,18 @@ public:
 class Student : public BaseEntity {
 private:
     int grade;
+    int classNumber = 0;
     double gpa = 0.00;
     std::vector<StudentCourse> assignedCourses;
 public:
     void setGrade(int grade);
+    void setClassNumber(int classNumber);
     void setGpa(double gpa);
     bool assignCourse(const std::string& courseId, const std::string& teacherName);
     bool isCourseAssigned(const std::string& courseId) const;
     bool updateTeacherForCourse(const std::string& courseId, const std::string& newTeacherName);
     int getGrade() const;
+    int getClassNumber() const;
     double getGpa() const;
     const std::vector<StudentCourse>& getAssignedCourses() const;
     int getNumberOfAssignedCourses() const;

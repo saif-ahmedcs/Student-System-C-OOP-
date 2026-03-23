@@ -218,6 +218,10 @@ void Student::setGrade(int g) {
     grade = g;
 }
 
+void Student::setClassNumber(int c) {
+    classNumber = c;
+}
+
 void Student::setGpa(double g) {
     gpa = g;
 }
@@ -254,6 +258,10 @@ bool Student::updateTeacherForCourse(const std::string& courseId, const std::str
 
 int Student::getGrade() const {
     return grade;
+}
+
+int Student::getClassNumber() const {
+    return classNumber;
 }
 
 double Student::getGpa() const {
