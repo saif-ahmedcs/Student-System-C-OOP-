@@ -35,7 +35,7 @@ void handleCourseOperations(CourseController& courseCtrl, TeacherController& tea
 void handleAddTeacher(TeacherController& teacherCtrl);
 void handleRemoveTeacher(TeacherController& teacherCtrl);
 void handleEditTeacher(TeacherController& teacherCtrl);
-void handleAssignCoursesToTeacher(TeacherController& teacherCtrl);
+void handleAssignCoursesToTeacher(TeacherController& teacherCtrl, CourseController& courseCtrl);
 void handleShowTeacher(TeacherController& teacherCtrl);
 void handleUnassignCourseFromTeacher(TeacherController& teacherCtrl);
 void handleListTeachersByGrade(TeacherController& teacherCtrl);

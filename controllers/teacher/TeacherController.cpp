@@ -1,5 +1,6 @@
 #include "TeacherController.h"
 #include <iomanip>
+#include <map>
 using namespace std;
 
 TeacherController::TeacherController(TeacherService& service, StudentRepository& sRepo, CourseRepository& cRepo, TeacherRepository& tRepo)
@@ -44,8 +45,8 @@ string TeacherController::editTeacher(const string& id, const Teacher& newData) 
     return teacherService.editTeacher(id, newData);
 }
 
-string TeacherController::assignCoursesToTeacher(const string& teacherId, const vector<string>& courseIds) {
-    return teacherService.assignCoursesToTeacher(teacherId, courseIds);
+string TeacherController::assignCoursesToTeacher(const string& teacherId, const vector<string>& courseIds, const vector<vector<int>>& courseClasses) {
+    return teacherService.assignCoursesToTeacher(teacherId, courseIds, courseClasses);
 }
 
 void TeacherController::showTeacher(const string& id) {
@@ -60,28 +61,50 @@ void TeacherController::showTeacher(const string& id) {
     cout << "Teacher Name: " << t->getName() << "\n";
     cout << "Age: " << t->getAge() << "\n";
     cout << "Experience Years: " << t->getExperienceYears() << "\n";
-    cout << "Subject: " << t->getSubject() << "\n";
     cout << "Specialization: " << t->getSpecialization() << "\n";
     cout << "Grade: " << t->getGrade() << "\n";
-    cout << "Assigned Courses: ";
 
     const vector<string>& courses = t->getAssignedCourses();
     if (courses.empty())
     {
-        cout << "NONE";
+        cout << "Assigned Courses: NONE\n";
     }
     else
     {
+        cout << "Assigned Courses:\n";
         for (int i = 0; i < (int)courses.size(); i++)
         {
-            cout << courses[i];
-            if (i != (int)courses.size() - 1)
+            cout << "  - " << courses[i];
+            Course* c = courseRepo.findCourseById(courses[i]);
+            if (c)
             {
-                cout << ", ";
+                const map<int, string>& ctm = c->getClassTeacherMap();
+                vector<int> myClasses;
+                for (map<int, string>::const_iterator it = ctm.begin(); it != ctm.end(); ++it)
+                {
+                    if (it->second == t->getId())
+                    {
+                        myClasses.push_back(it->first);
+                    }
+                }
+                if (!myClasses.empty())
+                {
+                    cout << " (Classes: ";
+                    for (int j = 0; j < (int)myClasses.size(); j++)
+                    {
+                        cout << c->getGrade() << "/" << myClasses[j];
+                        if (j != (int)myClasses.size() - 1)
+                        {
+                            cout << ", ";
+                        }
+                    }
+                    cout << ")";
+                }
             }
+            cout << "\n";
         }
     }
-    cout << "\n";
+
     cout << "Monthly Salary: $" << t->getMonthlySalary() << "\n";
     cout << "--------------------------\n";
 }

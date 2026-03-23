@@ -662,7 +662,7 @@ void handleEditTeacher(TeacherController& teacherCtrl) {
 }
 
 
-void handleAssignCoursesToTeacher(TeacherController& teacherCtrl) {
+void handleAssignCoursesToTeacher(TeacherController& teacherCtrl, CourseController& courseCtrl) {
     cout << "\nEnter Teacher ID to assign courses: ";
     string teacherId;
     getline(cin, teacherId);
@@ -674,15 +674,84 @@ void handleAssignCoursesToTeacher(TeacherController& teacherCtrl) {
     }
 
     vector<string> courseIds;
+    vector<vector<int>> courseClasses;
 
     for (int i = 0; i < numCourses; i++) {
         cout << "Enter Course ID #" << (i + 1) << ": ";
         string cid;
         getline(cin, cid);
         courseIds.push_back(cid);
+
+        int courseGrade = 0;
+        Course* foundCourse = courseCtrl.findCourseById(cid);
+        if (foundCourse) {
+            courseGrade = foundCourse->getGrade();
+        }
+
+        cout << "Select class(es) for this course:\n";
+        cout << "1- Class " << courseGrade << "/1\n";
+        cout << "2- Class " << courseGrade << "/2\n";
+        cout << "3- Class " << courseGrade << "/3\n";
+        cout << "4- Class " << courseGrade << "/4\n";
+        cout << "5- More than one class\n";
+        cout << "6- All classes\n";
+
+        int classChoice = readInt("");
+        vector<int> selectedClasses;
+
+        if (classChoice == 1) {
+            selectedClasses.push_back(1);
+        }
+        else if (classChoice == 2) {
+            selectedClasses.push_back(2);
+        }
+        else if (classChoice == 3) {
+            selectedClasses.push_back(3);
+        }
+        else if (classChoice == 4) {
+            selectedClasses.push_back(4);
+        }
+        else if (classChoice == 5) {
+            int numSelected = readInt("How many classes (2-4)? ");
+            if (numSelected < 2 || numSelected > 4) {
+                cout << "Invalid number. Must be between 2 and 4.\n";
+                return;
+            }
+            for (int j = 0; j < numSelected; j++) {
+                int cls = readInt("Enter class number (1-4): ");
+                if (cls < 1 || cls > 4) {
+                    cout << "Invalid class number.\n";
+                    return;
+                }
+                bool duplicate = false;
+                for (int k = 0; k < (int)selectedClasses.size(); k++) {
+                    if (selectedClasses[k] == cls) {
+                        duplicate = true;
+                        break;
+                    }
+                }
+                if (duplicate) {
+                    cout << "Class " << cls << " already selected. Skipping.\n";
+                } else {
+                    selectedClasses.push_back(cls);
+                }
+            }
+        }
+        else if (classChoice == 6) {
+            selectedClasses.push_back(1);
+            selectedClasses.push_back(2);
+            selectedClasses.push_back(3);
+            selectedClasses.push_back(4);
+        }
+        else {
+            cout << "Invalid class selection.\n";
+            return;
+        }
+
+        courseClasses.push_back(selectedClasses);
     }
 
-    string result = teacherCtrl.assignCoursesToTeacher(teacherId, courseIds);
+    string result = teacherCtrl.assignCoursesToTeacher(teacherId, courseIds, courseClasses);
     cout << result << "\n";
 
     if (result.find("failed") == string::npos &&
@@ -755,7 +824,7 @@ void handleTeacherOperations(TeacherController& teacherCtrl, CourseController& c
         handleEditTeacher(teacherCtrl);
     }
     else if (op == 4) {
-        handleAssignCoursesToTeacher(teacherCtrl);
+        handleAssignCoursesToTeacher(teacherCtrl, courseCtrl);
     }
     else if (op == 5) {
         handleShowTeacher(teacherCtrl);

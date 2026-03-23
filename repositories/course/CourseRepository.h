@@ -17,6 +17,7 @@ public:
     virtual std::string editCourse(const std::string& id, const Course& newData) = 0;
     virtual std::string assignTeacherToCourse(const std::string& courseId, const std::string& teacherId, const std::string& teacherName) = 0;
     virtual std::string assignTeacherToCourseForReplace(const std::string& courseId, const std::string& teacherId, const std::string& teacherName) = 0;
+    virtual std::string assignTeacherToClassInCourse(const std::string& courseId, int classNum, const std::string& teacherId) = 0;
     virtual std::string assignStudentToCourse(const std::string& studentId, const std::string& courseId) = 0;
     virtual std::string removeStudentFromCourse(const std::string& studentId, const std::string& courseId) = 0;
     virtual std::string removeCourse(const std::string& id) = 0;
@@ -38,6 +39,7 @@ public:
     std::string editCourse(const std::string& id, const Course& newData) override;
     std::string assignTeacherToCourse(const std::string& courseId, const std::string& teacherId, const std::string& teacherName) override;
     std::string assignTeacherToCourseForReplace(const std::string& courseId, const std::string& teacherId, const std::string& teacherName) override;
+    std::string assignTeacherToClassInCourse(const std::string& courseId, int classNum, const std::string& teacherId) override;
     std::string assignStudentToCourse(const std::string& studentId, const std::string& courseId) override;
     std::string removeStudentFromCourse(const std::string& studentId, const std::string& courseId) override;
     std::string removeCourse(const std::string& id) override;

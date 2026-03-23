@@ -23,7 +23,7 @@ public:
     int getMaxTeachersForGrade(int grade) const;
     std::string addTeacher(int grade, Teacher& teacher);
     std::string editTeacher(const std::string& id, const Teacher& newData);
-    std::string assignCoursesToTeacher(const std::string& teacherId, const std::vector<std::string>& courseIds);
+    std::string assignCoursesToTeacher(const std::string& teacherId, const std::vector<std::string>& courseIds, const std::vector<std::vector<int>>& courseClasses);
     void showTeacher(const std::string& id);
     std::string removeTeacher(const std::string& id);
     std::string replaceTeacherInCourse(const std::string& courseId, const std::string& oldTeacherId, const std::string& newTeacherId);

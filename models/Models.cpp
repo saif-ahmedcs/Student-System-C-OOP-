@@ -157,6 +157,30 @@ bool Course::isStudentAssigned(const std::string& studentId) const {
     return false;
 }
 
+bool Course::assignTeacherToClass(int classNum, const std::string& teacherId) {
+    if (isClassTaken(classNum)) {
+        return false;
+    }
+    classTeacherMap[classNum] = teacherId;
+    return true;
+}
+
+bool Course::isClassTaken(int classNum) const {
+    return classTeacherMap.find(classNum) != classTeacherMap.end();
+}
+
+std::string Course::getTeacherForClass(int classNum) const {
+    std::map<int, std::string>::const_iterator it = classTeacherMap.find(classNum);
+    if (it != classTeacherMap.end()) {
+        return it->second;
+    }
+    return "";
+}
+
+const std::map<int, std::string>& Course::getClassTeacherMap() const {
+    return classTeacherMap;
+}
+
 bool Course::removeTeacherById(const std::string& teacherId) {
     bool removed = false;
     for (int i = 0; i < (int)teacherIds.size(); i++) {
@@ -167,6 +191,13 @@ bool Course::removeTeacherById(const std::string& teacherId) {
             }
             removed = true;
             i--;
+        }
+    }
+    for (std::map<int, std::string>::iterator it = classTeacherMap.begin(); it != classTeacherMap.end(); ) {
+        if (it->second == teacherId) {
+            it = classTeacherMap.erase(it);
+        } else {
+            ++it;
         }
     }
     return removed;

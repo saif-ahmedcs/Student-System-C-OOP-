@@ -7,8 +7,8 @@ TeacherServiceImpl::TeacherServiceImpl(TeacherRepository& teacherRepo, CourseRep
 
 int TeacherServiceImpl::getMinAvailableSeatsForStage(Stage stage) const {
     switch (stage) {
-        case Stage::Primary:   return SchoolConstants::MIN_AVAILABLE_SEATS_PRIMARY;
-        case Stage::Middle:    return SchoolConstants::MIN_AVAILABLE_SEATS_MIDDLE;
+        case Stage::Primary: return SchoolConstants::MIN_AVAILABLE_SEATS_PRIMARY;
+        case Stage::Middle: return SchoolConstants::MIN_AVAILABLE_SEATS_MIDDLE;
         case Stage::Secondary: return SchoolConstants::MIN_AVAILABLE_SEATS_SECONDARY;
     }
     return 0;
@@ -16,8 +16,8 @@ int TeacherServiceImpl::getMinAvailableSeatsForStage(Stage stage) const {
 
 int TeacherServiceImpl::getMaxStudentsForStage(Stage stage) const {
     switch (stage) {
-        case Stage::Primary:   return SchoolConstants::MAX_STUDENTS_IN_PRIMARY;
-        case Stage::Middle:    return SchoolConstants::MAX_STUDENTS_IN_MIDDLE;
+        case Stage::Primary: return SchoolConstants::MAX_STUDENTS_IN_PRIMARY;
+        case Stage::Middle: return SchoolConstants::MAX_STUDENTS_IN_MIDDLE;
         case Stage::Secondary: return SchoolConstants::MAX_STUDENTS_IN_SECONDARY;
     }
     return 0;
@@ -86,7 +86,7 @@ string TeacherServiceImpl::editTeacher(const string& id, const Teacher& newData)
     return teacherRepository.editTeacher(id, newData);
 }
 
-string TeacherServiceImpl::assignCoursesToTeacher(const string& teacherId, const vector<string>& courseIds) {
+string TeacherServiceImpl::assignCoursesToTeacher(const string& teacherId, const vector<string>& courseIds, const vector<vector<int>>& courseClasses) {
     if (courseIds.empty() || (int)courseIds.size() > SchoolConstants::MAX_COURSES_PER_TEACHER)
         return "Teacher must be assigned between 1 and " + to_string(SchoolConstants::MAX_COURSES_PER_TEACHER) + " courses.";
 
@@ -129,6 +129,12 @@ string TeacherServiceImpl::assignCoursesToTeacher(const string& teacherId, const
             errors += "- Course " + cid + " does not have enough available seats (" + to_string(available) + " available, " + to_string(required) + " required).\n";
             continue;
         }
+        const vector<int>& classes = courseClasses[i];
+        for (int j = 0; j < (int)classes.size(); j++) {
+            if (c->isClassTaken(classes[j])) {
+                errors += "- Course " + cid + " class " + to_string(classes[j]) + " already has a teacher assigned.\n";
+            }
+        }
     }
     if (!errors.empty()){
         return "Assignment failed:\n" + errors;
@@ -136,6 +142,10 @@ string TeacherServiceImpl::assignCoursesToTeacher(const string& teacherId, const
 
     for (int i = 0; i < (int)courseIds.size(); i++){
         courseRepository.assignTeacherToCourse(courseIds[i], teacher->getId(), teacher->getName());
+        const vector<int>& classes = courseClasses[i];
+        for (int j = 0; j < (int)classes.size(); j++) {
+            courseRepository.assignTeacherToClassInCourse(courseIds[i], classes[j], teacher->getId());
+        }
     }
 
     return teacherRepository.assignCoursesToTeacher(teacherId, courseIds);
@@ -202,7 +212,7 @@ string TeacherServiceImpl::replaceTeacherInCourse(const string& courseId, const 
     const vector<string>& enrolledStudentIds = course->getAssignedStudents();
     for (int i = 0; i < (int)enrolledStudentIds.size(); i++) {
         Student* student = studentRepository.findStudentById(enrolledStudentIds[i]);
-        if (student) student->updateTeacherForCourse(courseId, newTeacher->getName());
+        if (student) { student->updateTeacherForCourse(courseId, newTeacher->getName()); }
     }
 
     return "Teacher successfully replaced in course.";

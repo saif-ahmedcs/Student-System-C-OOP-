@@ -128,6 +128,17 @@ string CourseRepositoryImpl::assignTeacherToCourseForReplace(const string& cours
     return "Teacher assigned to course successfully.";
 }
 
+string CourseRepositoryImpl::assignTeacherToClassInCourse(const string& courseId, int classNum, const string& teacherId) {
+    Course* course = findCourseById(courseId);
+    if (!course) {
+        return "Error: Course " + courseId + " not found.";
+    }
+    if (!course->assignTeacherToClass(classNum, teacherId)) {
+        return "Error: Class " + to_string(classNum) + " already has a teacher in course " + courseId + ".";
+    }
+    return "Teacher assigned to class successfully.";
+}
+
 string CourseRepositoryImpl::assignStudentToCourse(const string& studentId, const string& courseId) {
     Course* course = findCourseById(courseId);
     if (!course) {
@@ -226,6 +237,12 @@ bool CourseRepositoryImpl::saveToFile(const string& filename) {
         for (int j = 0; j < (int)students.size(); j++) {
             f << students[j] << "\n";
         }
+        const map<int, string>& ctm = c.getClassTeacherMap();
+        f << ctm.size() << "\n";
+        for (map<int, string>::const_iterator it = ctm.begin(); it != ctm.end(); ++it) {
+            f << it->first << "\n";
+            f << it->second << "\n";
+        }
     }
     f.flush();
     if (!f.good()) {
@@ -293,6 +310,16 @@ void CourseRepositoryImpl::loadFromFile(const string& filename) {
             string sid;
             getline(f, sid);
             c.assignStudent(sid);
+        }
+
+        int numClassEntries;
+        f >> numClassEntries; f.ignore();
+        for (int j = 0; j < numClassEntries; j++) {
+            int classNum;
+            string tid;
+            f >> classNum; f.ignore();
+            getline(f, tid);
+            c.assignTeacherToClass(classNum, tid);
         }
 
         if (f.fail() && i < count - 1) {
