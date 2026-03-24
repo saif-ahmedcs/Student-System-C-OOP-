@@ -55,7 +55,8 @@ string StudentServiceImpl::addStudent(int grade, Student& student) {
 }
 
 string StudentServiceImpl::editStudent(const string& id, const Student& newData) {
-    if (!studentRepository.findStudentById(id)) {
+    Student* student = studentRepository.findStudentById(id);
+    if (!student) {
         return "Student not found.";
     }
 
@@ -83,6 +84,17 @@ string StudentServiceImpl::editStudent(const string& id, const Student& newData)
 
     if (!errors.empty()) {
         return "Student cannot be updated:\n" + errors;
+    }
+
+    if (student->getGrade() != newData.getGrade()) {
+        if (studentRepository.getStudentsInGrade(newData.getGrade()) >= studentRepository.getMaxStudentsForGrade(newData.getGrade())) {
+            return "Grade " + to_string(newData.getGrade()) + " has reached its maximum capacity.";
+        }
+        const vector<StudentCourse> courses = student->getAssignedCourses();
+        for (int i = 0; i < (int)courses.size(); i++) {
+            courseRepository.removeStudentFromCourse(id, courses[i].courseId);
+        }
+        studentRepository.clearStudentCourses(id);
     }
 
     return studentRepository.editStudent(id, newData);

@@ -287,6 +287,10 @@ bool Student::updateTeacherForCourse(const std::string& courseId, const std::str
     return false;
 }
 
+void Student::clearAssignedCourses() {
+    assignedCourses.clear();
+}
+
 int Student::getGrade() const {
     return grade;
 }

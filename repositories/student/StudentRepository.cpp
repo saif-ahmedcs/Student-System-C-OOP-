@@ -201,6 +201,13 @@ string StudentRepositoryImpl::assignCoursesToStudent(const string& studentId, co
     return "Courses assigned to student successfully.";
 }
 
+void StudentRepositoryImpl::clearStudentCourses(const string& studentId) {
+    Student* student = findStudentById(studentId);
+    if (student) {
+        student->clearAssignedCourses();
+    }
+}
+
 string StudentRepositoryImpl::removeStudent(const string& id) {
     int removeIndex = -1;
     for (int i = 0; i < (int)allStudents.size(); i++) {
