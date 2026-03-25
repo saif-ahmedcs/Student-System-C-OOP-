@@ -95,15 +95,68 @@ string CourseRepositoryImpl::addCourse(int grade, Course& course) {
 }
 
 string CourseRepositoryImpl::editCourse(const string& id, const Course& newData) {
-    Course* c = findCourseById(id);
-    if (!c) {
+    int removeIndex = -1;
+    for (int i = 0; i < (int)allCourses.size(); i++) {
+        if (allCourses[i].getId() == id) {
+            removeIndex = i;
+            break;
+        }
+    }
+    if (removeIndex == -1) {
         return "Course not found.";
     }
+
+    Course* c = &allCourses[removeIndex];
+    int oldGrade = c->getGrade();
+    int newGrade = newData.getGrade();
+    bool gradeChanged = (oldGrade != newGrade);
+
+    if (gradeChanged) {
+        Stage oldStage = getStageFromGrade(oldGrade);
+        Stage newStage = getStageFromGrade(newGrade);
+
+        map<int, vector<int>>::iterator git = gradeIndex.find(oldGrade);
+        if (git != gradeIndex.end()) {
+            vector<int>& indices = git->second;
+            for (int i = 0; i < (int)indices.size(); i++) {
+                if (indices[i] == removeIndex) {
+                    indices.erase(indices.begin() + i);
+                    break;
+                }
+            }
+            if (indices.empty()) {
+                gradeIndex.erase(git);
+            }
+        }
+
+        if (oldStage != newStage) {
+            map<Stage, vector<int>>::iterator sit = stageIndex.find(oldStage);
+            if (sit != stageIndex.end()) {
+                vector<int>& indices = sit->second;
+                for (int i = 0; i < (int)indices.size(); i++) {
+                    if (indices[i] == removeIndex) {
+                        indices.erase(indices.begin() + i);
+                        break;
+                    }
+                }
+                if (indices.empty()) {
+                    stageIndex.erase(sit);
+                }
+            }
+            stageIndex[newStage].push_back(removeIndex);
+        }
+
+        gradeIndex[newGrade].push_back(removeIndex);
+
+        string newId = generateCourseID(newData.getName(), newGrade, newData.getSpecialization());
+        c->setId(newId);
+    }
+
     c->setName(newData.getName());
-    c->setGrade(newData.getGrade());
+    c->setGrade(newGrade);
     c->setSubjectHours(newData.getSubjectHours());
     c->setSpecialization(newData.getSpecialization());
-    return "Course data updated successfully.";
+    return "Course data updated successfully. New ID: " + c->getId();
 }
 
 string CourseRepositoryImpl::assignTeacherToCourse(const string& courseId, const string& teacherId, const string& teacherName) {

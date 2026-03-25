@@ -53,8 +53,16 @@ string CourseServiceImpl::addCourse(int grade, Course& course) {
 }
 
 string CourseServiceImpl::editCourse(const string& id, const Course& newData) {
-    if (!courseRepository.findCourseById(id)) {
+    Course* existing = courseRepository.findCourseById(id);
+    if (!existing) {
         return "Course not found.";
+    }
+
+    bool gradeChanged = (existing->getGrade() != newData.getGrade());
+    bool specChanged = (existing->getSpecialization() != newData.getSpecialization());
+
+    if ((gradeChanged || specChanged) && existing->getNumberOfAssignedStudents() > 0) {
+        return "cannot modify grade or specialization: there are students registered in this course.";
     }
 
     string errors;
@@ -77,6 +85,37 @@ string CourseServiceImpl::editCourse(const string& id, const Course& newData) {
 
     if (!errors.empty()) {
         return "Course cannot be updated:\n" + errors;
+    }
+
+    if (gradeChanged) {
+        if (getStageFromGrade(existing->getGrade()) != getStageFromGrade(newData.getGrade())) {
+            return "cannot change grade to a different stage.";
+        }
+
+        if (courseRepository.getNumberOfCoursesInGrade(newData.getGrade()) >= courseRepository.getMaxCoursesForGrade(newData.getGrade())) {
+            return "cannot update: maximum number of courses reached for the target grade.";
+        }
+
+        vector<Course> all = courseRepository.getCoursesInSchoolVector();
+        for (int i = 0; i < (int)all.size(); i++) {
+            if (all[i].getId() == id) {
+                continue;
+            }
+            if (all[i].getName() == newData.getName() && all[i].getGrade() == newData.getGrade() && all[i].getSpecialization() == newData.getSpecialization()) {
+                return "cannot update: a course with the same name, grade, and specialization already exists.";
+            }
+        }
+    }
+
+    if (specChanged) {
+        const vector<string> teacherIds = existing->getTeacherIds();
+        for (int i = 0; i < (int)teacherIds.size(); i++) {
+            Teacher* t = teacherRepository.findTeacherById(teacherIds[i]);
+            if (t && t->getSpecialization() != newData.getSpecialization()) {
+                t->removeCourse(id);
+                existing->removeTeacherById(teacherIds[i]);
+            }
+        }
     }
 
     return courseRepository.editCourse(id, newData);
