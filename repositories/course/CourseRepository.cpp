@@ -109,9 +109,8 @@ string CourseRepositoryImpl::editCourse(const string& id, const Course& newData)
     Course* c = &allCourses[removeIndex];
     int oldGrade = c->getGrade();
     int newGrade = newData.getGrade();
-    bool gradeChanged = (oldGrade != newGrade);
 
-    if (gradeChanged) {
+    if (oldGrade != newGrade) {
         Stage oldStage = getStageFromGrade(oldGrade);
         Stage newStage = getStageFromGrade(newGrade);
 

@@ -58,12 +58,12 @@ string CourseServiceImpl::editCourse(const string& id, const Course& newData) {
         return "Course not found.";
     }
 
+    if (existing->getNumberOfAssignedStudents() > 0) {
+        return "cannot modify course: there are students registered in this course.";
+    }
+
     bool gradeChanged = (existing->getGrade() != newData.getGrade());
     bool specChanged = (existing->getSpecialization() != newData.getSpecialization());
-
-    if ((gradeChanged || specChanged) && existing->getNumberOfAssignedStudents() > 0) {
-        return "cannot modify grade or specialization: there are students registered in this course.";
-    }
 
     string errors;
 
@@ -108,17 +108,34 @@ string CourseServiceImpl::editCourse(const string& id, const Course& newData) {
     }
 
     if (specChanged) {
-        const vector<string> teacherIds = existing->getTeacherIds();
-        for (int i = 0; i < (int)teacherIds.size(); i++) {
-            Teacher* t = teacherRepository.findTeacherById(teacherIds[i]);
+        vector<string> teacherIdsCopy = existing->getTeacherIds();
+        for (int i = 0; i < (int)teacherIdsCopy.size(); i++) {
+            Teacher* t = teacherRepository.findTeacherById(teacherIdsCopy[i]);
             if (t && t->getSpecialization() != newData.getSpecialization()) {
                 t->removeCourse(id);
-                existing->removeTeacherById(teacherIds[i]);
+                existing->removeTeacherById(teacherIdsCopy[i]);
             }
         }
     }
 
-    return courseRepository.editCourse(id, newData);
+    vector<string> remainingTeacherIds = existing->getTeacherIds();
+
+    string result = courseRepository.editCourse(id, newData);
+
+    if (gradeChanged) {
+        string newCourseId = existing->getId();
+        if (newCourseId != id) {
+            for (int i = 0; i < (int)remainingTeacherIds.size(); i++) {
+                Teacher* t = teacherRepository.findTeacherById(remainingTeacherIds[i]);
+                if (t) {
+                    t->removeCourse(id);
+                    t->assignCourse(newCourseId);
+                }
+            }
+        }
+    }
+
+    return result;
 }
 
 string CourseServiceImpl::removeCourse(const string& id) {

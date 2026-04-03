@@ -64,7 +64,8 @@ string TeacherServiceImpl::addTeacher(int grade, Teacher& teacher) {
 }
 
 string TeacherServiceImpl::editTeacher(const string& id, const Teacher& newData) {
-    if (!teacherRepository.findTeacherById(id))
+    Teacher* existing = teacherRepository.findTeacherById(id);
+    if (!existing)
         return "Teacher not found.";
 
     string errors;
@@ -82,6 +83,35 @@ string TeacherServiceImpl::editTeacher(const string& id, const Teacher& newData)
         errors += "- Grade must be between 1 and 12 (make sure your input is DIGITS ONLY).\n";
     if (!errors.empty())
         return "Teacher cannot be updated:\n" + errors;
+
+    if (newData.getSpecialization() != existing->getSpecialization()) {
+        const vector<string>& assignedCourses = existing->getAssignedCourses();
+        for (int i = 0; i < (int)assignedCourses.size(); i++) {
+            Course* course = courseRepository.findCourseById(assignedCourses[i]);
+            if (course && course->getSpecialization() == existing->getSpecialization() && course->getNumberOfAssignedStudents() > 0)
+                return "cannot change specialization: students are enrolled in a course taught by this teacher with the same specialization.";
+        }
+    }
+
+    int oldGrade = existing->getGrade();
+    int newGrade = newData.getGrade();
+
+    if (oldGrade != newGrade) {
+        if (getStageFromGrade(oldGrade) != getStageFromGrade(newGrade))
+            return "cannot change grade to a different stage.";
+
+        if (teacherRepository.getTeachersInGrade(newGrade) >= teacherRepository.getMaxTeachersForGrade(newGrade))
+            return "Maximum number of teachers reached for the target grade.";
+
+        vector<string> assignedCoursesCopy = existing->getAssignedCourses();
+        for (int i = 0; i < (int)assignedCoursesCopy.size(); i++) {
+            Course* course = courseRepository.findCourseById(assignedCoursesCopy[i]);
+            if (course) {
+                course->removeTeacherById(id);
+            }
+        }
+        existing->removeAllCourses();
+    }
 
     return teacherRepository.editTeacher(id, newData);
 }

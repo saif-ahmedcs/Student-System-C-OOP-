@@ -154,6 +154,10 @@ string TeacherRepositoryImpl::editTeacher(const string& id, const Teacher& newDa
         }
         gradeIndex[newGrade].push_back(idx);
         stageIndex[getStageFromGrade(newGrade)].push_back(idx);
+
+        string newId = generateTeacherID(newGrade);
+        allTeachers[idx].setId(newId);
+        return "Teacher data updated successfully. New ID: " + newId;
     }
     return "Teacher data updated successfully.";
 }
