@@ -5,10 +5,14 @@
 #include <string>
 using namespace std;
 
-static string generateCourseID(const string& courseName, int grade, const string& specialization) {
-    static int id[13] = {0};
-    string idStart = "";
+CourseRepositoryImpl::CourseRepositoryImpl() {
+    for (int i = 0; i < 13; i++) {
+        idCounters[i] = 0;
+    }
+}
 
+string CourseRepositoryImpl::generateCourseID(const string& courseName, int grade, const string& specialization) {
+    string idStart = "";
     for (int i = 0; i < (int)courseName.length(); i++) {
         if (courseName[i] != ' ') {
             idStart += tolower(courseName[i]);
@@ -23,8 +27,8 @@ static string generateCourseID(const string& courseName, int grade, const string
         }
     }
 
-    id[grade]++;
-    int count = id[grade];
+    idCounters[grade]++;
+    int count = idCounters[grade];
     if (count <= 9) {
         return idStart + "00" + to_string(count);
     } else if (count <= 99) {
@@ -34,15 +38,9 @@ static string generateCourseID(const string& courseName, int grade, const string
     }
 }
 
-static void syncCourseIDCounter(int grade, int maxSuffix) {
-    string first = generateCourseID("x", grade, "x");
-    int start = (int)first.length() - 1;
-    while (start > 0 && first[start - 1] >= '0' && first[start - 1] <= '9') {
-        start--;
-    }
-    int current = stoi(first.substr(start));
-    for (int i = current; i < maxSuffix; i++) {
-        generateCourseID("x", grade, "x");
+void CourseRepositoryImpl::syncCourseIDCounter(int grade, int maxSuffix) {
+    while (idCounters[grade] < maxSuffix) {
+        idCounters[grade]++;
     }
 }
 
@@ -277,8 +275,8 @@ bool CourseRepositoryImpl::saveToFile(const string& filename) {
         f << c.getGrade() << "\n";
         f << c.getSubjectHours() << "\n";
         f << c.getSpecialization() << "\n";
-        const vector<string>& tids = c.getTeacherIds();
-        const vector<string>& tnames = c.getTeacherNames();
+        const std::vector<std::string> tids = c.getTeacherIds();
+        const std::vector<std::string> tnames = c.getTeacherNames();
         f << tids.size() << "\n";
         for (int j = 0; j < (int)tids.size(); j++) {
             f << tids[j] << "\n";

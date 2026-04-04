@@ -5,8 +5,13 @@
 #include <string>
 using namespace std;
 
-static string generateStudentID(int grade) {
-    static int id[13] = {0};
+StudentRepositoryImpl::StudentRepositoryImpl() {
+    for (int i = 0; i < 13; i++) {
+        idCounters[i] = 0;
+    }
+}
+
+string StudentRepositoryImpl::generateStudentID(int grade) {
     string idStart;
     if (grade == 1) { idStart = "2019"; }
     else if (grade == 2) { idStart = "2018"; }
@@ -22,38 +27,21 @@ static string generateStudentID(int grade) {
     else if (grade == 12) { idStart = "2008"; }
     else { return "Invalid grade"; }
 
-    if (id[grade] >= 0 && id[grade] <= 9) {
-        id[grade]++;
-        return idStart + "00" + to_string(id[grade]);
-    } else if (id[grade] >= 10 && id[grade] <= 99) {
-        id[grade]++;
-        return idStart + "0" + to_string(id[grade]);
+    if (idCounters[grade] >= 0 && idCounters[grade] <= 9) {
+        idCounters[grade]++;
+        return idStart + "00" + to_string(idCounters[grade]);
+    } else if (idCounters[grade] >= 10 && idCounters[grade] <= 99) {
+        idCounters[grade]++;
+        return idStart + "0" + to_string(idCounters[grade]);
     } else {
-        id[grade]++;
-        return idStart + to_string(id[grade]);
+        idCounters[grade]++;
+        return idStart + to_string(idCounters[grade]);
     }
 }
 
-static void syncStudentIDCounter(int grade, int maxSuffix) {
-    string prefix;
-    if (grade == 1) { prefix = "2019"; }
-    else if (grade == 2) { prefix = "2018"; }
-    else if (grade == 3) { prefix = "2017"; }
-    else if (grade == 4) { prefix = "2016"; }
-    else if (grade == 5) { prefix = "2015"; }
-    else if (grade == 6) { prefix = "2014"; }
-    else if (grade == 7) { prefix = "2013"; }
-    else if (grade == 8) { prefix = "2012"; }
-    else if (grade == 9) { prefix = "2011"; }
-    else if (grade == 10) { prefix = "2010"; }
-    else if (grade == 11) { prefix = "2009"; }
-    else if (grade == 12) { prefix = "2008"; }
-    else { return; }
-
-    string first = generateStudentID(grade);
-    int current = stoi(first.substr(prefix.length()));
-    for (int i = current; i < maxSuffix; i++) {
-        generateStudentID(grade);
+void StudentRepositoryImpl::syncStudentIDCounter(int grade, int maxSuffix) {
+    while (idCounters[grade] < maxSuffix) {
+        idCounters[grade]++;
     }
 }
 

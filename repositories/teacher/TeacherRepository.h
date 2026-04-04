@@ -27,7 +27,11 @@ private:
     std::vector<Teacher> allTeachers;
     std::map<int, std::vector<int>> gradeIndex;
     std::map<Stage, std::vector<int>> stageIndex;
+    int idCounters[13];
+    std::string generateTeacherID(int grade);
+    void syncTeacherIDCounter(int grade, int maxSuffix);
 public:
+    TeacherRepositoryImpl();
     Teacher* findTeacherByNationalNumber(const std::string& nationalNumber) override;
     Teacher* findTeacherById(const std::string& id) override;
     int getTeachersInGrade(int grade) const override;

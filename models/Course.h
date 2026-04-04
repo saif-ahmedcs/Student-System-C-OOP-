@@ -6,13 +6,17 @@
 #include <map>
 #include "Student.h"
 
+struct TeacherRef {
+    std::string id;
+    std::string name;
+};
+
 class Course : public ShareData {
 private:
     int grade;
     int subjectHours;
     std::string specialization;
-    std::vector<std::string> teacherIds;
-    std::vector<std::string> teacherNames;
+    std::vector<TeacherRef> teachers;
     std::vector<std::string> assignedStudentIds;
     std::map<int, std::string> classTeacherMap;
 public:
@@ -36,8 +40,8 @@ public:
     int getSubjectHours() const;
     std::string getSpecialization() const;
     int getNumberOfTeachers() const;
-    const std::vector<std::string>& getTeacherIds() const;
-    const std::vector<std::string>& getTeacherNames() const;
+    const std::vector<std::string> getTeacherIds() const;
+    const std::vector<std::string> getTeacherNames() const;
     const std::vector<std::string>& getAssignedStudents() const;
     int getNumberOfAssignedStudents() const;
 };

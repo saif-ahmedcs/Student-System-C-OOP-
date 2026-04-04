@@ -130,13 +130,15 @@ void Course::setSpecialization(const std::string& spec) {
 }
 
 bool Course::assignTeacher(const std::string& tid, const std::string& tname) {
-    for (int i = 0; i < (int)teacherIds.size(); i++) {
-        if (teacherIds[i] == tid) {
+    for (int i = 0; i < (int)teachers.size(); i++) {
+        if (teachers[i].id == tid) {
             return false;
         }
     }
-    teacherIds.push_back(tid);
-    teacherNames.push_back(tname);
+    TeacherRef ref;
+    ref.id = tid;
+    ref.name = tname;
+    teachers.push_back(ref);
     return true;
 }
 
@@ -183,12 +185,9 @@ const std::map<int, std::string>& Course::getClassTeacherMap() const {
 
 bool Course::removeTeacherById(const std::string& teacherId) {
     bool removed = false;
-    for (int i = 0; i < (int)teacherIds.size(); i++) {
-        if (teacherIds[i] == teacherId) {
-            teacherIds.erase(teacherIds.begin() + i);
-            if (i < (int)teacherNames.size()) {
-                teacherNames.erase(teacherNames.begin() + i);
-            }
+    for (int i = 0; i < (int)teachers.size(); i++) {
+        if (teachers[i].id == teacherId) {
+            teachers.erase(teachers.begin() + i);
             removed = true;
             i--;
         }
@@ -226,15 +225,23 @@ std::string Course::getSpecialization() const {
 }
 
 int Course::getNumberOfTeachers() const {
-    return (int)teacherIds.size();
+    return (int)teachers.size();
 }
 
-const std::vector<std::string>& Course::getTeacherIds() const {
-    return teacherIds;
+const std::vector<std::string> Course::getTeacherIds() const {
+    std::vector<std::string> ids;
+    for (int i = 0; i < (int)teachers.size(); i++) {
+        ids.push_back(teachers[i].id);
+    }
+    return ids;
 }
 
-const std::vector<std::string>& Course::getTeacherNames() const {
-    return teacherNames;
+const std::vector<std::string> Course::getTeacherNames() const {
+    std::vector<std::string> names;
+    for (int i = 0; i < (int)teachers.size(); i++) {
+        names.push_back(teachers[i].name);
+    }
+    return names;
 }
 
 const std::vector<std::string>& Course::getAssignedStudents() const {

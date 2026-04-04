@@ -5,34 +5,33 @@
 #include <string>
 using namespace std;
 
-static string generateTeacherID(int grade) {
-    static int id[13] = {0};
-    string idStart;
-    if (grade >= 1 && grade <= 12) { idStart = to_string(grade); }
-    else {
-        return "Invalid grade";
-    }
-
-    id[grade]++;
-    if (id[grade] <= 9) {
-        return idStart + "00" + to_string(id[grade]);
-    }
-    else if (id[grade] <= 99) {
-        return idStart + "0" + to_string(id[grade]);
-    }
-    else {
-        return idStart + to_string(id[grade]);
+TeacherRepositoryImpl::TeacherRepositoryImpl() {
+    for (int i = 0; i < 13; i++) {
+        idCounters[i] = 0;
     }
 }
 
-static void syncTeacherIDCounter(int grade, int maxSuffix) {
-    string first = generateTeacherID(grade);
-    int prefixLen = (int)to_string(grade).length();
-    int current = stoi(first.substr(prefixLen));
+string TeacherRepositoryImpl::generateTeacherID(int grade) {
+    if (grade < 1 || grade > 12) {
+        return "Invalid grade";
+    }
+    idCounters[grade]++;
+    string idStart = to_string(grade);
+    if (idCounters[grade] <= 9) {
+        return idStart + "00" + to_string(idCounters[grade]);
+    } else if (idCounters[grade] <= 99) {
+        return idStart + "0" + to_string(idCounters[grade]);
+    } else {
+        return idStart + to_string(idCounters[grade]);
+    }
+}
 
-    for (int i = current; i < maxSuffix; i++) {
+void TeacherRepositoryImpl::syncTeacherIDCounter(int grade, int maxSuffix) {
+    int prefixLen = (int)to_string(grade).length();
+    while (idCounters[grade] < maxSuffix) {
         generateTeacherID(grade);
     }
+    (void)prefixLen;
 }
 
 int TeacherRepositoryImpl::getTeachersInGrade(int grade) const {

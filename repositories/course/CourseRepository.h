@@ -30,7 +30,11 @@ private:
     std::vector<Course> allCourses;
     std::map<int, std::vector<int>> gradeIndex;
     std::map<Stage, std::vector<int>> stageIndex;
+    int idCounters[13];
+    std::string generateCourseID(const std::string& courseName, int grade, const std::string& specialization);
+    void syncCourseIDCounter(int grade, int maxSuffix);
 public:
+    CourseRepositoryImpl();
     Course* findCourseById(const std::string& id) override;
     int getNumberOfCoursesInGrade(int grade) const override;
     std::vector<Course> getCoursesInSchoolVector() override;
