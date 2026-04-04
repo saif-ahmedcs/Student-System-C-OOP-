@@ -85,11 +85,20 @@ string TeacherServiceImpl::editTeacher(const string& id, const Teacher& newData)
         return "Teacher cannot be updated:\n" + errors;
 
     if (newData.getSpecialization() != existing->getSpecialization()) {
-        const vector<string>& assignedCourses = existing->getAssignedCourses();
-        for (int i = 0; i < (int)assignedCourses.size(); i++) {
-            Course* course = courseRepository.findCourseById(assignedCourses[i]);
-            if (course && course->getSpecialization() == existing->getSpecialization() && course->getNumberOfAssignedStudents() > 0)
-                return "cannot change specialization: students are enrolled in a course taught by this teacher with the same specialization.";
+        const vector<string> assignedCoursesCopy = existing->getAssignedCourses();
+        for (int i = 0; i < (int)assignedCoursesCopy.size(); i++) {
+            Course* course = courseRepository.findCourseById(assignedCoursesCopy[i]);
+            if (course && course->getSpecialization() == existing->getSpecialization()) {
+                if (course->getNumberOfAssignedStudents() > 0)
+                    return "cannot change specialization: students are enrolled in a course taught by this teacher with the same specialization.";
+            }
+        }
+        for (int i = 0; i < (int)assignedCoursesCopy.size(); i++) {
+            Course* course = courseRepository.findCourseById(assignedCoursesCopy[i]);
+            if (course && course->getSpecialization() == existing->getSpecialization()) {
+                course->removeTeacherById(id);
+                existing->removeCourse(assignedCoursesCopy[i]);
+            }
         }
     }
 
