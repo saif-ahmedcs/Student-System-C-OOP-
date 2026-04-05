@@ -2,7 +2,7 @@
 #define COURSE_REPOSITORY_H
 
 #include "../../models/Course.h"
-#include "../../common/Stage.h"
+#include "../../common/SchoolUtils.h"
 #include <map>
 #include <vector>
 #include <string>

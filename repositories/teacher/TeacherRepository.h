@@ -2,7 +2,7 @@
 #define TEACHER_REPOSITORY_H
 
 #include "../../models/Teacher.h"
-#include "../../common/Stage.h"
+#include "../../common/SchoolUtils.h"
 #include <map>
 #include <vector>
 #include <string>

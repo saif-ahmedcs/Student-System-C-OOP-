@@ -1,5 +1,5 @@
 #include "TeacherRepository.h"
-#include "../../common/SchoolConstants.h"
+#include "../../common/SchoolUtils.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -59,19 +59,7 @@ vector<Teacher*> TeacherRepositoryImpl::getTeachersByGrade(int grade) {
 }
 
 int TeacherRepositoryImpl::getMaxTeachersForGrade(int grade) const {
-
-    switch (getStageFromGrade(grade)) {
-        case Stage::Primary: {
-            return SchoolConstants::MAX_TEACHERS_IN_PRIMARY;
-         }
-        case Stage::Middle: {
-            return SchoolConstants::MAX_TEACHERS_IN_MIDDLE;
-         }
-        case Stage::Secondary: {
-            return SchoolConstants::MAX_TEACHERS_IN_SECONDARY;
-         }
-    }
-    return 0;
+    return getMaxTeachersForStage(getStageFromGrade(grade));
 }
 
 Teacher* TeacherRepositoryImpl::findTeacherByNationalNumber(const string& nationalNumber) {

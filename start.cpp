@@ -6,7 +6,9 @@
 #include "services/student/StudentService.h"
 #include "services/course/CourseService.h"
 #include "services/teacher/TeacherService.h"
-#include "common/Validators.h"
+#include "validators/course/CourseValidator.h"
+#include "validators/teacher/TeacherValidator.h"
+#include "validators/student/StudentValidator.h"
 using namespace std;
 
 int main() {

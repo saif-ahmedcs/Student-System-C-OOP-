@@ -4,7 +4,7 @@
 #include "../../repositories/teacher/TeacherRepository.h"
 #include "../../repositories/course/CourseRepository.h"
 #include "../../repositories/student/StudentRepository.h"
-#include "../../common/Validators.h"
+#include "../../validators/teacher/TeacherValidator.h"
 #include <string>
 #include <vector>
 
@@ -28,9 +28,6 @@ private:
     CourseRepository& courseRepository;
     StudentRepository& studentRepository;
     TeacherValidator& teacherValidator;
-
-    int getMinAvailableSeatsForStage(Stage stage) const;
-    int getMaxStudentsForStage(Stage stage) const;
 
 public:
     TeacherServiceImpl(TeacherRepository& teacherRepo, CourseRepository& courseRepo, StudentRepository& studentRepo, TeacherValidator& validator);

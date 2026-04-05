@@ -3,7 +3,7 @@
 
 #include "../../repositories/student/StudentRepository.h"
 #include "../../repositories/course/CourseRepository.h"
-#include "../../common/Validators.h"
+#include "../../validators/student/StudentValidator.h"
 #include <string>
 #include <vector>
 

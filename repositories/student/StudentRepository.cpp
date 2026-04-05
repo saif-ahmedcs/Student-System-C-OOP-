@@ -1,5 +1,5 @@
 #include "StudentRepository.h"
-#include "../../common/SchoolConstants.h"
+#include "../../common/SchoolUtils.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -86,20 +86,7 @@ vector<Student*> StudentRepositoryImpl::getStudentsByGrade(int grade) {
 }
 
 int StudentRepositoryImpl::getMaxStudentsForGrade(int grade) const {
-
-    switch (getStageFromGrade(grade)) {
-        case Stage::Primary: {
-           return SchoolConstants::MAX_STUDENTS_IN_PRIMARY;
-        }
-        case Stage::Middle: {
-           return SchoolConstants::MAX_STUDENTS_IN_MIDDLE;
-        }
-        case Stage::Secondary: {
-           return SchoolConstants::MAX_STUDENTS_IN_SECONDARY;
-        }
-    }
-
-    return 0;
+    return getMaxStudentsForStage(getStageFromGrade(grade));
 }
 
 string StudentRepositoryImpl::addStudent(int grade, Student& student) {

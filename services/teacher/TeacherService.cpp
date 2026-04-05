@@ -1,27 +1,9 @@
 #include "TeacherService.h"
-#include "../../common/SchoolConstants.h"
+#include "../../common/SchoolUtils.h"
 using namespace std;
 
 TeacherServiceImpl::TeacherServiceImpl(TeacherRepository& teacherRepo, CourseRepository& courseRepo, StudentRepository& studentRepo, TeacherValidator& validator)
     : teacherRepository(teacherRepo), courseRepository(courseRepo), studentRepository(studentRepo), teacherValidator(validator) {}
-
-int TeacherServiceImpl::getMinAvailableSeatsForStage(Stage stage) const {
-    switch (stage) {
-        case Stage::Primary: return SchoolConstants::MIN_AVAILABLE_SEATS_PRIMARY;
-        case Stage::Middle: return SchoolConstants::MIN_AVAILABLE_SEATS_MIDDLE;
-        case Stage::Secondary: return SchoolConstants::MIN_AVAILABLE_SEATS_SECONDARY;
-    }
-    return 0;
-}
-
-int TeacherServiceImpl::getMaxStudentsForStage(Stage stage) const {
-    switch (stage) {
-        case Stage::Primary: return SchoolConstants::MAX_STUDENTS_IN_PRIMARY;
-        case Stage::Middle: return SchoolConstants::MAX_STUDENTS_IN_MIDDLE;
-        case Stage::Secondary: return SchoolConstants::MAX_STUDENTS_IN_SECONDARY;
-    }
-    return 0;
-}
 
 Teacher* TeacherServiceImpl::findTeacherByNationalNumber(const string& nationalNumber) {
     return teacherRepository.findTeacherByNationalNumber(nationalNumber);

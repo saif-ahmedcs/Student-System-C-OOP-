@@ -1,5 +1,5 @@
 #include "CourseRepository.h"
-#include "../../common/SchoolConstants.h"
+#include "../../common/SchoolUtils.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -58,18 +58,7 @@ vector<Course> CourseRepositoryImpl::getCoursesInSchoolVector() {
 }
 
 int CourseRepositoryImpl::getMaxCoursesForGrade(int grade) const {
-    switch (getStageFromGrade(grade)) {
-        case Stage::Primary: {
-            return SchoolConstants::MAX_COURSES_IN_PRIMARY;
-        }
-        case Stage::Middle: {
-            return SchoolConstants::MAX_COURSES_IN_MIDDLE;
-        }
-        case Stage::Secondary: {
-            return SchoolConstants::MAX_COURSES_IN_SECONDARY;
-        }
-    }
-    return 0;
+    return getMaxCoursesForStage(getStageFromGrade(grade));
 }
 
 Course* CourseRepositoryImpl::findCourseById(const string& id) {

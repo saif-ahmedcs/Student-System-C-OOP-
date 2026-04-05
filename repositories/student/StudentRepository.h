@@ -2,7 +2,7 @@
 #define STUDENT_REPOSITORY_H
 
 #include "../../models/Student.h"
-#include "../../common/Stage.h"
+#include "../../common/SchoolUtils.h"
 #include <map>
 #include <vector>
 #include <string>
