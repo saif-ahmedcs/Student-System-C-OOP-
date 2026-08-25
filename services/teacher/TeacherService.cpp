@@ -1,5 +1,6 @@
 #include "TeacherService.h"
 #include "../../common/SchoolUtils.h"
+#include "../../common/ServiceUtils.h"
 using namespace std;
 
 TeacherServiceImpl::TeacherServiceImpl(TeacherRepository& teacherRepo, CourseRepository& courseRepo, StudentRepository& studentRepo, TeacherValidator& validator)
@@ -17,62 +18,62 @@ int TeacherServiceImpl::getMaxTeachersForGrade(int grade) const {
     return teacherRepository.getMaxTeachersForGrade(grade);
 }
 
+bool TeacherServiceImpl::isGradeAtCapacity(int grade) const {
+    return ::isGradeAtCapacity(teacherRepository.getTeachersInGrade(grade), teacherRepository.getMaxTeachersForGrade(grade));
+}
+
+string TeacherServiceImpl::validateFields(const Teacher& teacher, int grade) {
+    string errors;
+    errors += buildValidationError(teacherValidator.validateName(teacher.getName()), "Teacher name cannot be empty.");
+    errors += buildValidationError(teacherValidator.validateAge(teacher.getAge()), "Teacher age does not comply with school policy (make sure your input is DIGITS ONLY).");
+    errors += buildValidationError(teacherValidator.validateExperienceYears(teacher.getExperienceYears()), "Years of experience do not meet school requirements (make sure your input is DIGITS ONLY).");
+    errors += buildValidationError(teacherValidator.validateSpecialization(teacher.getSpecialization()), "Specialization cannot be empty.");
+    errors += buildValidationError(teacherValidator.validateMonthlySalary(teacher.getMonthlySalary()), "Monthly salary must be at least 7000 (make sure your input is DIGITS ONLY).");
+    errors += buildValidationError(teacherValidator.validateGrade(grade), "Grade must be between 1 and 12 (make sure your input is DIGITS ONLY).");
+    return errors;
+}
+
 string TeacherServiceImpl::addTeacher(int grade, Teacher& teacher) {
-    if (teacherRepository.findTeacherByNationalNumber(teacher.getNationalNumber()))
+
+    if (teacherRepository.findTeacherByNationalNumber(teacher.getNationalNumber())) {
         return "Teacher already exists.";
+    }
 
     string errors;
-    if (!teacherValidator.validateName(teacher.getName()))
-        errors += "- Teacher name cannot be empty.\n";
-    if (!teacherValidator.validateNationalNumber(teacher.getNationalNumber()))
-        errors += "- National number must be 14 characters (make sure your input is DIGITS ONLY).\n";
-    if (!teacherValidator.validateAge(teacher.getAge()))
-        errors += "- Teacher age does not comply with school policy (make sure your input is DIGITS ONLY)\n";
-    if (!teacherValidator.validateExperienceYears(teacher.getExperienceYears()))
-        errors += "- Years of experience do not meet school requirements (make sure your input is DIGITS ONLY)\n";
-    if (!teacherValidator.validateSpecialization(teacher.getSpecialization()))
-        errors += "- Specialization cannot be empty.\n";
-    if (!teacherValidator.validateMonthlySalary(teacher.getMonthlySalary()))
-        errors += "- Monthly salary must be at least 7000 (make sure your input is DIGITS ONLY).\n";
-    if (!teacherValidator.validateGrade(grade))
-        errors += "- Grade must be between 1 and 12 (make sure your input is DIGITS ONLY)\n";
-    if (!errors.empty())
-        return "Teacher cannot be added:\n" + errors;
+    errors += buildValidationError(teacherValidator.validateNationalNumber(teacher.getNationalNumber()), "National number must be 14 characters (make sure your input is DIGITS ONLY).");
+    errors += validateFields(teacher, grade);
 
-    if (teacherRepository.getTeachersInGrade(grade) >= teacherRepository.getMaxTeachersForGrade(grade))
+    if (!errors.empty()) {
+        return "Teacher cannot be added:\n" + errors;
+    }
+
+    if (isGradeAtCapacity(grade)) {
         return "Maximum number of teachers reached for this grade.";
+    }
 
     return teacherRepository.addTeacher(grade, teacher);
 }
 
+
 string TeacherServiceImpl::editTeacher(const string& id, const Teacher& newData) {
     Teacher* existing = teacherRepository.findTeacherById(id);
-    if (!existing)
+    if (!existing) {
         return "Teacher not found.";
+    }
 
-    string errors;
-    if (!teacherValidator.validateName(newData.getName()))
-        errors += "- Teacher name cannot be empty.\n";
-    if (!teacherValidator.validateAge(newData.getAge()))
-        errors += "- Teacher age does not comply with school policy (make sure your input is DIGITS ONLY).\n";
-    if (!teacherValidator.validateExperienceYears(newData.getExperienceYears()))
-        errors += "- Years of experience do not meet school requirements (make sure your input is DIGITS ONLY).\n";
-    if (!teacherValidator.validateSpecialization(newData.getSpecialization()))
-        errors += "- Specialization cannot be empty.\n";
-    if (!teacherValidator.validateMonthlySalary(newData.getMonthlySalary()))
-        errors += "- Monthly salary must be at least 7000 (make sure your input is DIGITS ONLY).\n";
-    if (!teacherValidator.validateGrade(newData.getGrade()))
-        errors += "- Grade must be between 1 and 12 (make sure your input is DIGITS ONLY).\n";
-    if (!errors.empty())
-        return "Teacher cannot be updated:\n" + errors;
+    string errors = validateFields(newData, newData.getGrade());
+    if (!errors.empty()) {
+        return wrapUpdateErrors("Teacher", errors);
+    }
 
     if (newData.getSpecialization() != existing->getSpecialization()) {
         const vector<string> assignedCoursesCopy = existing->getAssignedCourses();
         for (int i = 0; i < (int)assignedCoursesCopy.size(); i++) {
             Course* course = courseRepository.findCourseById(assignedCoursesCopy[i]);
             if (course && course->getSpecialization() == existing->getSpecialization()) {
-                if (course->getNumberOfAssignedStudents() > 0)
+                if (course->getNumberOfAssignedStudents() > 0) {
                     return "cannot change specialization: students are enrolled in a course taught by this teacher with the same specialization.";
+                }
             }
         }
         for (int i = 0; i < (int)assignedCoursesCopy.size(); i++) {
@@ -88,11 +89,13 @@ string TeacherServiceImpl::editTeacher(const string& id, const Teacher& newData)
     int newGrade = newData.getGrade();
 
     if (oldGrade != newGrade) {
-        if (getStageFromGrade(oldGrade) != getStageFromGrade(newGrade))
+        if (getStageFromGrade(oldGrade) != getStageFromGrade(newGrade)) {
             return "cannot change grade to a different stage.";
+        }
 
-        if (teacherRepository.getTeachersInGrade(newGrade) >= teacherRepository.getMaxTeachersForGrade(newGrade))
+        if (isGradeAtCapacity(newGrade)) {
             return "Maximum number of teachers reached for the target grade.";
+        }
 
         vector<string> assignedCoursesCopy = existing->getAssignedCourses();
         for (int i = 0; i < (int)assignedCoursesCopy.size(); i++) {
@@ -108,15 +111,18 @@ string TeacherServiceImpl::editTeacher(const string& id, const Teacher& newData)
 }
 
 string TeacherServiceImpl::assignCoursesToTeacher(const string& teacherId, const vector<string>& courseIds, const vector<vector<int>>& courseClasses) {
-    if (courseIds.empty() || (int)courseIds.size() > SchoolConstants::MAX_COURSES_PER_TEACHER)
+    if (courseIds.empty() || (int)courseIds.size() > SchoolConstants::MAX_COURSES_PER_TEACHER) {
         return "Teacher must be assigned between 1 and " + to_string(SchoolConstants::MAX_COURSES_PER_TEACHER) + " courses.";
+    }
 
     Teacher* teacher = teacherRepository.findTeacherById(teacherId);
-    if (!teacher)
+    if (!teacher) {
         return "Teacher not found.";
+    }
 
-    if ((int)(teacher->getAssignedCourses().size() + courseIds.size()) > SchoolConstants::MAX_COURSES_PER_TEACHER)
+    if ((int)(teacher->getAssignedCourses().size() + courseIds.size()) > SchoolConstants::MAX_COURSES_PER_TEACHER) {
         return "Teacher cannot be assigned more than " + to_string(SchoolConstants::MAX_COURSES_PER_TEACHER) + " courses.";
+    }
 
     string errors;
     for (int i = 0; i < (int)courseIds.size(); i++) {
@@ -157,11 +163,11 @@ string TeacherServiceImpl::assignCoursesToTeacher(const string& teacherId, const
             }
         }
     }
-    if (!errors.empty()){
+    if (!errors.empty()) {
         return "Assignment failed:\n" + errors;
     }
 
-    for (int i = 0; i < (int)courseIds.size(); i++){
+    for (int i = 0; i < (int)courseIds.size(); i++) {
         courseRepository.assignTeacherToCourse(courseIds[i], teacher->getId(), teacher->getName());
         const vector<int>& classes = courseClasses[i];
         for (int j = 0; j < (int)classes.size(); j++) {
@@ -173,58 +179,71 @@ string TeacherServiceImpl::assignCoursesToTeacher(const string& teacherId, const
 }
 
 string TeacherServiceImpl::replaceTeacherInCourse(const string& courseId, const string& oldTeacherId, const string& newTeacherId) {
-    if (oldTeacherId == newTeacherId)
+    if (oldTeacherId == newTeacherId) {
         return "Old and new teacher IDs must be different.";
+    }
 
     Course* course = courseRepository.findCourseById(courseId);
-    if (!course)
+    if (!course) {
         return "Course not found.";
+    }
 
     Teacher* oldTeacher = teacherRepository.findTeacherById(oldTeacherId);
-    if (!oldTeacher)
+    if (!oldTeacher) {
         return "Old teacher not found.";
+    }
 
     Teacher* newTeacher = teacherRepository.findTeacherById(newTeacherId);
-    if (!newTeacher)
+    if (!newTeacher) {
         return "New teacher not found.";
+    }
 
-    if (!oldTeacher->isCourseAssigned(courseId))
+    if (!oldTeacher->isCourseAssigned(courseId)) {
         return "Old teacher is not assigned to this course.";
+    }
 
     const vector<string>& courseTeacherIds = course->getTeacherIds();
     bool oldInCourse = false;
     for (int i = 0; i < (int)courseTeacherIds.size(); i++) {
         if (courseTeacherIds[i] == oldTeacherId) { oldInCourse = true; break; }
     }
-    if (!oldInCourse) return "Old teacher is not registered for this course.";
+    if (!oldInCourse) {
+        return "Old teacher is not registered for this course.";
+    }
 
-    if (newTeacher->isCourseAssigned(courseId))
+    if (newTeacher->isCourseAssigned(courseId)) {
         return "New teacher is already assigned to this course.";
+    }
 
-    if (getStageFromGrade(newTeacher->getGrade()) != getStageFromGrade(course->getGrade()))
+    if (getStageFromGrade(newTeacher->getGrade()) != getStageFromGrade(course->getGrade())) {
         return "New teacher is in a different school stage than the course.";
+    }
 
-    if (newTeacher->getSpecialization() != course->getSpecialization())
+    if (newTeacher->getSpecialization() != course->getSpecialization()) {
         return "Course specialization does not match the new teacher's specialization.";
+    }
 
     int currentNewCourses = (int)newTeacher->getAssignedCourses().size();
-    if (currentNewCourses + 1 > SchoolConstants::MAX_COURSES_PER_TEACHER)
+    if (currentNewCourses + 1 > SchoolConstants::MAX_COURSES_PER_TEACHER) {
         return "New teacher cannot be assigned more than " + to_string(SchoolConstants::MAX_COURSES_PER_TEACHER) + " courses.";
+    }
 
     Stage courseStage = getStageFromGrade(course->getGrade());
     int maxSeats = getMaxStudentsForStage(courseStage);
     int enrolled = course->getNumberOfAssignedStudents();
     int available = maxSeats - enrolled;
     int requiredSeats = getMinAvailableSeatsForStage(courseStage);
-    if (available < requiredSeats)
+    if (available < requiredSeats) {
         return "Course does not have enough available seats (" + to_string(available) + " available, " + to_string(requiredSeats) + " required).";
+    }
 
     oldTeacher->removeCourse(courseId);
     course->removeTeacherById(oldTeacherId);
 
     string assignResult = courseRepository.assignTeacherToCourseForReplace(courseId, newTeacherId, newTeacher->getName());
-    if (assignResult.find("Error:") != string::npos)
+    if (assignResult.find("Error:") != string::npos) {
         return assignResult;
+    }
 
     vector<string> oneCourse;
     oneCourse.push_back(courseId);
@@ -241,18 +260,22 @@ string TeacherServiceImpl::replaceTeacherInCourse(const string& courseId, const 
 
 string TeacherServiceImpl::unassignCourseFromTeacher(const string& teacherId, const string& courseId) {
     Teacher* teacher = teacherRepository.findTeacherById(teacherId);
-    if (!teacher)
+    if (!teacher) {
         return "Teacher not found.";
+    }
 
     Course* course = courseRepository.findCourseById(courseId);
-    if (!course)
+    if (!course) {
         return "Course not found.";
+    }
 
-    if (!teacher->isCourseAssigned(courseId))
+    if (!teacher->isCourseAssigned(courseId)) {
         return "This course is not assigned to the teacher.";
+    }
 
-    if (course->getNumberOfAssignedStudents() > 0)
+    if (course->getNumberOfAssignedStudents() > 0) {
         return "Cannot reassign course with enrolled students. Use replace option instead.";
+    }
 
     teacher->removeCourse(courseId);
     course->removeTeacherById(teacherId);
@@ -261,26 +284,31 @@ string TeacherServiceImpl::unassignCourseFromTeacher(const string& teacherId, co
 
 string TeacherServiceImpl::removeTeacher(const string& id) {
     Teacher* teacher = teacherRepository.findTeacherById(id);
-    if (!teacher)
+    if (!teacher) {
         return "Teacher not found.";
+    }
 
     const vector<string>& assignedCourses = teacher->getAssignedCourses();
     string blockingCourses;
     for (int i = 0; i < (int)assignedCourses.size(); i++) {
         Course* course = courseRepository.findCourseById(assignedCourses[i]);
-        if (!course)
+        if (!course) {
             continue;
-        if (course->getNumberOfAssignedStudents() > 0)
+        }
+        if (course->getNumberOfAssignedStudents() > 0) {
             blockingCourses += "- " + course->getName() + " (ID: " + course->getId() + ")\n";
+        }
     }
 
-    if (!blockingCourses.empty())
+    if (!blockingCourses.empty()) {
         return "Cannot remove teacher. The teacher still has students registered in the following courses:\n" + blockingCourses + "Please reassign or remove those students/courses first.";
+    }
 
     for (int i = 0; i < (int)assignedCourses.size(); i++) {
         Course* course = courseRepository.findCourseById(assignedCourses[i]);
-        if (!course)
+        if (!course) {
             continue;
+        }
         course->removeTeacherById(teacher->getId());
     }
 

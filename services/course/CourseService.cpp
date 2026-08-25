@@ -1,4 +1,6 @@
 #include "CourseService.h"
+#include "../../common/SchoolUtils.h"
+#include "../../common/ServiceUtils.h"
 using namespace std;
 
 CourseServiceImpl::CourseServiceImpl(CourseRepository& courseRepo, TeacherRepository& teacherRepo, CourseValidator& validator)
@@ -12,6 +14,15 @@ int CourseServiceImpl::getMaxCoursesForGrade(int grade) const {
     return courseRepository.getMaxCoursesForGrade(grade);
 }
 
+string CourseServiceImpl::validateCourseFields(const Course& course) {
+    string errors;
+    errors += buildValidationError(courseValidator.validateCourseName(course.getName()), "Invalid course name.");
+    errors += buildValidationError(courseValidator.validateGrade(course.getGrade()), "Invalid grade. Must be between 1 and 12 (make sure your input is DIGITS ONLY).");
+    errors += buildValidationError(courseValidator.validateSubjectHours(course.getSubjectHours()), "Subject hours must be between 2 and 6 (make sure your input is DIGITS ONLY).");
+    errors += buildValidationError(courseValidator.validateSpecialization(course.getSpecialization()), "Specialization cannot be empty.");
+    return errors;
+}
+
 string CourseServiceImpl::addCourse(int grade, Course& course) {
     vector<Course> existing = courseRepository.getCoursesInSchoolVector();
     for (int i = 0; i < (int)existing.size(); i++) {
@@ -23,29 +34,12 @@ string CourseServiceImpl::addCourse(int grade, Course& course) {
         }
     }
 
-    string errors;
-
-    if (!courseValidator.validateCourseName(course.getName())) {
-        errors += "- Invalid course name.\n";
-    }
-
-    if (!courseValidator.validateGrade(course.getGrade())) {
-        errors += "- Invalid grade. Must be between 1 and 12 (make sure your input is DIGITS ONLY).\n";
-    }
-
-    if (!courseValidator.validateSubjectHours(course.getSubjectHours())) {
-        errors += "- Subject hours must be between 2 and 6 (make sure your input is DIGITS ONLY).\n";
-    }
-
-    if (!courseValidator.validateSpecialization(course.getSpecialization())) {
-        errors += "- Specialization cannot be empty.\n";
-    }
-
+    string errors = validateCourseFields(course);
     if (!errors.empty()) {
-        return "Course cannot be added:\n" + errors;
+        return wrapAddErrors("Course", errors);
     }
 
-    if (courseRepository.getNumberOfCoursesInGrade(grade) >= courseRepository.getMaxCoursesForGrade(grade)) {
+    if (::isGradeAtCapacity(courseRepository.getNumberOfCoursesInGrade(grade), courseRepository.getMaxCoursesForGrade(grade))) {
         return "Maximum number of courses reached for this grade.";
     }
 
@@ -65,26 +59,9 @@ string CourseServiceImpl::editCourse(const string& id, const Course& newData) {
     bool gradeChanged = (existing->getGrade() != newData.getGrade());
     bool specChanged = (existing->getSpecialization() != newData.getSpecialization());
 
-    string errors;
-
-    if (!courseValidator.validateCourseName(newData.getName())) {
-        errors += "- Invalid course name.\n";
-    }
-
-    if (!courseValidator.validateGrade(newData.getGrade())) {
-        errors += "- Invalid grade. Must be between 1 and 12 (make sure your input is DIGITS ONLY).\n";
-    }
-
-    if (!courseValidator.validateSubjectHours(newData.getSubjectHours())) {
-        errors += "- Subject hours must be between 2 and 6 (make sure your input is DIGITS ONLY).\n";
-    }
-
-    if (!courseValidator.validateSpecialization(newData.getSpecialization())) {
-        errors += "- Specialization cannot be empty.\n";
-    }
-
+    string errors = validateCourseFields(newData);
     if (!errors.empty()) {
-        return "Course cannot be updated:\n" + errors;
+        return wrapUpdateErrors("Course", errors);
     }
 
     if (gradeChanged) {
@@ -92,7 +69,7 @@ string CourseServiceImpl::editCourse(const string& id, const Course& newData) {
             return "cannot change grade to a different stage.";
         }
 
-        if (courseRepository.getNumberOfCoursesInGrade(newData.getGrade()) >= courseRepository.getMaxCoursesForGrade(newData.getGrade())) {
+        if (::isGradeAtCapacity(courseRepository.getNumberOfCoursesInGrade(newData.getGrade()), courseRepository.getMaxCoursesForGrade(newData.getGrade()))) {
             return "cannot update: maximum number of courses reached for the target grade.";
         }
 

@@ -22,6 +22,7 @@ private:
     CourseRepository& courseRepository;
     TeacherRepository& teacherRepository;
     CourseValidator& courseValidator;
+    std::string validateCourseFields(const Course& course);
 
 public:
     CourseServiceImpl(CourseRepository& courseRepo, TeacherRepository& teacherRepo, CourseValidator& validator);

@@ -3,6 +3,7 @@
 
 #include "../../models/Teacher.h"
 #include "../../common/SchoolUtils.h"
+#include "../BaseRepository.h"
 #include <map>
 #include <vector>
 #include <string>
@@ -22,12 +23,8 @@ public:
     virtual ~TeacherRepository() = default;
 };
 
-class TeacherRepositoryImpl : public TeacherRepository {
+class TeacherRepositoryImpl : public TeacherRepository, public BaseRepository<Teacher> {
 private:
-    std::vector<Teacher> allTeachers;
-    std::map<int, std::vector<int>> gradeIndex;
-    std::map<Stage, std::vector<int>> stageIndex;
-    int idCounters[13];
     std::string generateTeacherID(int grade);
     void syncTeacherIDCounter(int grade, int maxSuffix);
 public:

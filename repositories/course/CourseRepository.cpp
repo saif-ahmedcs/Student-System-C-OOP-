@@ -5,10 +5,7 @@
 #include <string>
 using namespace std;
 
-CourseRepositoryImpl::CourseRepositoryImpl() {
-    for (int i = 0; i < 13; i++) {
-        idCounters[i] = 0;
-    }
+CourseRepositoryImpl::CourseRepositoryImpl() : BaseRepository<Course>() {
 }
 
 string CourseRepositoryImpl::generateCourseID(const string& courseName, int grade, const string& specialization) {
@@ -28,14 +25,7 @@ string CourseRepositoryImpl::generateCourseID(const string& courseName, int grad
     }
 
     idCounters[grade]++;
-    int count = idCounters[grade];
-    if (count <= 9) {
-        return idStart + "00" + to_string(count);
-    } else if (count <= 99) {
-        return idStart + "0" + to_string(count);
-    } else {
-        return idStart + to_string(count);
-    }
+    return idStart + formatIdCounter(idCounters[grade]);
 }
 
 void CourseRepositoryImpl::syncCourseIDCounter(int grade, int maxSuffix) {
@@ -54,7 +44,7 @@ int CourseRepositoryImpl::getNumberOfCoursesInGrade(int grade) const {
 }
 
 vector<Course> CourseRepositoryImpl::getCoursesInSchoolVector() {
-    return allCourses;
+    return allEntities;
 }
 
 int CourseRepositoryImpl::getMaxCoursesForGrade(int grade) const {
@@ -62,9 +52,9 @@ int CourseRepositoryImpl::getMaxCoursesForGrade(int grade) const {
 }
 
 Course* CourseRepositoryImpl::findCourseById(const string& id) {
-    for (int i = 0; i < (int)allCourses.size(); i++) {
-        if (allCourses[i].getId() == id) {
-            return &allCourses[i];
+    for (int i = 0; i < (int)allEntities.size(); i++) {
+        if (allEntities[i].getId() == id) {
+            return &allEntities[i];
         }
     }
     return nullptr;
@@ -73,9 +63,9 @@ Course* CourseRepositoryImpl::findCourseById(const string& id) {
 string CourseRepositoryImpl::addCourse(int grade, Course& course) {
     string finalId = generateCourseID(course.getName(), grade, course.getSpecialization());
     course.setId(finalId);
-    allCourses.reserve(allCourses.size() + 1);
-    allCourses.push_back(course);
-    int idx = (int)allCourses.size() - 1;
+    allEntities.reserve(allEntities.size() + 1);
+    allEntities.push_back(course);
+    int idx = (int)allEntities.size() - 1;
     gradeIndex[grade].push_back(idx);
     stageIndex[getStageFromGrade(grade)].push_back(idx);
     return "Course added successfully to grade " + to_string(grade) + ". ID: " + finalId;
@@ -83,8 +73,8 @@ string CourseRepositoryImpl::addCourse(int grade, Course& course) {
 
 string CourseRepositoryImpl::editCourse(const string& id, const Course& newData) {
     int removeIndex = -1;
-    for (int i = 0; i < (int)allCourses.size(); i++) {
-        if (allCourses[i].getId() == id) {
+    for (int i = 0; i < (int)allEntities.size(); i++) {
+        if (allEntities[i].getId() == id) {
             removeIndex = i;
             break;
         }
@@ -93,7 +83,7 @@ string CourseRepositoryImpl::editCourse(const string& id, const Course& newData)
         return "Course not found.";
     }
 
-    Course* c = &allCourses[removeIndex];
+    Course* c = &allEntities[removeIndex];
     int oldGrade = c->getGrade();
     int newGrade = newData.getGrade();
 
@@ -101,34 +91,10 @@ string CourseRepositoryImpl::editCourse(const string& id, const Course& newData)
         Stage oldStage = getStageFromGrade(oldGrade);
         Stage newStage = getStageFromGrade(newGrade);
 
-        map<int, vector<int>>::iterator git = gradeIndex.find(oldGrade);
-        if (git != gradeIndex.end()) {
-            vector<int>& indices = git->second;
-            for (int i = 0; i < (int)indices.size(); i++) {
-                if (indices[i] == removeIndex) {
-                    indices.erase(indices.begin() + i);
-                    break;
-                }
-            }
-            if (indices.empty()) {
-                gradeIndex.erase(git);
-            }
-        }
+        removeFromGradeIndex(oldGrade, removeIndex);
 
         if (oldStage != newStage) {
-            map<Stage, vector<int>>::iterator sit = stageIndex.find(oldStage);
-            if (sit != stageIndex.end()) {
-                vector<int>& indices = sit->second;
-                for (int i = 0; i < (int)indices.size(); i++) {
-                    if (indices[i] == removeIndex) {
-                        indices.erase(indices.begin() + i);
-                        break;
-                    }
-                }
-                if (indices.empty()) {
-                    stageIndex.erase(sit);
-                }
-            }
+            removeFromStageIndex(oldStage, removeIndex);
             stageIndex[newStage].push_back(removeIndex);
         }
 
@@ -145,15 +111,19 @@ string CourseRepositoryImpl::editCourse(const string& id, const Course& newData)
     return "Course data updated successfully. New ID: " + c->getId();
 }
 
+static string doAssignTeacherToCourse(Course* course, const string& courseId, const string& teacherId, const string& teacherName) {
+    if (!course->assignTeacher(teacherId, teacherName)) {
+        return "Error: Teacher already assigned to course " + courseId + ".";
+    }
+    return "Teacher assigned to course successfully.";
+}
+
 string CourseRepositoryImpl::assignTeacherToCourse(const string& courseId, const string& teacherId, const string& teacherName) {
     Course* course = findCourseById(courseId);
     if (!course) {
         return "Error: Course " + courseId + " not found.";
     }
-    if (!course->assignTeacher(teacherId, teacherName)) {
-        return "Error: Teacher already assigned to course " + courseId + ".";
-    }
-    return "Teacher assigned to course successfully.";
+    return doAssignTeacherToCourse(course, courseId, teacherId, teacherName);
 }
 
 string CourseRepositoryImpl::assignTeacherToCourseForReplace(const string& courseId, const string& teacherId, const string& teacherName) {
@@ -161,10 +131,7 @@ string CourseRepositoryImpl::assignTeacherToCourseForReplace(const string& cours
     if (!course) {
         return "Error: Course " + courseId + " not found.";
     }
-    if (!course->assignTeacher(teacherId, teacherName)) {
-        return "Error: Teacher already assigned to course " + courseId + ".";
-    }
-    return "Teacher assigned to course successfully.";
+    return doAssignTeacherToCourse(course, courseId, teacherId, teacherName);
 }
 
 string CourseRepositoryImpl::assignTeacherToClassInCourse(const string& courseId, int classNum, const string& teacherId) {
@@ -200,8 +167,8 @@ string CourseRepositoryImpl::removeStudentFromCourse(const string& studentId, co
 
 string CourseRepositoryImpl::removeCourse(const string& id) {
     int removeIndex = -1;
-    for (int i = 0; i < (int)allCourses.size(); i++) {
-        if (allCourses[i].getId() == id) {
+    for (int i = 0; i < (int)allEntities.size(); i++) {
+        if (allEntities[i].getId() == id) {
             removeIndex = i;
             break;
         }
@@ -210,7 +177,7 @@ string CourseRepositoryImpl::removeCourse(const string& id) {
         return "Course not found.";
     }
 
-    int grade = allCourses[removeIndex].getGrade();
+    int grade = allEntities[removeIndex].getGrade();
     Stage stage = getStageFromGrade(grade);
 
     map<int, vector<int>>::iterator git = gradeIndex.find(grade);
@@ -245,20 +212,20 @@ string CourseRepositoryImpl::removeCourse(const string& id) {
         }
     }
 
-    allCourses.erase(allCourses.begin() + removeIndex);
+    allEntities.erase(allEntities.begin() + removeIndex);
     return "Course removed successfully.";
 }
 
 bool CourseRepositoryImpl::saveToFile(const string& filename) {
-    string tmp = filename + ".tmp";
-    ofstream f(tmp.c_str());
-    if (!f) {
+    string tmp;
+    ofstream f;
+    if (!atomicSaveOpen(filename, f, tmp)) {
         return false;
     }
 
-    f << allCourses.size() << "\n";
-    for (int i = 0; i < (int)allCourses.size(); i++) {
-        Course& c = allCourses[i];
+    f << allEntities.size() << "\n";
+    for (int i = 0; i < (int)allEntities.size(); i++) {
+        Course& c = allEntities[i];
         f << c.getId() << "\n";
         f << c.getName() << "\n";
         f << c.getGrade() << "\n";
@@ -283,15 +250,7 @@ bool CourseRepositoryImpl::saveToFile(const string& filename) {
             f << it->second << "\n";
         }
     }
-    f.flush();
-    if (!f.good()) {
-        f.close();
-        remove(tmp.c_str());
-        return false;
-    }
-    f.close();
-    remove(filename.c_str());
-    return rename(tmp.c_str(), filename.c_str()) == 0;
+    return atomicSaveFinish(f, tmp, filename);
 }
 
 void CourseRepositoryImpl::loadFromFile(const string& filename) {
@@ -305,7 +264,7 @@ void CourseRepositoryImpl::loadFromFile(const string& filename) {
     f.ignore();
 
     if (f.fail()) {
-        cout << "[WARNING] \"" << filename << "\" is corrupt or empty — starting fresh.\n";
+        cout << "[WARNING] \"" << filename << "\" is corrupt or empty \xe2\x80\x94 starting fresh.\n";
         return;
     }
 
@@ -323,8 +282,7 @@ void CourseRepositoryImpl::loadFromFile(const string& filename) {
         getline(f, spec);
 
         if (f.fail()) {
-            cout << "[WARNING] \"" << filename << "\" is corrupt at record " << (i + 1) << " — discarding loaded data.\n";
-            allCourses.clear(); gradeIndex.clear(); stageIndex.clear();
+            discardLoadedData(filename, i + 1);
             return;
         }
 
@@ -362,13 +320,12 @@ void CourseRepositoryImpl::loadFromFile(const string& filename) {
         }
 
         if (f.fail() && i < count - 1) {
-            cout << "[WARNING] \"" << filename << "\" is corrupt at record " << (i + 1) << " — discarding loaded data.\n";
-            allCourses.clear(); gradeIndex.clear(); stageIndex.clear();
+            discardLoadedData(filename, i + 1);
             return;
         }
 
-        allCourses.push_back(c);
-        int idx = (int)allCourses.size() - 1;
+        allEntities.push_back(c);
+        int idx = (int)allEntities.size() - 1;
         gradeIndex[grade].push_back(idx);
         stageIndex[getStageFromGrade(grade)].push_back(idx);
 

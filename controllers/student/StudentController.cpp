@@ -1,4 +1,6 @@
 #include "StudentController.h"
+#include "../../common/SaveManager.h"
+#include "../../common/TablePrinter.h"
 #include <iomanip>
 using namespace std;
 
@@ -6,26 +8,7 @@ StudentController::StudentController(StudentService& sSrv, CourseService& cSrv, 
     : studentService(sSrv), courseService(cSrv), studentRepo(sRepo), courseRepo(cRepo), teacherRepo(tRepo) {}
 
 void StudentController::save() const {
-    bool ok = true;
-    if (!studentRepo.saveToFile(SchoolConstants::FILE_STUDENTS))
-    {
-        cout << "[ERROR] Failed to save student data.\n";
-        ok = false;
-    }
-    if (!courseRepo.saveToFile(SchoolConstants::FILE_COURSES))
-    {
-        cout << "[ERROR] Failed to save course data.\n";
-        ok = false;
-    }
-    if (!teacherRepo.saveToFile(SchoolConstants::FILE_TEACHERS))
-    {
-        cout << "[ERROR] Failed to save teacher data.\n";
-        ok = false;
-    }
-    if (ok)
-    {
-        cout << "[Saved]\n";
-    }
+    saveAll(studentRepo, courseRepo, teacherRepo);
 }
 
 Student* StudentController::findStudentById(const string& id) {
@@ -100,37 +83,44 @@ string StudentController::removeStudent(const string& id) {
     return studentService.removeStudent(id);
 }
 
+static const string CYAN = "\033[36m";
+static const int STUDENT_TABLE_WIDTH = 65;
+
+static void printStudentRow(const string& color, int number, Student* s, const string& lastCell) {
+    string classLabel = to_string(s->getGrade()) + "/" + to_string(s->getClassNumber());
+    printTableCell(color, 5);  cout << (number);
+    printTableCell(color, 25); cout << s->getName();
+    printTableCell(color, 13); cout << s->getId();
+    printTableCell(color, 9);  cout << classLabel;
+    printTableCell(color, 9);  cout << lastCell;
+    printTableRowEnd(color);
+}
+
 void StudentController::listStudentsByGrade(int grade) {
     vector<Student*> students = studentRepo.getStudentsByGrade(grade);
 
     cout << "Students in Grade " << grade << " (" << students.size() << ")\n";
-    cout << "\033[36m-----------------------------------------------------------------\033[0m\n";
-    cout << "\033[36m|\033[0m " << left << setw(5)  << "No."
-         << "\033[36m|\033[0m " << left << setw(25) << "Student Name"
-         << "\033[36m|\033[0m " << left << setw(13) << "Student ID"
-         << "\033[36m|\033[0m " << left << setw(9)  << "Class"
-         << "\033[36m|\033[0m " << left << setw(9)  << "Courses"
-         << "\033[36m|\033[0m\n";
-    cout << "\033[36m-----------------------------------------------------------------\033[0m\n";
+
+    vector<TableColumn> cols = {
+        {"No.",          5},
+        {"Student Name", 25},
+        {"Student ID",   13},
+        {"Class",        9},
+        {"Courses",      9}
+    };
+    printTableHeader(CYAN, STUDENT_TABLE_WIDTH, cols);
 
     if (students.empty())
     {
-        cout << "No students found in this grade.\n";
-        cout << "\033[36m=================================================================\033[0m\n";
+        printEmptyTableNotice(CYAN, STUDENT_TABLE_WIDTH, "No students found in this grade.");
         return;
     }
 
     for (int i = 0; i < (int)students.size(); i++)
     {
-        string classLabel = to_string(students[i]->getGrade()) + "/" + to_string(students[i]->getClassNumber());
-        cout << "\033[36m|\033[0m " << left << setw(5)  << (i + 1)
-             << "\033[36m|\033[0m " << left << setw(25) << students[i]->getName()
-             << "\033[36m|\033[0m " << left << setw(13) << students[i]->getId()
-             << "\033[36m|\033[0m " << left << setw(9)  << classLabel
-             << "\033[36m|\033[0m " << left << setw(9)  << students[i]->getNumberOfAssignedCourses()
-             << "\033[36m|\033[0m\n";
+        printStudentRow(CYAN, i + 1, students[i], to_string(students[i]->getNumberOfAssignedCourses()));
     }
-    cout << "\033[36m-----------------------------------------------------------------\033[0m\n";
+    printTableDivider(CYAN, STUDENT_TABLE_WIDTH);
 }
 
 void StudentController::listStudentsByGpa(int grade) {
@@ -147,31 +137,27 @@ void StudentController::listStudentsByGpa(int grade) {
     }
 
     cout << "Students in Grade " << grade << " Sorted by GPA (" << students.size() << ")\n";
-    cout << "\033[36m-----------------------------------------------------------------\033[0m\n";
-    cout << "\033[36m|\033[0m " << left << setw(5)  << "No."
-         << "\033[36m|\033[0m " << left << setw(25) << "Student Name"
-         << "\033[36m|\033[0m " << left << setw(13) << "Student ID"
-         << "\033[36m|\033[0m " << left << setw(9)  << "Class"
-         << "\033[36m|\033[0m " << left << setw(9)  << "GPA"
-         << "\033[36m|\033[0m\n";
-    cout << "\033[36m-----------------------------------------------------------------\033[0m\n";
+
+    vector<TableColumn> cols = {
+        {"No.",          5},
+        {"Student Name", 25},
+        {"Student ID",   13},
+        {"Class",        9},
+        {"GPA",          9}
+    };
+    printTableHeader(CYAN, STUDENT_TABLE_WIDTH, cols);
 
     if (students.empty())
     {
-        cout << "No students found in this grade.\n";
-        cout << "\033[36m=================================================================\033[0m\n";
+        printEmptyTableNotice(CYAN, STUDENT_TABLE_WIDTH, "No students found in this grade.");
         return;
     }
 
     for (int i = 0; i < (int)students.size(); i++)
     {
-        string classLabel = to_string(students[i]->getGrade()) + "/" + to_string(students[i]->getClassNumber());
-        cout << "\033[36m|\033[0m " << left << setw(5)  << (i + 1)
-             << "\033[36m|\033[0m " << left << setw(25) << students[i]->getName()
-             << "\033[36m|\033[0m " << left << setw(13) << students[i]->getId()
-             << "\033[36m|\033[0m " << left << setw(9)  << classLabel
-             << "\033[36m|\033[0m " << left << setw(9)  << fixed << setprecision(2) << students[i]->getGpa()
-             << "\033[36m|\033[0m\n";
+        ostringstream gpaStr;
+        gpaStr << fixed << setprecision(2) << students[i]->getGpa();
+        printStudentRow(CYAN, i + 1, students[i], gpaStr.str());
     }
-    cout << "\033[36m-----------------------------------------------------------------\033[0m\n";
+    printTableDivider(CYAN, STUDENT_TABLE_WIDTH);
 }

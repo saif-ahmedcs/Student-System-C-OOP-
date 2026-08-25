@@ -7,14 +7,12 @@
 
 class Teacher : public BaseEntity {
 private:
-    int grade;
     std::string subject;
     double monthlySalary;
     int experienceYears;
     std::string specialization;
     std::vector<std::string> assignedCourseIds;
 public:
-    void setGrade(int grade);
     void setMonthlySalary(double salary);
     void setSubject(const std::string& subject);
     void setExperienceYears(int years);
@@ -26,7 +24,6 @@ public:
     bool removeCourse(const std::string& courseId);
     void removeAllCourses();
 
-    int getGrade() const;
     double getMonthlySalary() const;
     std::string getSubject() const;
     int getExperienceYears() const;

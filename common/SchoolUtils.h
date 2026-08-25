@@ -70,4 +70,18 @@ inline int getMaxCoursesForGrade(int grade) {
     return getMaxCoursesForStage(getStageFromGrade(grade));
 }
 
+inline bool isGradeAtCapacity(int countInGrade, int maxAllowedForGrade) {
+    return countInGrade >= maxAllowedForGrade;
+}
+
+inline std::string formatIdCounter(int count) {
+    if (count <= 9) {
+        return "00" + std::to_string(count);
+    } else if (count <= 99) {
+        return "0" + std::to_string(count);
+    } else {
+        return std::to_string(count);
+    }
+}
+
 #endif

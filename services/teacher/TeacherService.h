@@ -28,6 +28,8 @@ private:
     CourseRepository& courseRepository;
     StudentRepository& studentRepository;
     TeacherValidator& teacherValidator;
+    std::string validateFields(const Teacher& teacher, int grade);
+    bool isGradeAtCapacity(int grade) const;
 
 public:
     TeacherServiceImpl(TeacherRepository& teacherRepo, CourseRepository& courseRepo, StudentRepository& studentRepo, TeacherValidator& validator);

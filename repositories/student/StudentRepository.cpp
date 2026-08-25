@@ -5,39 +5,36 @@
 #include <string>
 using namespace std;
 
-StudentRepositoryImpl::StudentRepositoryImpl() {
-    for (int i = 0; i < 13; i++) {
-        idCounters[i] = 0;
-    }
+StudentRepositoryImpl::StudentRepositoryImpl() : BaseRepository<Student>() {
 }
+
+static const std::string gradeYear[13] = {
+    "",
+    "2019",
+    "2018",
+    "2017",
+    "2016",
+    "2015",
+    "2014",
+    "2013",
+    "2012",
+    "2011",
+    "2010",
+    "2009",
+    "2008"
+};
 
 string StudentRepositoryImpl::generateStudentID(int grade) {
-    string idStart;
-    if (grade == 1) { idStart = "2019"; }
-    else if (grade == 2) { idStart = "2018"; }
-    else if (grade == 3) { idStart = "2017"; }
-    else if (grade == 4) { idStart = "2016"; }
-    else if (grade == 5) { idStart = "2015"; }
-    else if (grade == 6) { idStart = "2014"; }
-    else if (grade == 7) { idStart = "2013"; }
-    else if (grade == 8) { idStart = "2012"; }
-    else if (grade == 9) { idStart = "2011"; }
-    else if (grade == 10) { idStart = "2010"; }
-    else if (grade == 11) { idStart = "2009"; }
-    else if (grade == 12) { idStart = "2008"; }
-    else { return "Invalid grade"; }
+    if (grade < 1 || grade > 12)
+        return "Invalid grade";
 
-    if (idCounters[grade] >= 0 && idCounters[grade] <= 9) {
-        idCounters[grade]++;
-        return idStart + "00" + to_string(idCounters[grade]);
-    } else if (idCounters[grade] >= 10 && idCounters[grade] <= 99) {
-        idCounters[grade]++;
-        return idStart + "0" + to_string(idCounters[grade]);
-    } else {
-        idCounters[grade]++;
-        return idStart + to_string(idCounters[grade]);
-    }
+    string idStart = gradeYear[grade];
+
+    idCounters[grade]++;
+
+    return idStart + formatIdCounter(idCounters[grade]);
 }
+
 
 void StudentRepositoryImpl::syncStudentIDCounter(int grade, int maxSuffix) {
     while (idCounters[grade] < maxSuffix) {
@@ -46,18 +43,18 @@ void StudentRepositoryImpl::syncStudentIDCounter(int grade, int maxSuffix) {
 }
 
 Student* StudentRepositoryImpl::findStudentByNationalNumber(const string& nn) {
-    for (int i = 0; i < (int)allStudents.size(); i++) {
-        if (allStudents[i].getNationalNumber() == nn) {
-            return &allStudents[i];
+    for (int i = 0; i < (int)allEntities.size(); i++) {
+        if (allEntities[i].getNationalNumber() == nn) {
+            return &allEntities[i];
         }
     }
     return nullptr;
 }
 
 Student* StudentRepositoryImpl::findStudentById(const string& id) {
-    for (int i = 0; i < (int)allStudents.size(); i++) {
-        if (allStudents[i].getId() == id) {
-            return &allStudents[i];
+    for (int i = 0; i < (int)allEntities.size(); i++) {
+        if (allEntities[i].getId() == id) {
+            return &allEntities[i];
         }
     }
     return nullptr;
@@ -80,7 +77,7 @@ vector<Student*> StudentRepositoryImpl::getStudentsByGrade(int grade) {
         return result;
     }
     for (int i = 0; i < (int)it->second.size(); i++) {
-        result.push_back(&allStudents[it->second[i]]);
+        result.push_back(&allEntities[it->second[i]]);
     }
     return result;
 }
@@ -96,9 +93,9 @@ string StudentRepositoryImpl::addStudent(int grade, Student& student) {
     int studentsInGrade = (int)gradeIndex[grade].size();
     int classNum = (studentsInGrade % SchoolConstants::CLASSES_PER_GRADE) + 1;
     student.setClassNumber(classNum);
-    allStudents.reserve(allStudents.size() + 1);
-    allStudents.push_back(student);
-    int idx = (int)allStudents.size() - 1;
+    allEntities.reserve(allEntities.size() + 1);
+    allEntities.push_back(student);
+    int idx = (int)allEntities.size() - 1;
     gradeIndex[grade].push_back(idx);
     stageIndex[getStageFromGrade(grade)].push_back(idx);
 
@@ -107,8 +104,8 @@ string StudentRepositoryImpl::addStudent(int grade, Student& student) {
 
 string StudentRepositoryImpl::editStudent(const string& id, const Student& newData) {
     int idx = -1;
-    for (int i = 0; i < (int)allStudents.size(); i++) {
-        if (allStudents[i].getId() == id) {
+    for (int i = 0; i < (int)allEntities.size(); i++) {
+        if (allEntities[i].getId() == id) {
                 idx = i; break;
         }
     }
@@ -117,47 +114,21 @@ string StudentRepositoryImpl::editStudent(const string& id, const Student& newDa
             return "Student not found.";
     }
 
-    int oldGrade = allStudents[idx].getGrade();
+    int oldGrade = allEntities[idx].getGrade();
     int newGrade = newData.getGrade();
 
-    allStudents[idx].setName(newData.getName());
-    allStudents[idx].setPhoneNumber(newData.getPhoneNumber());
-    allStudents[idx].setGpa(newData.getGpa());
-    allStudents[idx].setAge(newData.getAge());
-    allStudents[idx].setGrade(newGrade);
+    allEntities[idx].setName(newData.getName());
+    allEntities[idx].setPhoneNumber(newData.getPhoneNumber());
+    allEntities[idx].setGpa(newData.getGpa());
+    allEntities[idx].setAge(newData.getAge());
+    allEntities[idx].setGrade(newGrade);
 
     if (oldGrade != newGrade) {
-        map<int, vector<int>>::iterator git = gradeIndex.find(oldGrade);
-        if (git != gradeIndex.end()) {
-            vector<int>& indices = git->second;
-            for (int i = 0; i < (int)indices.size(); i++) {
-                if (indices[i] == idx) {
-                    indices.erase(indices.begin() + i);
-                    break;
-                }
-            }
-            if (indices.empty()) {
-                gradeIndex.erase(git);
-            }
-        }
-
-        Stage oldStage = getStageFromGrade(oldGrade);
-        map<Stage, vector<int>>::iterator sit = stageIndex.find(oldStage);
-        if (sit != stageIndex.end()) {
-            vector<int>& indices = sit->second;
-            for (int i = 0; i < (int)indices.size(); i++) {
-                if (indices[i] == idx) {
-                    indices.erase(indices.begin() + i);
-                    break;
-                }
-            }
-            if (indices.empty()) {
-                stageIndex.erase(sit);
-            }
-        }
+        removeFromGradeIndex(oldGrade, idx);
+        removeFromStageIndex(getStageFromGrade(oldGrade), idx);
 
         string newId = generateStudentID(newGrade);
-        allStudents[idx].setId(newId);
+        allEntities[idx].setId(newId);
 
         gradeIndex[newGrade].push_back(idx);
         stageIndex[getStageFromGrade(newGrade)].push_back(idx);
@@ -185,8 +156,8 @@ void StudentRepositoryImpl::clearStudentCourses(const string& studentId) {
 
 string StudentRepositoryImpl::removeStudent(const string& id) {
     int removeIndex = -1;
-    for (int i = 0; i < (int)allStudents.size(); i++) {
-        if (allStudents[i].getId() == id) {
+    for (int i = 0; i < (int)allEntities.size(); i++) {
+        if (allEntities[i].getId() == id) {
             removeIndex = i; break;
         }
     }
@@ -194,7 +165,7 @@ string StudentRepositoryImpl::removeStudent(const string& id) {
         return "Student not found.";
     }
 
-    int grade = allStudents[removeIndex].getGrade();
+    int grade = allEntities[removeIndex].getGrade();
     Stage stage = getStageFromGrade(grade);
 
     map<int, vector<int>>::iterator git = gradeIndex.find(grade);
@@ -231,20 +202,20 @@ string StudentRepositoryImpl::removeStudent(const string& id) {
         }
     }
 
-    allStudents.erase(allStudents.begin() + removeIndex);
+    allEntities.erase(allEntities.begin() + removeIndex);
     return "Student removed successfully.";
 }
 
 bool StudentRepositoryImpl::saveToFile(const string& filename) {
-    string tmp = filename + ".tmp";
-    ofstream f(tmp.c_str());
-    if (!f) {
+    string tmp;
+    ofstream f;
+    if (!atomicSaveOpen(filename, f, tmp)) {
         return false;
     }
 
-    f << allStudents.size() << "\n";
-    for (int i = 0; i < (int)allStudents.size(); i++) {
-        Student& s = allStudents[i];
+    f << allEntities.size() << "\n";
+    for (int i = 0; i < (int)allEntities.size(); i++) {
+        Student& s = allEntities[i];
         f << s.getId() << "\n";
         f << s.getName() << "\n";
         f << s.getNationalNumber() << "\n";
@@ -262,15 +233,7 @@ bool StudentRepositoryImpl::saveToFile(const string& filename) {
             f << courses[j].teacherName << "\n";
         }
     }
-    f.flush();
-    if (!f.good()) {
-        f.close();
-        remove(tmp.c_str());
-        return false;
-    }
-    f.close();
-    remove(filename.c_str());
-    return rename(tmp.c_str(), filename.c_str()) == 0;
+    return atomicSaveFinish(f, tmp, filename);
 }
 
 void StudentRepositoryImpl::loadFromFile(const string& filename) {
@@ -284,7 +247,7 @@ void StudentRepositoryImpl::loadFromFile(const string& filename) {
     f.ignore();
 
     if (f.fail()) {
-        cout << "[WARNING] \"" << filename << "\" is corrupt or empty — starting fresh.\n";
+        cout << "[WARNING] \"" << filename << "\" is corrupt or empty \xe2\x80\x94 starting fresh.\n";
         return;
     }
 
@@ -315,10 +278,7 @@ void StudentRepositoryImpl::loadFromFile(const string& filename) {
         getline(f, phone);
 
         if (f.fail()) {
-            cout << "[WARNING] \"" << filename << "\" is corrupt at record " << (i + 1) << " — discarding loaded data.\n";
-            allStudents.clear();
-            gradeIndex.clear();
-            stageIndex.clear();
+            discardLoadedData(filename, i + 1);
             return;
         }
 
@@ -341,15 +301,12 @@ void StudentRepositoryImpl::loadFromFile(const string& filename) {
         }
 
         if (f.fail() && i < count - 1) {
-            cout << "[WARNING] \"" << filename << "\" is corrupt at record " << (i + 1) << " — discarding loaded data.\n";
-            allStudents.clear();
-            gradeIndex.clear();
-            stageIndex.clear();
+            discardLoadedData(filename, i + 1);
             return;
         }
 
-        allStudents.push_back(s);
-        int idx = (int)allStudents.size() - 1;
+        allEntities.push_back(s);
+        int idx = (int)allEntities.size() - 1;
         gradeIndex[grade].push_back(idx);
         stageIndex[getStageFromGrade(grade)].push_back(idx);
 

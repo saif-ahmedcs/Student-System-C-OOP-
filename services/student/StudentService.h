@@ -24,6 +24,9 @@ private:
     StudentRepository& studentRepository;
     CourseRepository& courseRepository;
     StudentValidator& studentValidator;
+    std::string validateFields(const Student& student, int grade);
+    std::string validateAddFields(const Student& student, int grade);
+    bool isGradeAtCapacity(int grade) const;
 
 public:
     StudentServiceImpl(StudentRepository& studentRepo, CourseRepository& courseRepo, StudentValidator& validator);

@@ -1,4 +1,5 @@
 #include "StudentService.h"
+#include "../../common/ServiceUtils.h"
 using namespace std;
 
 StudentServiceImpl::StudentServiceImpl(StudentRepository& studentRepo, CourseRepository& courseRepo, StudentValidator& validator)
@@ -16,38 +17,38 @@ int StudentServiceImpl::getMaxStudentsForGrade(int grade) const {
     return studentRepository.getMaxStudentsForGrade(grade);
 }
 
+bool StudentServiceImpl::isGradeAtCapacity(int grade) const {
+    return ::isGradeAtCapacity(studentRepository.getStudentsInGrade(grade), studentRepository.getMaxStudentsForGrade(grade));
+}
+
+string StudentServiceImpl::validateFields(const Student& student, int grade) {
+    string errors;
+    errors += buildValidationError(studentValidator.validateName(student.getName()), "Name cannot be empty.");
+    errors += buildValidationError(studentValidator.validateAge(student.getAge(), grade), "Age does not match the expected range for this grade (make sure your input is DIGITS ONLY).");
+    errors += buildValidationError(studentValidator.validatePhoneNumber(student.getPhoneNumber()), "Phone number must be 10-12 characters (make sure your input is DIGITS ONLY)");
+    errors += buildValidationError(studentValidator.validateGpa((float)student.getGpa()), "GPA must be between 0.0 and 4.0 (make sure your input is DIGITS ONLY)");
+    errors += buildValidationError(studentValidator.validateGrade(grade), "Grade must be between 1 and 12 characters (make sure your input is DIGITS ONLY)");
+    return errors;
+}
+
+string StudentServiceImpl::validateAddFields(const Student& student, int grade) {
+    string errors;
+    errors += buildValidationError(studentValidator.validateNationalNumber(student.getNationalNumber()), "National number must be 14 characters (make sure your input is DIGITS ONLY).");
+    errors += validateFields(student, grade);
+    return errors;
+}
+
 string StudentServiceImpl::addStudent(int grade, Student& student) {
     if (studentRepository.findStudentByNationalNumber(student.getNationalNumber())) {
         return "Student already exists.";
     }
 
-    string errors;
-
-    if (!studentValidator.validateName(student.getName())) {
-        errors += "- Name cannot be empty.\n";
-    }
-
-    if (!studentValidator.validateNationalNumber(student.getNationalNumber())) {
-        errors += "- National number must be 14 characters (make sure your input is DIGITS ONLY).\n";
-    }
-
-    if (!studentValidator.validateGrade(grade)) {
-        errors += "- Grade must be between 1 and 12 (make sure your input is DIGITS ONLY).\n";
-    }
-
-    if (!studentValidator.validateAge(student.getAge(), grade)) {
-        errors += "- Student age does not match the expected range for this grade (make sure your input is DIGITS ONLY).\n";
-    }
-
-    if (!studentValidator.validatePhoneNumber(student.getPhoneNumber())) {
-        errors += "- Phone number must be 10-12 characters (make sure your input is DIGITS ONLY)\n";
-    }
-
+    string errors = validateAddFields(student, grade);
     if (!errors.empty()) {
         return "Student registration failed:\n" + errors;
     }
 
-    if (studentRepository.getStudentsInGrade(grade) >= studentRepository.getMaxStudentsForGrade(grade)) {
+    if (isGradeAtCapacity(grade)) {
         return "Grade " + to_string(grade) + " has reached its maximum capacity.";
     }
 
@@ -60,34 +61,13 @@ string StudentServiceImpl::editStudent(const string& id, const Student& newData)
         return "Student not found.";
     }
 
-    string errors;
-
-    if (!studentValidator.validateName(newData.getName())) {
-        errors += "- Name cannot be empty.\n";
-    }
-
-    if (!studentValidator.validateAge(newData.getAge(), newData.getGrade())) {
-        errors += "- Age does not match the expected range for this grade (make sure your input is DIGITS ONLY).\n";
-    }
-
-    if (!studentValidator.validatePhoneNumber(newData.getPhoneNumber())) {
-        errors += "- Phone number must be 10-12 characters (make sure your input is DIGITS ONLY)\n";
-    }
-
-    if (!studentValidator.validateGpa((float)newData.getGpa())) {
-        errors += "- GPA must be between 0.0 and 4.0 (make sure your input is DIGITS ONLY)\n";
-    }
-
-    if (!studentValidator.validateGrade(newData.getGrade())) {
-        errors += "- Grade must be between 1 and 12 characters (make sure your input is DIGITS ONLY)\n";
-    }
-
+    string errors = validateFields(newData, newData.getGrade());
     if (!errors.empty()) {
-        return "Student cannot be updated:\n" + errors;
+        return wrapUpdateErrors("Student", errors);
     }
 
     if (student->getGrade() != newData.getGrade()) {
-        if (studentRepository.getStudentsInGrade(newData.getGrade()) >= studentRepository.getMaxStudentsForGrade(newData.getGrade())) {
+        if (isGradeAtCapacity(newData.getGrade())) {
             return "Grade " + to_string(newData.getGrade()) + " has reached its maximum capacity.";
         }
         const vector<StudentCourse> courses = student->getAssignedCourses();

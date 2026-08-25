@@ -1,4 +1,6 @@
 #include "CourseController.h"
+#include "../../common/SaveManager.h"
+#include "../../common/TablePrinter.h"
 #include <limits>
 using namespace std;
 
@@ -6,23 +8,7 @@ CourseController::CourseController(CourseService& cSrv, StudentService& sSrv, St
     : courseService(cSrv), studentService(sSrv), studentRepo(sRepo), courseRepo(cRepo), teacherRepo(tRepo) {}
 
 void CourseController::save() const {
-    bool ok = true;
-    if (!studentRepo.saveToFile(SchoolConstants::FILE_STUDENTS)) {
-        cout << "[ERROR] Failed to save student data.\n";
-        ok = false;
-    }
-    if (!courseRepo.saveToFile(SchoolConstants::FILE_COURSES)) {
-        cout << "[ERROR] Failed to save course data.\n";
-        ok = false;
-    }
-    if (!teacherRepo.saveToFile(SchoolConstants::FILE_TEACHERS)) {
-        cout << "[ERROR] Failed to save teacher data.\n";
-        ok = false;
-    }
-    if (ok)
-    {
-        cout << "[Saved]\n";
-    }
+    saveAll(studentRepo, courseRepo, teacherRepo);
 }
 
 Course* CourseController::findCourseById(const string& id) {
@@ -89,6 +75,17 @@ void CourseController::showCourse(const string& id) {
     cout << "-----------------------------------\n";
 }
 
+static const string MAGENTA = "\033[35m";
+static const int COURSE_STUDENTS_TABLE_WIDTH = 50;
+static const int COURSE_LIST_TABLE_WIDTH = 74;
+
+static void printStudentTableRow(const string& color, int number, Student* s) {
+    printTableCell(color, 5);  cout << number;
+    printTableCell(color, 25); cout << s->getName();
+    printTableCell(color, 13); cout << s->getId();
+    printTableRowEnd(color);
+}
+
 void CourseController::showCourseStudents(const string& courseId) {
     Course* c = courseService.findCourseById(courseId);
     if (!c)
@@ -99,39 +96,37 @@ void CourseController::showCourseStudents(const string& courseId) {
 
     const vector<string>& assigned = c->getAssignedStudents();
 
-    cout << "\n\033[35m==================================================\033[0m\n";
+    cout << "\n" << MAGENTA << "==================================================" << "\033[0m\n";
     cout << left << setw(14) << "Course Name" << ": " << c->getName()  << "\n";
     cout << left << setw(14) << "Course ID"   << ": " << c->getId()    << "\n";
     cout << left << setw(14) << "Grade"       << ": " << c->getGrade() << "\n";
-    cout << "\033[35m==================================================\033[0m\n";
+    cout << MAGENTA << "==================================================" << "\033[0m\n";
 
     if (assigned.empty())
     {
         cout << "No students assigned in this course yet.\n";
-        cout << "\033[35m==================================================\033[0m\n";
+        cout << MAGENTA << "==================================================" << "\033[0m\n";
         return;
     }
 
     cout << "\nTotal Assigned Students: " << assigned.size() << "\n";
-    cout << "\033[35m--------------------------------------------------\033[0m\n";
-    cout << "\033[35m|\033[0m " << left << setw(5)  << "No."
-         << "\033[35m|\033[0m " << left << setw(25) << "Student Name"
-         << "\033[35m|\033[0m " << left << setw(13) << "Student ID"
-         << "\033[35m|\033[0m\n";
-    cout << "\033[35m--------------------------------------------------\033[0m\n";
+
+    vector<TableColumn> cols = {
+        {"No.",          5},
+        {"Student Name", 25},
+        {"Student ID",   13}
+    };
+    printTableHeader(MAGENTA, COURSE_STUDENTS_TABLE_WIDTH, cols);
 
     for (int i = 0; i < (int)assigned.size(); i++)
     {
         Student* s = studentService.findStudentById(assigned[i]);
         if (s)
         {
-            cout << "\033[35m|\033[0m " << left << setw(5)  << (i + 1)
-                 << "\033[35m|\033[0m " << left << setw(25) << s->getName()
-                 << "\033[35m|\033[0m " << left << setw(13) << s->getId()
-                 << "\033[35m|\033[0m\n";
+            printStudentTableRow(MAGENTA, i + 1, s);
         }
     }
-    cout << "\033[35m--------------------------------------------------\033[0m\n";
+    printTableDivider(MAGENTA, COURSE_STUDENTS_TABLE_WIDTH);
 }
 
 void CourseController::showCourseStudentsByTeacher(const string& courseId) {
@@ -175,10 +170,10 @@ void CourseController::showCourseStudentsByTeacher(const string& courseId) {
         selectedTeacher = teachers[choice - 1];
     }
 
-    cout << "\n\033[35m==================================================\033[0m\n";
+    cout << "\n" << MAGENTA << "==================================================" << "\033[0m\n";
     cout << left << setw(14) << "Course Name"  << ": " << c->getName()    << "\n";
     cout << left << setw(14) << "Teacher Name" << ": " << selectedTeacher << "\n";
-    cout << "\033[35m==================================================\033[0m\n";
+    cout << MAGENTA << "==================================================" << "\033[0m\n";
 
     const vector<string>& allStudents = c->getAssignedStudents();
     vector<Student*> result;
@@ -204,40 +199,39 @@ void CourseController::showCourseStudentsByTeacher(const string& courseId) {
     if (result.empty())
     {
         cout << "No students registered with this teacher.\n";
-        cout << "\033[35m==================================================\033[0m\n";
+        cout << MAGENTA << "==================================================" << "\033[0m\n";
         return;
     }
 
     cout << "\nRegistered Students (" << result.size() << "):\n";
-    cout << "\033[35m--------------------------------------------------\033[0m\n";
-    cout << "\033[35m|\033[0m " << left << setw(5)  << "No."
-         << "\033[35m|\033[0m " << left << setw(25) << "Student Name"
-         << "\033[35m|\033[0m " << left << setw(13) << "Student ID"
-         << "\033[35m|\033[0m\n";
-    cout << "\033[35m--------------------------------------------------\033[0m\n";
+
+    vector<TableColumn> cols = {
+        {"No.",          5},
+        {"Student Name", 25},
+        {"Student ID",   13}
+    };
+    printTableHeader(MAGENTA, COURSE_STUDENTS_TABLE_WIDTH, cols);
 
     for (int i = 0; i < (int)result.size(); i++)
     {
-        cout << "\033[35m|\033[0m " << left << setw(5)  << (i + 1)
-             << "\033[35m|\033[0m " << left << setw(25) << result[i]->getName()
-             << "\033[35m|\033[0m " << left << setw(13) << result[i]->getId()
-             << "\033[35m|\033[0m\n";
+        printStudentTableRow(MAGENTA, i + 1, result[i]);
     }
-    cout << "\033[35m--------------------------------------------------\033[0m\n";
+    printTableDivider(MAGENTA, COURSE_STUDENTS_TABLE_WIDTH);
 }
 
 void CourseController::listCoursesByGrade(int grade) {
     vector<Course> all = courseRepo.getCoursesInSchoolVector();
 
     cout << "Courses in Grade " << grade << "\n";
-    cout << "\033[35m------------------------------------------------------------------------\033[0m\n";
-    cout << "\033[35m|\033[0m " << left << setw(5)  << "No."
-         << "\033[35m|\033[0m " << left << setw(25) << "Course Name"
-         << "\033[35m|\033[0m " << left << setw(20) << "Course ID"
-         << "\033[35m|\033[0m " << left << setw(10) << "Students"
-         << "\033[35m|\033[0m " << left << setw(10) << "Teachers"
-         << "\033[35m|\033[0m\n";
-    cout << "\033[35m------------------------------------------------------------------------\033[0m\n";
+
+    vector<TableColumn> cols = {
+        {"No.",        5},
+        {"Course Name",25},
+        {"Course ID",  20},
+        {"Students",   10},
+        {"Teachers",   10}
+    };
+    printTableHeader(MAGENTA, COURSE_LIST_TABLE_WIDTH, cols);
 
     int count = 0;
     for (int i = 0; i < (int)all.size(); i++)
@@ -247,17 +241,17 @@ void CourseController::listCoursesByGrade(int grade) {
             continue;
         }
         count++;
-        cout << "\033[35m|\033[0m " << left << setw(5)  << count
-             << "\033[35m|\033[0m " << left << setw(25) << all[i].getName()
-             << "\033[35m|\033[0m " << left << setw(20) << all[i].getId()
-             << "\033[35m|\033[0m " << left << setw(10) << all[i].getNumberOfAssignedStudents()
-             << "\033[35m|\033[0m " << left << setw(10) << all[i].getNumberOfTeachers()
-             << "\033[35m|\033[0m\n";
+        printTableCell(MAGENTA, 5);  cout << count;
+        printTableCell(MAGENTA, 25); cout << all[i].getName();
+        printTableCell(MAGENTA, 20); cout << all[i].getId();
+        printTableCell(MAGENTA, 10); cout << all[i].getNumberOfAssignedStudents();
+        printTableCell(MAGENTA, 10); cout << all[i].getNumberOfTeachers();
+        printTableRowEnd(MAGENTA);
     }
 
     if (count == 0)
     {
         cout << "No courses found in this grade.\n";
     }
-    cout << "\033[35m------------------------------------------------------------------------\033[0m\n";
+    printTableDivider(MAGENTA, COURSE_LIST_TABLE_WIDTH);
 }

@@ -1,4 +1,6 @@
 #include "TeacherController.h"
+#include "../../common/SaveManager.h"
+#include "../../common/TablePrinter.h"
 #include <iomanip>
 #include <map>
 using namespace std;
@@ -7,26 +9,7 @@ TeacherController::TeacherController(TeacherService& service, StudentRepository&
     : teacherService(service), studentRepo(sRepo), courseRepo(cRepo), teacherRepo(tRepo) {}
 
 void TeacherController::save() const {
-    bool ok = true;
-    if (!studentRepo.saveToFile(SchoolConstants::FILE_STUDENTS))
-    {
-        cout << "[ERROR] Failed to save student data.\n";
-        ok = false;
-    }
-    if (!courseRepo.saveToFile(SchoolConstants::FILE_COURSES))
-    {
-        cout << "[ERROR] Failed to save course data.\n";
-        ok = false;
-    }
-    if (!teacherRepo.saveToFile(SchoolConstants::FILE_TEACHERS))
-    {
-        cout << "[ERROR] Failed to save teacher data.\n";
-        ok = false;
-    }
-    if (ok)
-    {
-        cout << "[Saved]\n";
-    }
+    saveAll(studentRepo, courseRepo, teacherRepo);
 }
 
 Teacher* TeacherController::findTeacherById(const string& id) {
@@ -121,22 +104,25 @@ string TeacherController::unassignCourseFromTeacher(const string& teacherId, con
     return teacherService.unassignCourseFromTeacher(teacherId, courseId);
 }
 
+static const string YELLOW = "\033[33m";
+static const int TEACHER_TABLE_WIDTH = 69;
+
 void TeacherController::listTeachersByGrade(int grade) {
     vector<Teacher*> teachers = teacherRepo.getTeachersByGrade(grade);
 
     cout << "Teachers in Grade " << grade << " (" << teachers.size() << ")\n";
-    cout << "\033[33m---------------------------------------------------------------------\033[0m\n";
-    cout << "\033[33m|\033[0m " << left << setw(5)  << "No."
-         << "\033[33m|\033[0m " << left << setw(25) << "Teacher Name"
-         << "\033[33m|\033[0m " << left << setw(13) << "Teacher ID"
-         << "\033[33m|\033[0m " << left << setw(10) << "Students"
-         << "\033[33m|\033[0m\n";
-    cout << "\033[33m---------------------------------------------------------------------\033[0m\n";
+
+    vector<TableColumn> cols = {
+        {"No.",          5},
+        {"Teacher Name", 25},
+        {"Teacher ID",   13},
+        {"Students",     10}
+    };
+    printTableHeader(YELLOW, TEACHER_TABLE_WIDTH, cols);
 
     if (teachers.empty())
     {
-        cout << "No teachers found in this grade.\n";
-        cout << "\033[33m---------------------------------------------------------------------\033[0m\n";
+        printEmptyTableNotice(YELLOW, TEACHER_TABLE_WIDTH, "No teachers found in this grade.");
         return;
     }
 
@@ -158,9 +144,11 @@ void TeacherController::listTeachersByGrade(int grade) {
             }
         }
 
-        cout << "\033[33m|\033[0m " << left << setw(5)  << (i + 1) << "\033[33m|\033[0m " << left << setw(25) << teachers[i]->getName()
-             << "\033[33m|\033[0m " << left << setw(13) << teachers[i]->getId()
-             << "\033[33m|\033[0m " << left << setw(10) << counter << "\033[33m|\033[0m\n";
+        printTableCell(YELLOW, 5);  cout << (i + 1);
+        printTableCell(YELLOW, 25); cout << teachers[i]->getName();
+        printTableCell(YELLOW, 13); cout << teachers[i]->getId();
+        printTableCell(YELLOW, 10); cout << counter;
+        printTableRowEnd(YELLOW);
     }
-    cout << "\033[33m---------------------------------------------------------------------\033[0m\n";
+    printTableDivider(YELLOW, TEACHER_TABLE_WIDTH);
 }

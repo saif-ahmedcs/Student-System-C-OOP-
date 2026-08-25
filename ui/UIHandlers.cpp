@@ -82,6 +82,120 @@ void showProcesses(const string& s) {
 }
 
 
+static string readEntityId(const string& prompt) {
+    cout << prompt;
+    string id;
+    getline(cin, id);
+    return id;
+}
+
+static void handleRemoveStudent(StudentController& studentCtrl) {
+    string id = readEntityId("\nEnter Student ID to remove: ");
+
+    Student* s = studentCtrl.findStudentById(id);
+    if (!s) {
+        cout << "Student not found.\n";
+        return;
+    }
+
+    cout << "\nYou are about to remove student: " << s->getName() << " (ID: " << s->getId() << ")\n";
+
+    if (!confirmAction("Are you sure?")) {
+        cout << "Operation cancelled.\n";
+        return;
+    }
+
+    string result = studentCtrl.removeStudent(id);
+    cout << result << "\n";
+
+    if (result.find("not found") == string::npos) {
+        studentCtrl.save();
+    }
+}
+
+static void handleRemoveTeacher(TeacherController& teacherCtrl) {
+    string id = readEntityId("\nEnter Teacher ID to remove: ");
+
+    Teacher* t = teacherCtrl.findTeacherById(id);
+    if (!t) {
+        cout << "Teacher not found.\n";
+        return;
+    }
+
+    cout << "\nYou are about to remove teacher: " << t->getName() << " (ID: " << t->getId() << ")\n";
+    cout << "This will unassign the teacher from any courses that currently have no students enrolled.\n";
+
+    if (!confirmAction("Are you sure?")) {
+        cout << "Operation cancelled.\n";
+        return;
+    }
+
+    string result = teacherCtrl.removeTeacher(id);
+    cout << result << "\n";
+
+    if (result.find("not found") == string::npos && result.find("Cannot") == string::npos) {
+        teacherCtrl.save();
+    }
+}
+
+static void handleRemoveCourse(CourseController& courseCtrl) {
+    string id = readEntityId("\nEnter Course ID to remove: ");
+
+    Course* c = courseCtrl.findCourseById(id);
+    if (!c) {
+        cout << "Course not found.\n";
+        return;
+    }
+
+    cout << "\nYou are about to remove course: " << c->getName() << " (ID: " << c->getId() << ")\n";
+
+    if (!confirmAction("Are you sure?")) {
+        cout << "Operation cancelled.\n";
+        return;
+    }
+
+    string result = courseCtrl.removeCourse(id);
+    cout << result << "\n";
+
+    if (result.find("not found") == string::npos && result.find("Cannot") == string::npos) {
+        courseCtrl.save();
+    }
+}
+
+static void handleShowStudent(StudentController& studentCtrl) {
+    string id = readEntityId("\nEnter Student ID: ");
+
+    if (!studentCtrl.findStudentById(id)) {
+        cout << "Student not found.\n";
+        return;
+    }
+
+    studentCtrl.showStudent(id);
+}
+
+static void handleShowTeacher(TeacherController& teacherCtrl) {
+    string id = readEntityId("\nEnter Teacher ID: ");
+
+    if (!teacherCtrl.findTeacherById(id)) {
+        cout << "Teacher not found.\n";
+        return;
+    }
+
+    teacherCtrl.showTeacher(id);
+}
+
+static void handleShowCourse(CourseController& courseCtrl) {
+    string id = readEntityId("\nEnter Course ID: ");
+
+    if (!courseCtrl.findCourseById(id)) {
+        cout << "Course not found.\n";
+        return;
+    }
+
+    courseCtrl.showCourse(id);
+}
+
+
 void handleAddStudent(StudentController& studentCtrl) {
     Student student;
 
@@ -120,33 +234,6 @@ void handleAddStudent(StudentController& studentCtrl) {
         result.find("maximum") == string::npos) {
         studentCtrl.save();
      }
-}
-
-
-void handleRemoveStudent(StudentController& studentCtrl) {
-    cout << "\nEnter Student ID to remove: ";
-    string id;
-    getline(cin, id);
-
-    Student* s = studentCtrl.findStudentById(id);
-    if (!s) {
-        cout << "Student not found.\n";
-        return;
-    }
-
-    cout << "\nYou are about to remove student: " << s->getName() << " (ID: " << s->getId() << ")\n";
-
-    if (!confirmAction("Are you sure?")) {
-        cout << "Operation cancelled.\n";
-        return;
-    }
-
-    string result = studentCtrl.removeStudent(id);
-    cout << result << "\n";
-
-    if (result.find("not found") == string::npos) {
-        studentCtrl.save();
-    }
 }
 
 
@@ -259,20 +346,6 @@ void handleAssignCoursesToStudent(StudentController& studentCtrl, CourseControll
 }
 
 
-void handleShowStudent(StudentController& studentCtrl) {
-    cout << "\nEnter Student ID: ";
-    string id;
-    getline(cin, id);
-
-    if (!studentCtrl.findStudentById(id)) {
-        cout << "Student not found.\n";
-        return;
-    }
-
-    studentCtrl.showStudent(id);
-}
-
-
 void handleListStudentsByGrade(StudentController& studentCtrl) {
     int grade = readInt("\nEnter Grade (1-12): ");
     studentCtrl.listStudentsByGrade(grade);
@@ -358,33 +431,6 @@ void handleAddCourse(CourseController& courseCtrl) {
 }
 
 
-void handleRemoveCourse(CourseController& courseCtrl) {
-    cout << "\nEnter Course ID to remove: ";
-    string id;
-    getline(cin, id);
-
-    Course* c = courseCtrl.findCourseById(id);
-    if (!c) {
-        cout << "Course not found.\n";
-        return;
-    }
-
-    cout << "\nYou are about to remove course: " << c->getName() << " (ID: " << c->getId() << ")\n";
-
-    if (!confirmAction("Are you sure?")) {
-        cout << "Operation cancelled.\n";
-        return;
-    }
-
-    string result = courseCtrl.removeCourse(id);
-    cout << result << "\n";
-
-    if (result.find("not found") == string::npos && result.find("Cannot") == string::npos) {
-        courseCtrl.save();
-    }
-}
-
-
 void handleEditCourse(CourseController& courseCtrl) {
     cout << "\nEnter Course ID to edit: ";
     string id;
@@ -454,9 +500,7 @@ void handleReplaceTeacherInCourse(TeacherController& teacherCtrl, CourseControll
 
 
 void handleShowCourseStudents(CourseController& courseCtrl) {
-    cout << "\nEnter Course ID: ";
-    string id;
-    getline(cin, id);
+    string id = readEntityId("\nEnter Course ID: ");
 
     if (!courseCtrl.findCourseById(id)) {
         cout << "Course not found.\n";
@@ -467,24 +511,8 @@ void handleShowCourseStudents(CourseController& courseCtrl) {
 }
 
 
-void handleShowCourse(CourseController& courseCtrl) {
-    cout << "\nEnter Course ID: ";
-    string id;
-    getline(cin, id);
-
-    if (!courseCtrl.findCourseById(id)) {
-        cout << "Course not found.\n";
-        return;
-    }
-
-    courseCtrl.showCourse(id);
-}
-
-
 void handleShowCourseStudentsByTeacher(CourseController& courseCtrl) {
-    cout << "\nEnter Course ID: ";
-    string id;
-    getline(cin, id);
+    string id = readEntityId("\nEnter Course ID: ");
 
     if (!courseCtrl.findCourseById(id)) {
         cout << "Course not found.\n";
@@ -582,34 +610,6 @@ void handleAddTeacher(TeacherController& teacherCtrl) {
         result.find("Invalid") == string::npos &&
         result.find("Maximum") == string::npos)
     {
-        teacherCtrl.save();
-    }
-}
-
-
-void handleRemoveTeacher(TeacherController& teacherCtrl) {
-    cout << "\nEnter Teacher ID to remove: ";
-    string id;
-    getline(cin, id);
-
-    Teacher* t = teacherCtrl.findTeacherById(id);
-    if (!t) {
-        cout << "Teacher not found.\n";
-        return;
-    }
-
-    cout << "\nYou are about to remove teacher: " << t->getName() << " (ID: " << t->getId() << ")\n";
-    cout << "This will unassign the teacher from any courses that currently have no students enrolled.\n";
-
-    if (!confirmAction("Are you sure?")) {
-        cout << "Operation cancelled.\n";
-        return;
-    }
-
-    string result = teacherCtrl.removeTeacher(id);
-    cout << result << "\n";
-
-    if (result.find("not found") == string::npos && result.find("Cannot") == string::npos) {
         teacherCtrl.save();
     }
 }
@@ -760,20 +760,6 @@ void handleAssignCoursesToTeacher(TeacherController& teacherCtrl, CourseControll
     {
         teacherCtrl.save();
     }
-}
-
-
-void handleShowTeacher(TeacherController& teacherCtrl) {
-    cout << "\nEnter Teacher ID: ";
-    string id;
-    getline(cin, id);
-
-    if (!teacherCtrl.findTeacherById(id)) {
-        cout << "Teacher not found.\n";
-        return;
-    }
-
-    teacherCtrl.showTeacher(id);
 }
 
 

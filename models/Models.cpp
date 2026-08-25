@@ -22,6 +22,10 @@ void BaseEntity::setAge(int a) {
     age = a;
 }
 
+void BaseEntity::setGrade(int g) {
+    grade = g;
+}
+
 void BaseEntity::setPhoneNumber(const std::string& p) {
     phoneNumber = p;
 }
@@ -34,16 +38,16 @@ int BaseEntity::getAge() const {
     return age;
 }
 
+int BaseEntity::getGrade() const {
+    return grade;
+}
+
 std::string BaseEntity::getPhoneNumber() const {
     return phoneNumber;
 }
 
 std::string BaseEntity::getNationalNumber() const {
     return nationalNumber;
-}
-
-void Teacher::setGrade(int g) {
-    grade = g;
 }
 
 void Teacher::setMonthlySalary(double s) {
@@ -91,10 +95,6 @@ bool Teacher::removeCourse(const std::string& courseId) {
 
 void Teacher::removeAllCourses() {
     assignedCourseIds.clear();
-}
-
-int Teacher::getGrade() const {
-    return grade;
 }
 
 double Teacher::getMonthlySalary() const {
@@ -252,10 +252,6 @@ int Course::getNumberOfAssignedStudents() const {
     return (int)assignedStudentIds.size();
 }
 
-void Student::setGrade(int g) {
-    grade = g;
-}
-
 void Student::setClassNumber(int c) {
     classNumber = c;
 }
@@ -296,10 +292,6 @@ bool Student::updateTeacherForCourse(const std::string& courseId, const std::str
 
 void Student::clearAssignedCourses() {
     assignedCourses.clear();
-}
-
-int Student::getGrade() const {
-    return grade;
 }
 
 int Student::getClassNumber() const {
